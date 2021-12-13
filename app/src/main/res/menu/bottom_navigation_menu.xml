@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/bottom_nav_conversation"
+        android:title="@string/conversation"
+        android:icon="@drawable/ic_conversation"/>
+
+    <item
+        android:id="@+id/bottom_nav_translation"
+        android:title="@string/translate"
+        android:icon="@drawable/ic_translate"/>
+
+    <item
+        android:id="@+id/bottom_nav_dictionary"
+        android:title="@string/dictionary"
+        android:icon="@drawable/ic_dictionary"/>
+
+</menu>

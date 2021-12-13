@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/custom_border">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:weightSum="15">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/lang_selector_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lang 1"
+            android:theme="@style/Widget.AppCompat.Button.Borderless"
+            android:textColor="@color/colorPrimary"
+            android:textAlignment="center"
+            android:textSize="@dimen/_12ssp"
+            android:layout_weight="5"
+            android:drawableEnd="@drawable/ic_arrow_down"
+            android:drawableTint="@color/colorPrimary"
+            android:layout_marginStart="@dimen/_10sdp"/>
+
+        <ImageView
+            android:id="@+id/img_btn_swapping"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_swapping_arrow"
+            android:layout_marginStart="@dimen/_17sdp"
+            android:layout_marginTop="@dimen/_9sdp"
+            android:scaleType="fitXY"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/lang_selector_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lang 2"
+            android:theme="@style/Widget.AppCompat.Button.Borderless"
+            android:textColor="@color/colorPrimary"
+            android:textAlignment="center"
+            android:textSize="@dimen/_12ssp"
+            android:layout_weight="5"
+            android:drawableEnd="@drawable/ic_arrow_down"
+            android:drawableTint="@color/colorPrimary"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
