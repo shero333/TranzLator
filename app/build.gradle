@@ -42,9 +42,11 @@ dependencies {
     //design library is used for additional support to material design such as FAB, navigation drawers, snack bars, tabs etc
     //noinspection GradleCompatible
     implementation 'com.android.support:design:24.0.0'
+    //for adding navigation component which is used to navigate between fragments
     implementation 'androidx.navigation:navigation-fragment:2.3.5'
     implementation 'androidx.navigation:navigation-ui:2.3.5'
     implementation 'com.google.firebase:firebase-firestore:22.1.2'
+    implementation 'androidx.fragment:fragment:1.3.2'
 
     testImplementation 'junit:junit:4.+'
     testImplementation 'org.testng:testng:6.9.6'

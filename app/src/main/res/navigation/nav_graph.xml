@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/translateHomeFragment">
+
+    <fragment
+        android:id="@+id/translateHomeFragment"
+        android:name="com.hammad.tranzlator.TranslateHomeFragment"
+        android:label="TranslateHomeFragment" />
+    <fragment
+        android:id="@+id/conversationFragment"
+        android:name="com.hammad.tranzlator.ConversationFragment"
+        android:label="ConversationFragment" />
+    <fragment
+        android:id="@+id/dictionaryFragment"
+        android:name="com.hammad.tranzlator.DictionaryFragment"
+        android:label="DictionaryFragment" />
+    <fragment
+        android:id="@+id/fragmentTranslation"
+        android:name="com.hammad.tranzlator.FragmentTranslation"
+        android:label="FragmentTranslation" />
+</navigation>
