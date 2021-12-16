@@ -18,19 +18,33 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_5sdp">
 
             <TextView
-                android:id="@+id/text_cardview_1"
+                android:id="@+id/text_1_cardview_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/_10ssp"
-                android:text="spoken text"
+                android:text="@string/spoken_text"
                 android:textStyle="bold"
                 android:textAlignment="viewStart"
                 android:textColor="@color/black"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/text_2_cardview_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/_10ssp"
+                android:text="@string/translated_text"
+                android:textStyle="bold"
+                android:textAlignment="viewStart"
+                android:textColor="@color/black"
+                android:layout_marginTop="@dimen/_10sdp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/text_1_cardview_1"/>
 
             <ImageView
                 android:id="@+id/img_cardview_1"
@@ -39,8 +53,9 @@
                 android:src="@drawable/ic_volume_up"
                 app:tint="@color/colorPrimary"
                 android:layout_marginStart="@dimen/_20sdp"
-                app:layout_constraintStart_toEndOf="@id/text_cardview_1"
-                app:layout_constraintTop_toTopOf="@id/text_cardview_1"/>
+                app:layout_constraintStart_toEndOf="@id/text_2_cardview_1"
+                app:layout_constraintTop_toTopOf="@id/text_2_cardview_1"
+                app:layout_constraintBottom_toBottomOf="@id/text_2_cardview_1"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -60,10 +75,23 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_5sdp">
 
             <TextView
-                android:id="@+id/text_cardview_2"
+                android:id="@+id/text_1_cardview_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/_10ssp"
+                android:text="spoken text"
+                android:textStyle="bold"
+                android:textAlignment="viewStart"
+                android:textColor="@color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/text_2_cardview_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/_10ssp"
@@ -71,8 +99,9 @@
                 android:textStyle="bold"
                 android:textAlignment="viewStart"
                 android:textColor="@color/white"
+                android:layout_marginTop="@dimen/_10sdp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@id/text_1_cardview_2"/>
 
             <ImageView
                 android:id="@+id/img_cardview_2"
@@ -81,8 +110,9 @@
                 android:src="@drawable/ic_volume_up"
                 app:tint="@color/white"
                 android:layout_marginStart="@dimen/_20sdp"
-                app:layout_constraintStart_toEndOf="@id/text_cardview_2"
-                app:layout_constraintTop_toTopOf="@id/text_cardview_2"/>
+                app:layout_constraintStart_toEndOf="@id/text_2_cardview_2"
+                app:layout_constraintTop_toTopOf="@id/text_2_cardview_2"
+                app:layout_constraintBottom_toBottomOf="@id/text_2_cardview_2"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

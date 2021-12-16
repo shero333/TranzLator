@@ -29,12 +29,8 @@ public class ConversationFragment extends Fragment
         //initializing the animation for image view click
         animation=AnimationUtils.loadAnimation(getActivity(),R.anim.img_button_animation);
 
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                imageView.startAnimation(animation);
-            }
-        });
+        imageView.setOnClickListener(v ->
+                imageView.startAnimation(animation));
 
         return view;
     }

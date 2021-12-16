@@ -4,8 +4,8 @@
     xmlns:menu="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="@dimen/_30sdp"
-    android:padding="@dimen/_10sdp">
+    android:layout_marginTop="@dimen/_50sdp"
+    android:padding="@dimen/_5sdp">
 
     <include
         android:id="@+id/appbar_1"
@@ -16,9 +16,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_15sdp"
-        android:background="@drawable/custom_border"
         android:hint="@string/tap_to_enter_text"
         app:endIconMode="clear_text"
+        android:background="@drawable/custom_border"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/appbar_1">
 
@@ -26,12 +26,13 @@
             android:id="@+id/edittext_input_layout_translation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@null"
             android:gravity="start"
             android:inputType="textMultiLine"
             android:minLines="6"
+            android:background="@drawable/custom_border"
+            android:backgroundTint="@color/white"
             android:textColor="@color/black"
-            android:textSize="@dimen/_14ssp" />
+            android:textSize="@dimen/_14ssp"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -39,12 +40,13 @@
         android:id="@+id/edittext_imageview_volume_up"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_30sdp"
+        android:layout_marginTop="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_15sdp"
         android:src="@drawable/ic_volume_up"
         app:layout_constraintEnd_toEndOf="@id/text_input_layout_translation"
         app:layout_constraintTop_toTopOf="@id/text_input_layout_translation"
-        app:tint="@color/colorPrimary" />
+        app:tint="@color/colorPrimary"
+        android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/edittext_imageview_speak_translation"
@@ -52,9 +54,10 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_15sdp"
         android:layout_marginBottom="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_50sdp"
         android:src="@drawable/ic_mic_translation"
-        app:layout_constraintBottom_toBottomOf="@id/text_input_layout_translation"
         app:layout_constraintEnd_toEndOf="@id/text_input_layout_translation"
+        app:layout_constraintTop_toBottomOf="@id/edittext_imageview_volume_up"
         app:tint="@color/colorPrimary" />
 
     <TextView
@@ -65,9 +68,11 @@
         android:background="@drawable/custom_border"
         android:gravity="start"
         android:minLines="7"
+        android:padding="@dimen/_10sdp"
         android:textColor="@color/black"
         android:textSize="@dimen/_14sdp"
-        app:layout_constraintTop_toBottomOf="@id/text_input_layout_translation" />
+        app:layout_constraintTop_toBottomOf="@id/text_input_layout_translation"
+        android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/textview_imageview_volume_up"
@@ -78,7 +83,8 @@
         android:src="@drawable/ic_volume_up"
         app:layout_constraintBottom_toBottomOf="@id/textview_translated"
         app:layout_constraintStart_toStartOf="parent"
-        app:tint="@color/colorPrimary" />
+        app:tint="@color/colorPrimary"
+        android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/textview_imageview_copy_content"
@@ -89,17 +95,21 @@
         android:src="@drawable/ic_copy_content"
         app:tint="@color/colorGrey"
         app:layout_constraintBottom_toBottomOf="@id/textview_translated"
-        app:layout_constraintStart_toEndOf="@id/textview_imageview_volume_up" />
+        app:layout_constraintStart_toEndOf="@id/textview_imageview_volume_up"
+        android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/textview_imageview_more"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/_15sdp"
-        android:layout_marginStart="@dimen/_15sdp"
+        android:layout_marginStart="@dimen/_13sdp"
+        android:layout_marginEnd="@dimen/_15sdp"
         android:src="@drawable/ic_more"
         app:tint="@color/colorGrey"
+        app:layout_constraintEnd_toEndOf="@+id/textview_translated"
         app:layout_constraintBottom_toBottomOf="@id/textview_translated"
-        app:layout_constraintStart_toEndOf="@id/textview_imageview_copy_content"/>
+        app:layout_constraintStart_toEndOf="@id/textview_imageview_copy_content"
+        android:visibility="gone"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
