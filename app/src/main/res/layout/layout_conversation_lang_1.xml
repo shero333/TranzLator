@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/custom_border_lang_1"
+    android:padding="@dimen/_8sdp"
+    android:layout_marginTop="@dimen/_8sdp"
+    android:layout_marginBottom="@dimen/_8sdp"
+    android:layout_margin="@dimen/_5sdp"
+    android:layout_gravity="start">
+
+    <TextView
+        android:id="@+id/text_1_cardview_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/_10ssp"
+        android:text="@string/spoken_text"
+        android:textStyle="bold"
+        android:textAlignment="viewStart"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/text_2_cardview_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/_10ssp"
+        android:text="@string/translated_text"
+        android:textStyle="bold"
+        android:textAlignment="viewStart"
+        android:textColor="@color/black"
+        android:layout_marginTop="@dimen/_10sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_1_cardview_1"/>
+
+    <ImageView
+        android:id="@+id/img_cardview_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_volume_up"
+        app:tint="@color/colorPrimary"
+        android:layout_marginStart="@dimen/_20sdp"
+        app:layout_constraintStart_toEndOf="@id/text_2_cardview_1"
+        app:layout_constraintTop_toTopOf="@id/text_2_cardview_1"
+        app:layout_constraintBottom_toBottomOf="@id/text_2_cardview_1"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

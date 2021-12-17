@@ -46,6 +46,20 @@
         <entry key="..\:/Android_Pratice/TranzLator/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.1" />
         <entry key="..\:/Android_Pratice/TranzLator/app/src/main/res/menu/navigation_drawer_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Android_Pratice/TranzLator/app/src/main/res/menu/textview_translation_menu.xml" value="0.20416666666666666" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/custom_border.xml" value="0.24722222222222223" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/custom_border_lang_1.xml" value="0.24722222222222223" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/custom_border_lang_2.xml" value="0.24722222222222223" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/custom_cardview_border.xml" value="0.24722222222222223" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/custom_round_border.xml" value="0.24722222222222223" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/activity_home_screen.xml" value="0.14492753623188406" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragement_conversation.xml" value="0.21784420289855072" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragement_translate_home.xml" value="0.21784420289855072" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragment_translation.xml" value="0.21784420289855072" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/layout_conversation.xml" value="0.21784420289855072" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/layout_conversation_lang_1.xml" value="0.25" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/layout_conversation_lang_2.xml" value="0.21784420289855072" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/layout_language_selection.xml" value="0.14990942028985507" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/layout_translation_history.xml" value="0.21784420289855072" />
       </map>
     </option>
   </component>

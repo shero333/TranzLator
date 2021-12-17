@@ -68,8 +68,7 @@
                 android:id="@+id/recyclerview_history"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:background="@drawable/custom_border"/>
+                android:layout_marginTop="@dimen/_10sdp"/>
 
         </LinearLayout>
 
