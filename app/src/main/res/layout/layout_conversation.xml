@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/_10sdp"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="#0C373737"
+    android:padding="@dimen/_5sdp">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardview_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:contentPadding="@dimen/_10sdp"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_3sdp"
         app:cardCornerRadius="@dimen/_10sdp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:contentPadding="@dimen/_10sdp"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:layout_marginStart="@dimen/_10sdp">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
@@ -25,37 +26,37 @@
                 android:id="@+id/text_1_cardview_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/_10ssp"
                 android:text="@string/spoken_text"
-                android:textStyle="bold"
                 android:textAlignment="viewStart"
                 android:textColor="@color/black"
+                android:textSize="@dimen/_10ssp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/text_2_cardview_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/_10ssp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:text="@string/translated_text"
-                android:textStyle="bold"
                 android:textAlignment="viewStart"
                 android:textColor="@color/black"
-                android:layout_marginTop="@dimen/_10sdp"
+                android:textSize="@dimen/_10ssp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/text_1_cardview_1"/>
+                app:layout_constraintTop_toBottomOf="@id/text_1_cardview_1" />
 
             <ImageView
                 android:id="@+id/img_cardview_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_volume_up"
-                app:tint="@color/colorPrimary"
                 android:layout_marginStart="@dimen/_20sdp"
+                android:src="@drawable/ic_volume_up"
+                app:layout_constraintBottom_toBottomOf="@id/text_2_cardview_1"
                 app:layout_constraintStart_toEndOf="@id/text_2_cardview_1"
                 app:layout_constraintTop_toTopOf="@id/text_2_cardview_1"
-                app:layout_constraintBottom_toBottomOf="@id/text_2_cardview_1"/>
+                app:tint="@color/colorPrimary" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -65,12 +66,12 @@
         android:id="@+id/cardview_2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:contentPadding="@dimen/_10sdp"
-        app:cardCornerRadius="@dimen/_10sdp"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:layout_marginEnd="@dimen/_10sdp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/_3sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
         app:cardBackgroundColor="@color/colorPrimary"
+        app:cardCornerRadius="@dimen/_10sdp"
+        app:contentPadding="@dimen/_10sdp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cardview_1">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -82,37 +83,37 @@
                 android:id="@+id/text_1_cardview_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/_10ssp"
                 android:text="spoken text"
-                android:textStyle="bold"
                 android:textAlignment="viewStart"
                 android:textColor="@color/white"
+                android:textSize="@dimen/_10ssp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/text_2_cardview_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/_10ssp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:text="translated text"
-                android:textStyle="bold"
                 android:textAlignment="viewStart"
                 android:textColor="@color/white"
-                android:layout_marginTop="@dimen/_10sdp"
+                android:textSize="@dimen/_10ssp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/text_1_cardview_2"/>
+                app:layout_constraintTop_toBottomOf="@id/text_1_cardview_2" />
 
             <ImageView
                 android:id="@+id/img_cardview_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_volume_up"
-                app:tint="@color/white"
                 android:layout_marginStart="@dimen/_20sdp"
+                android:src="@drawable/ic_volume_up"
+                app:layout_constraintBottom_toBottomOf="@id/text_2_cardview_2"
                 app:layout_constraintStart_toEndOf="@id/text_2_cardview_2"
                 app:layout_constraintTop_toTopOf="@id/text_2_cardview_2"
-                app:layout_constraintBottom_toBottomOf="@id/text_2_cardview_2"/>
+                app:tint="@color/white" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

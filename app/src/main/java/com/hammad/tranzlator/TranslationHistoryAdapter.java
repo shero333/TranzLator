@@ -56,8 +56,7 @@ public class TranslationHistoryAdapter extends RecyclerView.Adapter<TranslationH
 
             //click listener for history recyclerview
             itemView.setOnClickListener(v ->
-                            Log.d("ITEM", "MyViewHolder: "+context));
-//                    Toast.makeText(context, "Position "+getAdapterPosition(),Toast.LENGTH_SHORT));
+                    Toast.makeText(context, "Item clicked: "+getAdapterPosition(), Toast.LENGTH_SHORT).show());
 
         }
     }
