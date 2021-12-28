@@ -1,6 +1,10 @@
 package com.hammad.tranzlator;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -19,6 +23,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.translate.Translate;
+import com.google.cloud.translate.TranslateOptions;
+import com.google.cloud.translate.Translation;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuItemClickListener {
 
@@ -28,6 +39,10 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     TextInputEditText inputEditText;
     ImageView imageViewSwapLang;
     Animation animation;
+
+    //initializing the cloud translation
+    Translate translate;
+    String[] supportedLanguages;
 
     @Nullable
     @Override
@@ -67,6 +82,9 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
             popupMenu.show();
         });
 
+        //the arraylist from string.xml file
+        supportedLanguages=getResources().getStringArray(R.array.supportedLanguages);
+
         return view;
     }
 
@@ -101,12 +119,26 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
                 editTextImageVolumeUp.setVisibility(View.VISIBLE);
 
                 editTextImageSpeak.setOnClickListener(v -> {
-                    textViewTranslation.setVisibility(View.VISIBLE);
-                    textViewTranslation.setText(s.toString());
+                    if(checkInternetConnection())
+                    {
+                        //setting the translation service
+                        getTranslateService();
 
-                    textViewImageVolumeUp.setVisibility(View.VISIBLE);
-                    textViewImageCopy.setVisibility(View.VISIBLE);
-                    textViewImageMoreOptions.setVisibility(View.VISIBLE);
+                        //translating the text
+                        textViewTranslation.setText(translate(s.toString(),"en","ur"));
+
+                        //setting the visibility of textview where translated text is set
+                        textViewTranslation.setVisibility(View.VISIBLE);
+
+                        textViewImageVolumeUp.setVisibility(View.VISIBLE);
+                        textViewImageCopy.setVisibility(View.VISIBLE);
+                        textViewImageMoreOptions.setVisibility(View.VISIBLE);
+                    }
+                    else
+                    {
+                        Toast.makeText(getContext(), "No Internet connection! Cannot be translated", Toast.LENGTH_SHORT).show();
+                    }
+
                 });
             } else {
                 editTextImageSpeak.setImageResource(R.drawable.ic_mic_translation);
@@ -124,4 +156,45 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
         }
     };
+
+    public boolean checkInternetConnection()
+    {
+        boolean isConnected;
+        //check internet connection
+        ConnectivityManager connectivityManager= (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        isConnected=connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState()== NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState()==NetworkInfo.State.CONNECTED;
+
+        return isConnected;
+    }
+
+    public void getTranslateService()
+    {
+        StrictMode.ThreadPolicy policy=new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        try(InputStream is=getResources().openRawResource(R.raw.credentials))
+        {
+            //get credentials
+            final GoogleCredentials myCredentials=GoogleCredentials.fromStream(is);
+
+            //setting credentials and get translate service
+            TranslateOptions translateOptions=TranslateOptions.newBuilder().setCredentials(myCredentials).build();
+            translate=translateOptions.getService();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String translate(String textToTranslate,String sourceLang, String targetLang)
+    {
+        String translatedText;
+
+        Translation translation=translate.translate(textToTranslate, Translate.TranslateOption.sourceLanguage(sourceLang), Translate.TranslateOption.targetLanguage(targetLang), Translate.TranslateOption.model("base"));
+        translatedText=translation.getTranslatedText();
+
+        return translatedText;
+    }
 }

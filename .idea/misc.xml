@@ -53,8 +53,9 @@
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/custom_round_border.xml" value="0.24722222222222223" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/activity_home_screen.xml" value="0.14492753623188406" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragement_conversation.xml" value="0.21784420289855072" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragement_dictionary.xml" value="0.27291666666666664" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragement_translate_home.xml" value="0.21784420289855072" />
-        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragment_translation.xml" value="0.21784420289855072" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragment_translation.xml" value="0.19" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/layout_bottom_navigation.xml" value="0.21784420289855072" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/layout_conversation.xml" value="0.2" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/layout_conversation_lang_1.xml" value="0.25" />
