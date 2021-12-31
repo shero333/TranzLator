@@ -1,6 +1,7 @@
 package com.hammad.tranzlator;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -21,8 +22,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textview.MaterialTextView;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
@@ -42,12 +45,18 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
     //initializing the cloud translation
     Translate translate;
-    String[] supportedLanguages;
+
+    //material textviews for selecting languages
+    MaterialTextView materialTxtViewLang1,materialTxtViewLang2;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_translation, container, false);
+
+        //initializing material textview which are used to select languages from & to translate
+        materialTxtViewLang1=view.findViewById(R.id.lang_selector_1);
+        materialTxtViewLang2=view.findViewById(R.id.lang_selector_2);
 
         //initializing swap language image view
         imageViewSwapLang=view.findViewById(R.id.img_btn_swapping);
@@ -82,11 +91,12 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
             popupMenu.show();
         });
 
-        //the arraylist from string.xml file
-        supportedLanguages=getResources().getStringArray(R.array.supportedLanguages);
+        //this method handles the click listeners for translation language selection
+        languageSelection();
 
         return view;
     }
+
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
@@ -196,5 +206,24 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         translatedText=translation.getTranslatedText();
 
         return translatedText;
+    }
+
+    public void languageSelection()
+    {
+        //click listener for lang 1
+        materialTxtViewLang1.setOnClickListener(v->
+                //Navigation.findNavController(getView()).navigate(R.id.action_fragmentTranslation_to_fragmentLanguagesList2)
+        {
+            Intent intent=new Intent(getActivity(),LanguageListActivity.class);
+            intent.putExtra("value","Lang1");
+            startActivity(intent);
+        });
+
+        //click listener for lang 2
+        materialTxtViewLang2.setOnClickListener( v->{
+            Intent intent=new Intent(getActivity(),LanguageListActivity.class);
+            intent.putExtra("value","Lang2");
+            startActivity(intent);
+        });
     }
 }

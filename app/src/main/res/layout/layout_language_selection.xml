@@ -17,7 +17,7 @@
             android:id="@+id/lang_selector_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Lang 1"
+            android:text="Language 1"
             android:theme="@style/Widget.AppCompat.Button.Borderless"
             android:textColor="@color/colorPrimary"
             android:textAlignment="center"
@@ -32,15 +32,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_swapping_arrow"
-            android:layout_marginStart="@dimen/_17sdp"
+            android:layout_marginStart="@dimen/_10sdp"
             android:layout_marginTop="@dimen/_9sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
             android:scaleType="fitXY"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/lang_selector_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Lang 2"
+            android:text="Language 2"
             android:theme="@style/Widget.AppCompat.Button.Borderless"
             android:textColor="@color/colorPrimary"
             android:textAlignment="center"
