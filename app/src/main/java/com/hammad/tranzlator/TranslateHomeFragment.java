@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textview.MaterialTextView;
 
-public class TranslateHomeFragment extends Fragment {
+public class TranslateHomeFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
     TextView textViewTranslTransferFragment;
     ImageView imageViewSwapLang;
     Animation animation;
@@ -35,6 +35,9 @@ public class TranslateHomeFragment extends Fragment {
     SharedPreferences mPreference;
     SharedPreferences.Editor mEditor;
 
+    //string variables for storing source & target languages and codes
+    String srcLang, trgtLang, srcLangCode, trgtLangCode;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -42,22 +45,22 @@ public class TranslateHomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_translate_home, container, false);
 
         //initialize preference
-        mPreference= PreferenceManager.getDefaultSharedPreferences(getContext());
-        mEditor=mPreference.edit();
+        mPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mEditor = mPreference.edit();
 
         textViewTranslTransferFragment = view.findViewById(R.id.textview_enter_text);
 
-        imageViewSwapLang=view.findViewById(R.id.img_btn_swapping);
+        imageViewSwapLang = view.findViewById(R.id.img_btn_swapping);
 
         //initializing the animation for image view click
-        animation= AnimationUtils.loadAnimation(getActivity(),R.anim.img_button_animation);
+        animation = AnimationUtils.loadAnimation(getActivity(), R.anim.img_button_animation);
 
         //initializing material textview which are used to select languages from & to translate
-        materialLang1 =view.findViewById(R.id.lang_selector_1);
-        materialLang2 =view.findViewById(R.id.lang_selector_2);
+        materialLang1 = view.findViewById(R.id.lang_selector_1);
+        materialLang2 = view.findViewById(R.id.lang_selector_2);
 
         //initializing history recyclerview
-        recyclerViewHistory=view.findViewById(R.id.recyclerview_history);
+        recyclerViewHistory = view.findViewById(R.id.recyclerview_history);
 
         //swap languages function
         swapLanguages();
@@ -77,60 +80,70 @@ public class TranslateHomeFragment extends Fragment {
         return view;
     }
 
-    public void languageSelectionHome()
-    {
+    public void languageSelectionHome() {
         //click listener for lang 1
-        materialLang1.setOnClickListener(v-> {
-            Intent intent=new Intent(getActivity(),LanguageListActivity.class);
-            intent.putExtra("value","Lang1");
+        materialLang1.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), LanguageListActivity.class);
+            intent.putExtra("value", "Lang1");
             startActivity(intent);
         });
 
         //click listener for lang 2
-        materialLang2.setOnClickListener(v->{
-            Intent intent=new Intent(getActivity(),LanguageListActivity.class);
-            intent.putExtra("value","Lang2");
+        materialLang2.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), LanguageListActivity.class);
+            intent.putExtra("value", "Lang2");
             startActivity(intent);
         });
     }
 
-    public void setRecyclerview()
-    {
+    public void setRecyclerview() {
         //setting the layout for recyclerview
-        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerViewHistory.setLayoutManager(linearLayoutManager);
 
         //setting the adapter to the recyclerview
-        translationHistoryAdapter=new TranslationHistoryAdapter(getActivity());
+        translationHistoryAdapter = new TranslationHistoryAdapter(getActivity());
         recyclerViewHistory.setAdapter(translationHistoryAdapter);
     }
 
-    public void navigateToFragmentTranslation(View view)
-    {
-        textViewTranslTransferFragment.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_bottom_nav_translation_to_fragmentTranslation);
-
-        });
+    public void navigateToFragmentTranslation(View view) {
+        textViewTranslTransferFragment.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_bottom_nav_translation_to_fragmentTranslation));
     }
 
-    public void swapLanguages()
-    {
-        imageViewSwapLang.setOnClickListener(v ->imageViewSwapLang.startAnimation(animation));
+    public void swapLanguages() {
+        imageViewSwapLang.setOnClickListener(v -> imageViewSwapLang.startAnimation(animation));
     }
 
-    public void checkSharePreference(){
-        String srcLang,trgtLang,srcLangCode,trgtLangCode;
-
-        srcLang=mPreference.getString(getString(R.string.lang_one),"Lang 1");
-        srcLangCode=mPreference.getString(getString(R.string.lang_one_code),"Lang 1 Code");
-        trgtLang=mPreference.getString(getString(R.string.lang_two),"Lang 2");
-        trgtLangCode=mPreference.getString(getString(R.string.lang_two_code),"Lang 2 Code");
+    public void checkSharePreference()
+    {
+        srcLang = mPreference.getString(getString(R.string.lang_one), "Lang 1");
+        srcLangCode = mPreference.getString(getString(R.string.lang_one_code), "Lang 1 Code");
+        trgtLang = mPreference.getString(getString(R.string.lang_two), "Lang 2");
+        trgtLangCode = mPreference.getString(getString(R.string.lang_two_code), "Lang 2 Code");
 
         materialLang1.setText(srcLang);
-        Toast.makeText(getActivity(), "Src Code: "+srcLangCode, Toast.LENGTH_SHORT).show();
 
         materialLang2.setText(trgtLang);
-        Toast.makeText(getActivity(), "Target Code: "+trgtLangCode, Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+    {
+        checkSharePreference();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        LanguageListActivity.registerPreference(getActivity(), this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        //Toast.makeText(getContext(), "OnDestroy() called", Toast.LENGTH_LONG).show();
+        LanguageListActivity.unregisterPreference(getActivity(), this);
     }
 
 }

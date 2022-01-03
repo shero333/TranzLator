@@ -2,10 +2,12 @@ package com.hammad.tranzlator;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -34,7 +36,7 @@ import com.google.cloud.translate.Translation;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuItemClickListener {
+public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuItemClickListener,SharedPreferences.OnSharedPreferenceChangeListener {
 
     ImageView editTextImageVolumeUp, editTextImageSpeak;
     ImageView textViewImageVolumeUp, textViewImageCopy, textViewImageMoreOptions;
@@ -49,10 +51,21 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     //material textviews for selecting languages
     MaterialTextView materialTxtViewLang1,materialTxtViewLang2;
 
+    //shared preference
+    SharedPreferences mPreference;
+    SharedPreferences.Editor mEditor;
+
+    //string variables for storing source, target languages and codes
+    String sourceLang,targetLang,sourceLangCode,targetLangCode;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_translation, container, false);
+
+        //initialize preference
+        mPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mEditor = mPreference.edit();
 
         //initializing material textview which are used to select languages from & to translate
         materialTxtViewLang1=view.findViewById(R.id.lang_selector_1);
@@ -81,8 +94,6 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         textViewImageCopy = view.findViewById(R.id.textview_imageview_copy_content);
         textViewImageMoreOptions = view.findViewById(R.id.textview_imageview_more);
 
-        inputEditText.addTextChangedListener(textWatcher);
-
         //popup menu for clicking on more option in translated text view
         textViewImageMoreOptions.setOnClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(getActivity(), v);
@@ -93,6 +104,12 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
         //this method handles the click listeners for translation language selection
         languageSelection();
+
+        //getting the shared preferences values
+        checkSharedPreferences();
+
+        //text change listener for text translation
+        inputEditText.addTextChangedListener(textWatcher);
 
         return view;
     }
@@ -135,7 +152,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
                         getTranslateService();
 
                         //translating the text
-                        textViewTranslation.setText(translate(s.toString(),"en","ur"));
+                        textViewTranslation.setText(translate(s.toString(),sourceLangCode,targetLangCode));
 
                         //setting the visibility of textview where translated text is set
                         textViewTranslation.setVisibility(View.VISIBLE);
@@ -225,5 +242,34 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
             intent.putExtra("value","Lang2");
             startActivity(intent);
         });
+    }
+
+    public void checkSharedPreferences()
+    {
+        sourceLang=mPreference.getString(getString(R.string.lang_one), "Lang 1");
+        sourceLangCode=mPreference.getString(getString(R.string.lang_one_code), "Lang 1 code");
+        targetLang=mPreference.getString(getString(R.string.lang_two), "Lang 2");
+        targetLangCode=mPreference.getString(getString(R.string.lang_two_code), "Lang 2 code");
+
+        materialTxtViewLang1.setText(sourceLang);
+
+        materialTxtViewLang2.setText(targetLang);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        checkSharedPreferences();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        LanguageListActivity.registerPreference(getActivity(),this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LanguageListActivity.unregisterPreference(getActivity(),this);
     }
 }

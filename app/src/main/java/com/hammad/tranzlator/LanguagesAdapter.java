@@ -39,6 +39,7 @@ public class LanguagesAdapter extends RecyclerView.Adapter<LanguagesAdapter.MyVi
         this.mOnLanguageSelectionListener=onLanguageSelectionListener;
         this.btnOne=btnOne;
         this.btnTwo=btnTwo;
+
         /**
          * we converted the supported languages list to linked list because on casting string array to list,
          * the methods of list gives an exception of *UnsupportedOperationException*

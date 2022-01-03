@@ -1,5 +1,6 @@
 package com.hammad.tranzlator;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -94,7 +95,6 @@ public class LanguageListActivity extends AppCompatActivity implements Languages
 
         //setting the searchview properties
         searchView.setQueryHint("Search Language");
-        //toolbar.setBackgroundColor(Color.RED);
         searchView.setInputType(InputType.TYPE_CLASS_TEXT);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -134,12 +134,13 @@ public class LanguageListActivity extends AppCompatActivity implements Languages
     //overridden function of OnLanguageSelectionListener interface
     @Override
     public void onLanguageSelection(String lang, String langCode, boolean btnOnePressed, boolean btnTwoPressed) {
-        if (btnOnePressed == true) {
+        if (btnOnePressed) {
             mEditor.putString(getString(R.string.lang_one), lang);
             mEditor.apply();
             mEditor.putString(getString(R.string.lang_one_code), langCode);
             mEditor.apply();
-        } else if (btnTwoPressed == true) {
+        }
+        else if (btnTwoPressed) {
             mEditor.putString(getString(R.string.lang_two), lang);
             mEditor.apply();
             mEditor.putString(getString(R.string.lang_two_code), langCode);
@@ -147,6 +148,19 @@ public class LanguageListActivity extends AppCompatActivity implements Languages
         }
         finish();
 
+    }
+
+    //functions for preference change listeners
+    public static void registerPreference(Context context,SharedPreferences.OnSharedPreferenceChangeListener listener)
+    {
+        SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(context);
+        preferences.registerOnSharedPreferenceChangeListener(listener);
+    }
+
+    public static void unregisterPreference(Context context,SharedPreferences.OnSharedPreferenceChangeListener listener)
+    {
+        SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(context);
+        preferences.unregisterOnSharedPreferenceChangeListener(listener);
     }
 
 }
