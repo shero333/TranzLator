@@ -1,5 +1,7 @@
 package com.hammad.tranzlator;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -44,6 +47,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     TextInputEditText inputEditText;
     ImageView imageViewSwapLang;
     Animation animation;
+    ImageView imageViewCopyContent;
 
     //initializing the cloud translation
     Translate translate;
@@ -94,6 +98,9 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         textViewImageCopy = view.findViewById(R.id.textview_imageview_copy_content);
         textViewImageMoreOptions = view.findViewById(R.id.textview_imageview_more);
 
+        //image views initialization
+        imageViewCopyContent=view.findViewById(R.id.textview_imageview_copy_content);
+
         //popup menu for clicking on more option in translated text view
         textViewImageMoreOptions.setOnClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(getActivity(), v);
@@ -111,6 +118,10 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         //text change listener for text translation
         inputEditText.addTextChangedListener(textWatcher);
 
+        //click listener for copy content
+        imageViewCopyContent.setOnClickListener(v ->
+                copyContent());
+
         return view;
     }
 
@@ -119,11 +130,14 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.textview_translation_share:
-                Toast.makeText(getContext(), "Share", Toast.LENGTH_SHORT).show();
+                shareToApps();
                 break;
 
             case R.id.textview_translation_fullscreen:
-                Toast.makeText(getContext(), "Full Screen", Toast.LENGTH_SHORT).show();
+                Intent intent=new Intent(getActivity(),TranslationFullScreen.class);
+                intent.putExtra("sourceText",inputEditText.getText().toString());
+                intent.putExtra("translatedText",textViewTranslation.getText().toString());
+                startActivity(intent);
                 break;
 
             case R.id.textview_translation_reverse_translation:
@@ -271,5 +285,25 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     public void onDestroy() {
         super.onDestroy();
         LanguageListActivity.unregisterPreference(getActivity(),this);
+    }
+
+    public void copyContent()
+    {
+        if(textViewTranslation.getText().toString().trim().length() != 0)
+        {
+            ClipboardManager clipboardManager=(ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clipData=ClipData.newPlainText("translated Text",textViewTranslation.getText().toString());
+            clipboardManager.setPrimaryClip(clipData);
+            Toast.makeText(getContext(), "Copied!", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    public void shareToApps()
+    {
+        Intent intent=new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT,textViewTranslation.getText().toString().trim());
+        startActivity(intent);
     }
 }
