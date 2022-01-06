@@ -81,8 +81,6 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         //loading animation
         animation= AnimationUtils.loadAnimation(getActivity(),R.anim.img_button_animation);
 
-        imageViewSwapLang.setOnClickListener(v -> imageViewSwapLang.startAnimation(animation));
-
         //input text initialization
         inputEditText = view.findViewById(R.id.edittext_input_layout_translation);
 
@@ -101,6 +99,19 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         //image views initialization
         imageViewCopyContent=view.findViewById(R.id.textview_imageview_copy_content);
 
+        //getting the shared preferences values
+        checkSharedPreferences();
+
+        //this method handles the click listeners for translation language selection
+        languageSelection();
+
+        //click listener swap languages
+        imageViewSwapLang.setOnClickListener(v -> {
+
+            imageViewSwapLang.startAnimation(animation);
+            reserveTranslationLanguages();
+        });
+
         //popup menu for clicking on more option in translated text view
         textViewImageMoreOptions.setOnClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(getActivity(), v);
@@ -108,12 +119,6 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
             popupMenu.setOnMenuItemClickListener(this);
             popupMenu.show();
         });
-
-        //this method handles the click listeners for translation language selection
-        languageSelection();
-
-        //getting the shared preferences values
-        checkSharedPreferences();
 
         //text change listener for text translation
         inputEditText.addTextChangedListener(textWatcher);
@@ -141,7 +146,8 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
                 break;
 
             case R.id.textview_translation_reverse_translation:
-                Toast.makeText(getContext(), "Reverse Translation", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "Reverse Translation", Toast.LENGTH_SHORT).show();
+                reverseTranslation();
                 break;
         }
         return true;
@@ -305,5 +311,74 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TEXT,textViewTranslation.getText().toString().trim());
         startActivity(intent);
+    }
+
+    public void reverseTranslation()
+    {
+        //getting the data from edittext & textview
+        String translatingText=inputEditText.getText().toString();
+        String translatedText=textViewTranslation.getText().toString();
+
+        //reversing the values of source language & code with target language & code
+        String tempLang,tempLangCode;
+
+        tempLang=sourceLang;
+        tempLangCode=sourceLangCode;
+
+        sourceLang=targetLang;
+        sourceLangCode=targetLangCode;
+
+        targetLang=tempLang;
+        targetLangCode=tempLangCode;
+
+        //updating the shared preferences values to the new values
+//        mEditor.putString(getString(R.string.lang_one),sourceLang);
+//        mEditor.apply();
+//        mEditor.putString(getString(R.string.lang_one_code),sourceLangCode);
+//        mEditor.apply();
+//        mEditor.putString(getString(R.string.lang_two),targetLang);
+//        mEditor.apply();
+//        mEditor.putString(getString(R.string.lang_two_code),targetLangCode);
+//        mEditor.apply();
+
+        //for animating the swap languages button
+        imageViewSwapLang.startAnimation(animation);
+
+        //setting the changed source & target translation languages
+        materialTxtViewLang1.setText(sourceLang);
+        materialTxtViewLang2.setText(targetLang);
+
+        //setting the reversed text
+        inputEditText.setText(translatedText);
+        textViewTranslation.setText(translatingText);
+
+    }
+
+    public void reserveTranslationLanguages()
+    {
+        //reversing the values of source language & code with target language & code
+        String tempLang,tempLangCode;
+        tempLang=sourceLang;
+        tempLangCode=sourceLangCode;
+
+        sourceLang=targetLang;
+        sourceLangCode=targetLangCode;
+
+        targetLang=tempLang;
+        targetLangCode=tempLangCode;
+
+        //saving the newly updated data to shared preference object
+//        mEditor.putString(getString(R.string.lang_one),sourceLang);
+//        mEditor.apply();
+//        mEditor.putString(getString(R.string.lang_one_code),sourceLangCode);
+//        mEditor.apply();
+//        mEditor.putString(getString(R.string.lang_two),targetLang);
+//        mEditor.apply();
+//        mEditor.putString(getString(R.string.lang_two_code),targetLangCode);
+//        mEditor.apply();
+
+        //setting the changed source & target translation languages
+        materialTxtViewLang1.setText(sourceLang);
+        materialTxtViewLang2.setText(targetLang);
     }
 }
