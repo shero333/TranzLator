@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -27,7 +26,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
@@ -39,10 +37,10 @@ import com.google.cloud.translate.Translation;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuItemClickListener,SharedPreferences.OnSharedPreferenceChangeListener {
+public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuItemClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     ImageView editTextImageVolumeUp, editTextImageSpeak;
-    ImageView textViewImageVolumeUp, textViewImageCopy, textViewImageMoreOptions;
+    ImageView textViewImageVolumeUp, textViewImageMoreOptions;
     TextView textViewTranslation;
     TextInputEditText inputEditText;
     ImageView imageViewSwapLang;
@@ -53,14 +51,17 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     Translate translate;
 
     //material textviews for selecting languages
-    MaterialTextView materialTxtViewLang1,materialTxtViewLang2;
+    MaterialTextView materialTxtViewLang1, materialTxtViewLang2;
 
     //shared preference
     SharedPreferences mPreference;
     SharedPreferences.Editor mEditor;
 
     //string variables for storing source, target languages and codes
-    String sourceLang,targetLang,sourceLangCode,targetLangCode;
+    String sourceLang, targetLang, sourceLangCode, targetLangCode;
+
+    //integer variable for handling the onSharedPreferenceChanged() listener condition
+    int sharedPrefChecker = 0;
 
     @Nullable
     @Override
@@ -72,14 +73,14 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         mEditor = mPreference.edit();
 
         //initializing material textview which are used to select languages from & to translate
-        materialTxtViewLang1=view.findViewById(R.id.lang_selector_1);
-        materialTxtViewLang2=view.findViewById(R.id.lang_selector_2);
+        materialTxtViewLang1 = view.findViewById(R.id.lang_selector_1);
+        materialTxtViewLang2 = view.findViewById(R.id.lang_selector_2);
 
         //initializing swap language image view
-        imageViewSwapLang=view.findViewById(R.id.img_btn_swapping);
+        imageViewSwapLang = view.findViewById(R.id.img_btn_swapping);
 
         //loading animation
-        animation= AnimationUtils.loadAnimation(getActivity(),R.anim.img_button_animation);
+        animation = AnimationUtils.loadAnimation(getActivity(), R.anim.img_button_animation);
 
         //input text initialization
         inputEditText = view.findViewById(R.id.edittext_input_layout_translation);
@@ -93,11 +94,8 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
         //image views related to text view translated initialization
         textViewImageVolumeUp = view.findViewById(R.id.textview_imageview_volume_up);
-        textViewImageCopy = view.findViewById(R.id.textview_imageview_copy_content);
         textViewImageMoreOptions = view.findViewById(R.id.textview_imageview_more);
-
-        //image views initialization
-        imageViewCopyContent=view.findViewById(R.id.textview_imageview_copy_content);
+        imageViewCopyContent = view.findViewById(R.id.textview_imageview_copy_content);
 
         //getting the shared preferences values
         checkSharedPreferences();
@@ -139,14 +137,13 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
                 break;
 
             case R.id.textview_translation_fullscreen:
-                Intent intent=new Intent(getActivity(),TranslationFullScreen.class);
-                intent.putExtra("sourceText",inputEditText.getText().toString());
-                intent.putExtra("translatedText",textViewTranslation.getText().toString());
+                Intent intent = new Intent(getActivity(), TranslationFullScreen.class);
+                intent.putExtra("sourceText", inputEditText.getText().toString());
+                intent.putExtra("translatedText", textViewTranslation.getText().toString());
                 startActivity(intent);
                 break;
 
             case R.id.textview_translation_reverse_translation:
-//                Toast.makeText(getContext(), "Reverse Translation", Toast.LENGTH_SHORT).show();
                 reverseTranslation();
                 break;
         }
@@ -166,23 +163,20 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
                 editTextImageVolumeUp.setVisibility(View.VISIBLE);
 
                 editTextImageSpeak.setOnClickListener(v -> {
-                    if(checkInternetConnection())
-                    {
+                    if (checkInternetConnection()) {
                         //setting the translation service
                         getTranslateService();
 
                         //translating the text
-                        textViewTranslation.setText(translate(s.toString(),sourceLangCode,targetLangCode));
+                        textViewTranslation.setText(translate(s.toString(), sourceLangCode, targetLangCode));
 
                         //setting the visibility of textview where translated text is set
                         textViewTranslation.setVisibility(View.VISIBLE);
 
                         textViewImageVolumeUp.setVisibility(View.VISIBLE);
-                        textViewImageCopy.setVisibility(View.VISIBLE);
+                        imageViewCopyContent.setVisibility(View.VISIBLE);
                         textViewImageMoreOptions.setVisibility(View.VISIBLE);
-                    }
-                    else
-                    {
+                    } else {
                         Toast.makeText(getContext(), "No Internet connection! Cannot be translated", Toast.LENGTH_SHORT).show();
                     }
 
@@ -193,7 +187,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
                 textViewTranslation.setVisibility(View.GONE);
                 textViewImageVolumeUp.setVisibility(View.GONE);
-                textViewImageCopy.setVisibility(View.GONE);
+                imageViewCopyContent.setVisibility(View.GONE);
                 textViewImageMoreOptions.setVisibility(View.GONE);
             }
         }
@@ -204,72 +198,66 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         }
     };
 
-    public boolean checkInternetConnection()
-    {
+    public boolean checkInternetConnection() {
         boolean isConnected;
         //check internet connection
-        ConnectivityManager connectivityManager= (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        isConnected=connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState()== NetworkInfo.State.CONNECTED ||
-                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState()==NetworkInfo.State.CONNECTED;
+        isConnected = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED;
 
         return isConnected;
     }
 
-    public void getTranslateService()
-    {
-        StrictMode.ThreadPolicy policy=new StrictMode.ThreadPolicy.Builder().permitAll().build();
+    public void getTranslateService() {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        try(InputStream is=getResources().openRawResource(R.raw.credentials))
-        {
+        try (InputStream is = getResources().openRawResource(R.raw.credentials)) {
             //get credentials
-            final GoogleCredentials myCredentials=GoogleCredentials.fromStream(is);
+            final GoogleCredentials myCredentials = GoogleCredentials.fromStream(is);
 
             //setting credentials and get translate service
-            TranslateOptions translateOptions=TranslateOptions.newBuilder().setCredentials(myCredentials).build();
-            translate=translateOptions.getService();
+            TranslateOptions translateOptions = TranslateOptions.newBuilder().setCredentials(myCredentials).build();
+            translate = translateOptions.getService();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public String translate(String textToTranslate,String sourceLang, String targetLang)
-    {
+    public String translate(String textToTranslate, String sourceLang, String targetLang) {
         String translatedText;
 
-        Translation translation=translate.translate(textToTranslate, Translate.TranslateOption.sourceLanguage(sourceLang), Translate.TranslateOption.targetLanguage(targetLang), Translate.TranslateOption.model("base"));
-        translatedText=translation.getTranslatedText();
+        Translation translation = translate.translate(textToTranslate, Translate.TranslateOption.sourceLanguage(sourceLang), Translate.TranslateOption.targetLanguage(targetLang), Translate.TranslateOption.model("base"));
+        translatedText = translation.getTranslatedText();
 
         return translatedText;
     }
 
-    public void languageSelection()
-    {
+    public void languageSelection() {
         //click listener for lang 1
-        materialTxtViewLang1.setOnClickListener(v->
+        materialTxtViewLang1.setOnClickListener(v ->
                 //Navigation.findNavController(getView()).navigate(R.id.action_fragmentTranslation_to_fragmentLanguagesList2)
         {
-            Intent intent=new Intent(getActivity(),LanguageListActivity.class);
-            intent.putExtra("value","Lang1");
+            Intent intent = new Intent(getActivity(), LanguageListActivity.class);
+            intent.putExtra("value", "Lang1");
             startActivity(intent);
         });
 
         //click listener for lang 2
-        materialTxtViewLang2.setOnClickListener( v->{
-            Intent intent=new Intent(getActivity(),LanguageListActivity.class);
-            intent.putExtra("value","Lang2");
+        materialTxtViewLang2.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), LanguageListActivity.class);
+            intent.putExtra("value", "Lang2");
             startActivity(intent);
         });
     }
 
-    public void checkSharedPreferences()
-    {
-        sourceLang=mPreference.getString(getString(R.string.lang_one), "Lang 1");
-        sourceLangCode=mPreference.getString(getString(R.string.lang_one_code), "Lang 1 code");
-        targetLang=mPreference.getString(getString(R.string.lang_two), "Lang 2");
-        targetLangCode=mPreference.getString(getString(R.string.lang_two_code), "Lang 2 code");
+    public void checkSharedPreferences() {
+        sourceLang = mPreference.getString(getString(R.string.lang_one), "Lang 1");
+        sourceLangCode = mPreference.getString(getString(R.string.lang_one_code), "Lang 1 code");
+        targetLang = mPreference.getString(getString(R.string.lang_two), "Lang 2");
+        targetLangCode = mPreference.getString(getString(R.string.lang_two_code), "Lang 2 code");
 
         materialTxtViewLang1.setText(sourceLang);
 
@@ -278,68 +266,67 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        checkSharedPreferences();
+        if (sharedPrefChecker >= 1) {
+            updateSharedPreferences();
+        } else {
+            checkSharedPreferences();
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        LanguageListActivity.registerPreference(getActivity(),this);
+        LanguageListActivity.registerPreference(getActivity(), this);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        LanguageListActivity.unregisterPreference(getActivity(),this);
+        LanguageListActivity.unregisterPreference(getActivity(), this);
     }
 
-    public void copyContent()
-    {
-        if(textViewTranslation.getText().toString().trim().length() != 0)
-        {
-            ClipboardManager clipboardManager=(ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clipData=ClipData.newPlainText("translated Text",textViewTranslation.getText().toString());
+    public void copyContent() {
+        if (textViewTranslation.getText().toString().trim().length() != 0) {
+            ClipboardManager clipboardManager = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clipData = ClipData.newPlainText("translated Text", textViewTranslation.getText().toString());
             clipboardManager.setPrimaryClip(clipData);
             Toast.makeText(getContext(), "Copied!", Toast.LENGTH_SHORT).show();
         }
 
     }
 
-    public void shareToApps()
-    {
-        Intent intent=new Intent(Intent.ACTION_SEND);
+    public void shareToApps() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT,textViewTranslation.getText().toString().trim());
+        intent.putExtra(Intent.EXTRA_TEXT, textViewTranslation.getText().toString().trim());
         startActivity(intent);
     }
 
-    public void reverseTranslation()
-    {
+    public void reverseTranslation() {
         //getting the data from edittext & textview
-        String translatingText=inputEditText.getText().toString();
-        String translatedText=textViewTranslation.getText().toString();
+        String translatingText = inputEditText.getText().toString();
+        String translatedText = textViewTranslation.getText().toString();
 
         //reversing the values of source language & code with target language & code
-        String tempLang,tempLangCode;
+        String tempLang, tempLangCode;
 
-        tempLang=sourceLang;
-        tempLangCode=sourceLangCode;
+        tempLang = sourceLang;
+        tempLangCode = sourceLangCode;
 
-        sourceLang=targetLang;
-        sourceLangCode=targetLangCode;
+        sourceLang = targetLang;
+        sourceLangCode = targetLangCode;
 
-        targetLang=tempLang;
-        targetLangCode=tempLangCode;
+        targetLang = tempLang;
+        targetLangCode = tempLangCode;
 
-        //updating the shared preferences values to the new values
-//        mEditor.putString(getString(R.string.lang_one),sourceLang);
-//        mEditor.apply();
-//        mEditor.putString(getString(R.string.lang_one_code),sourceLangCode);
-//        mEditor.apply();
-//        mEditor.putString(getString(R.string.lang_two),targetLang);
-//        mEditor.apply();
-//        mEditor.putString(getString(R.string.lang_two_code),targetLangCode);
-//        mEditor.apply();
+        //clearing the previous values from shared preferences
+        mEditor.clear().commit();
+
+        //incrementing the sharedPrefChecker value here so that we can handle the onSharedPreferenceChanged() condition
+        sharedPrefChecker++;
+
+        //this line of code will trigger the onSharedPreferenceChanged() interface
+        mEditor.putString(getString(R.string.lang_one), sourceLang).apply();
 
         //for animating the swap languages button
         imageViewSwapLang.startAnimation(animation);
@@ -354,31 +341,38 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
     }
 
-    public void reserveTranslationLanguages()
-    {
+    public void reserveTranslationLanguages() {
         //reversing the values of source language & code with target language & code
-        String tempLang,tempLangCode;
-        tempLang=sourceLang;
-        tempLangCode=sourceLangCode;
+        String tempLang, tempLangCode;
+        tempLang = sourceLang;
+        tempLangCode = sourceLangCode;
 
-        sourceLang=targetLang;
-        sourceLangCode=targetLangCode;
+        sourceLang = targetLang;
+        sourceLangCode = targetLangCode;
 
-        targetLang=tempLang;
-        targetLangCode=tempLangCode;
+        targetLang = tempLang;
+        targetLangCode = tempLangCode;
 
-        //saving the newly updated data to shared preference object
-//        mEditor.putString(getString(R.string.lang_one),sourceLang);
-//        mEditor.apply();
-//        mEditor.putString(getString(R.string.lang_one_code),sourceLangCode);
-//        mEditor.apply();
-//        mEditor.putString(getString(R.string.lang_two),targetLang);
-//        mEditor.apply();
-//        mEditor.putString(getString(R.string.lang_two_code),targetLangCode);
-//        mEditor.apply();
+        //clearing the previous values from shared preferences
+        mEditor.clear().commit();
+
+        //incrementing the sharedPrefChecker value here so that we can handle the onSharedPreferenceChanged() condition
+        sharedPrefChecker++;
+
+        //this line of code will trigger the onSharedPreferenceChanged() interface
+        mEditor.putString(getString(R.string.lang_one), sourceLang).apply();
 
         //setting the changed source & target translation languages
         materialTxtViewLang1.setText(sourceLang);
         materialTxtViewLang2.setText(targetLang);
+    }
+
+
+    //this function updates shared preferences values
+    private void updateSharedPreferences() {
+        mEditor.putString(getString(R.string.lang_one), sourceLang).apply();
+        mEditor.putString(getString(R.string.lang_one_code), sourceLangCode).apply();
+        mEditor.putString(getString(R.string.lang_two), targetLang).apply();
+        mEditor.putString(getString(R.string.lang_two_code), targetLangCode).apply();
     }
 }

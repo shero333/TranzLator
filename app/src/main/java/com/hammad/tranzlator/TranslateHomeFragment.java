@@ -11,7 +11,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,6 +36,9 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
 
     //string variables for storing source & target languages and codes
     String srcLang, trgtLang, srcLangCode, trgtLangCode;
+
+    //integer variable for handling the condition in onSharedPreferenceChanged() listener
+    int sharedPrefChangedChecker = 0;
 
     @Nullable
     @Override
@@ -111,11 +113,13 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     }
 
     public void swapLanguages() {
-        imageViewSwapLang.setOnClickListener(v -> imageViewSwapLang.startAnimation(animation));
+        imageViewSwapLang.setOnClickListener(v -> {
+            imageViewSwapLang.startAnimation(animation);
+            reserveTranslationLanguages();
+        });
     }
 
-    public void checkSharePreference()
-    {
+    public void checkSharePreference() {
         srcLang = mPreference.getString(getString(R.string.lang_one), "Lang 1");
         srcLangCode = mPreference.getString(getString(R.string.lang_one_code), "Lang 1 Code");
         trgtLang = mPreference.getString(getString(R.string.lang_two), "Lang 2");
@@ -128,9 +132,17 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
-    {
-        checkSharePreference();
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+        //this 'if' condition here is used to check if there is any update/changed in the shared preference values.
+        // This if condition is true when reverseTranslationLanguages() function is called
+
+        if (sharedPrefChangedChecker >= 1) {
+            updateSharedPreferences();
+        } else {
+            checkSharePreference();
+        }
+
     }
 
     @Override
@@ -144,6 +156,44 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         super.onDestroy();
         //Toast.makeText(getContext(), "OnDestroy() called", Toast.LENGTH_LONG).show();
         LanguageListActivity.unregisterPreference(getActivity(), this);
+    }
+
+    public void reserveTranslationLanguages() {
+        //reversing the values of source language & code with target language & code
+        String tempLang, tempLangCode;
+        tempLang = srcLang;
+        tempLangCode = srcLangCode;
+
+        srcLang = trgtLang;
+        srcLangCode = trgtLangCode;
+
+        trgtLang = tempLang;
+        trgtLangCode = tempLangCode;
+
+        //clearing the previously saved shared preference values
+        mEditor.clear().commit();
+
+        //incrementing this integer variable here to handle the onSharedPreferenceChanged() interface conditions
+        sharedPrefChangedChecker++;
+
+        /**
+         * onSharedPreferenceChanged() listener is called when we add/remove values from shared preference
+         * The putString function below will call onSharedPreferenceChanged() listener,
+         * in which we have conditions to execute a particular piece of code
+         **/
+        mEditor.putString(getString(R.string.lang_one), srcLang).apply();
+
+        //setting the changed source & target translation languages
+        materialLang1.setText(srcLang);
+        materialLang2.setText(trgtLang);
+    }
+
+    public void updateSharedPreferences() {
+
+        mEditor.putString(getString(R.string.lang_one), srcLang).apply();
+        mEditor.putString(getString(R.string.lang_one_code), srcLangCode).apply();
+        mEditor.putString(getString(R.string.lang_two), trgtLang).apply();
+        mEditor.putString(getString(R.string.lang_two_code), trgtLangCode).apply();
     }
 
 }

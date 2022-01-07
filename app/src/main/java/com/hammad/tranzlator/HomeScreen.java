@@ -1,5 +1,6 @@
 package com.hammad.tranzlator;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
@@ -94,14 +95,11 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
             case R.id.nav_drawer_dark_mode:
                 Switch modeSwitch = (Switch) item.getActionView();
 
-                modeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if (modeSwitch.isChecked()) {
-                            Toast.makeText(HomeScreen.this, "Switch checked", Toast.LENGTH_SHORT).show();
-                        } else if (!modeSwitch.isChecked()) {
-                            Toast.makeText(HomeScreen.this, "Switch un-checked", Toast.LENGTH_SHORT).show();
-                        }
+                modeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    if (modeSwitch.isChecked()) {
+                        Toast.makeText(HomeScreen.this, "Switch checked", Toast.LENGTH_SHORT).show();
+                    } else if (!modeSwitch.isChecked()) {
+                        Toast.makeText(HomeScreen.this, "Switch un-checked", Toast.LENGTH_SHORT).show();
                     }
                 });
                 break;
@@ -111,7 +109,7 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
                 break;
 
             case R.id.nav_drawer_share:
-                Toast.makeText(this, "Share", Toast.LENGTH_SHORT).show();
+                shareAppLink();
                 break;
 
             case R.id.nav_drawer_clear_history:
@@ -127,42 +125,12 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
         return true;
     }
 
-    //click listener for bottom navigation view items
-
-/*
-    private NavigationBarView.OnItemSelectedListener bottomNav=new NavigationBarView.OnItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-            Fragment selectedFragment=null;
-
-            switch (item.getItemId())
-            {
-                case R.id.bottom_nav_translation:
-//                    NavController navController= Navigation.findNavController(HomeScreen.this,R.id.fragment_container);
-                   // selectedFragment=new TranslateHomeFragment();
-                    break;
-
-                case R.id.bottom_nav_conversation:
-//                    NavController navController= Navigation.findNavController(HomeScreen.this,R.id.fragment_container);
-//                    Toast.makeText(getApplicationContext(), "Conversation", Toast.LENGTH_SHORT).show();
-                    //selectedFragment=new ConversationFragment();
-
-                    break;
-
-                case R.id.bottom_nav_dictionary:
-                    Toast.makeText(getApplicationContext(), "Dictionary", Toast.LENGTH_SHORT).show();
-                   // selectedFragment=new DictionaryFragment();
-                    break;
-            }
-
-
-//            getSupportFragmentManager().beginTransaction().
-//                    replace(R.id.fragment_container,selectedFragment).
-//                    commit();
-
-            return true;
-        }
-    };
-*/
+    public void shareAppLink()
+    {
+        Intent intent=new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        String subSectionLink="Download Tranzlator app from:\n\n\thttps://play.google.com";
+        intent.putExtra(Intent.EXTRA_TEXT,subSectionLink);
+        startActivity(Intent.createChooser(intent,"Share app to"));
+    }
 }
