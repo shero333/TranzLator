@@ -21,6 +21,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textview.MaterialTextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TranslateHomeFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
     TextView textViewTranslTransferFragment;
     ImageView imageViewSwapLang;
@@ -39,6 +42,12 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
 
     //integer variable for handling the condition in onSharedPreferenceChanged() listener
     int sharedPrefChangedChecker = 0;
+
+    //list of languages entity class
+    List<TranslatedDataEntity> languageDataList=new ArrayList<>();
+
+    //room database class
+    TranslationRoomDB translationRoomDB;
 
     @Nullable
     @Override

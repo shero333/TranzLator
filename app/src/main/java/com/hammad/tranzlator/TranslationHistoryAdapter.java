@@ -1,7 +1,6 @@
 package com.hammad.tranzlator;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +10,18 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+
 public class TranslationHistoryAdapter extends RecyclerView.Adapter<TranslationHistoryAdapter.MyViewHolder> {
 
     Context context;
+    List<TranslatedDataEntity> dataList;
+    TranslationRoomDB database;
 
-    public TranslationHistoryAdapter(Context context) {
+    public TranslationHistoryAdapter(Context context, List<TranslatedDataEntity> dataEntityList) {
         this.context = context;
+        dataList=dataEntityList;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -30,16 +35,20 @@ public class TranslationHistoryAdapter extends RecyclerView.Adapter<TranslationH
     @Override
     public void onBindViewHolder(@NonNull TranslationHistoryAdapter.MyViewHolder holder, int position) {
 
-        holder.textViewLang1.setText("Language 1");
-        holder.textViewLang2.setText("Language 2");
-        holder.textViewEnteredText.setText("some entered text here");
-        holder.textViewTranslatedText.setText("some text is translated");
+        TranslatedDataEntity list=dataList.get(position);
+        database=TranslationRoomDB.getInstance(context);
+
+
+        holder.textViewLang1.setText(list.getSourceLang());
+        holder.textViewLang2.setText(list.getTargetLang());
+        holder.textViewEnteredText.setText(list.getSourceText());
+        holder.textViewTranslatedText.setText(list.getTranslatedText());
 
     }
 
     @Override
     public int getItemCount() {
-        return 10;
+        return dataList.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder
