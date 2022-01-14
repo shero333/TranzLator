@@ -79,7 +79,7 @@ public class ConversationFragment extends Fragment {
     /**
      * this function is used to set the recyclerview position to the new scrolled position
      * the goal is to set view on recyclerview as a chat app
-     */
+     **/
     public void adapterPosition()
     {
         int newPosition = testArray.size() - 1;

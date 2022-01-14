@@ -77,7 +77,7 @@ public class LanguagesAdapter extends RecyclerView.Adapter<LanguagesAdapter.MyVi
         supportedLanguagesList.add(new LanguageModel("Haitian Creole","ht"));
         supportedLanguagesList.add(new LanguageModel("Hausa","ha"));
         supportedLanguagesList.add(new LanguageModel("Hawaiian","haw"));
-        supportedLanguagesList.add(new LanguageModel("Hebrew","iw"));
+        supportedLanguagesList.add(new LanguageModel("Hebrew","he"));
         supportedLanguagesList.add(new LanguageModel("Hindi","hi"));
         supportedLanguagesList.add(new LanguageModel("Hmong","hmn"));
         supportedLanguagesList.add(new LanguageModel("Hungarian","hu"));

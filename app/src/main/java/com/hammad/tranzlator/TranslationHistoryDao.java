@@ -28,9 +28,8 @@ public interface TranslationHistoryDao {
     @Query("UPDATE language_translation_history SET sourceLang = :sSrcLang, sourceLangCode = :sSrcCode, targetLang = :sTrgtlang, targetLangCode = :sTrgtCode,sourceText =:sSrcText,translatedText =:sTrgtText WHERE ID = :sID")
     void updateTranslatedData(int sID,String sSrcLang,String sSrcCode,String sTrgtlang,String sTrgtCode, String sSrcText, String sTrgtText);
 
-    //get all data
-    @Query("SELECT * FROM language_translation_history")
+    //get all data in descending order(largest to smallest)
+    @Query("SELECT * FROM language_translation_history ORDER BY ID DESC")
     List<TranslatedDataEntity> getAllTranslatedData();
-
 
 }

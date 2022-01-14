@@ -34,5 +34,5 @@ public abstract class TranslationRoomDB extends RoomDatabase {
     }
 
     //create DAO
-    public abstract TranslationHistoryDao translationHistoryDAO();
+    public abstract TranslationHistoryDao translationHistoryDao();
 }

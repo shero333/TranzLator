@@ -43,11 +43,17 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     //integer variable for handling the condition in onSharedPreferenceChanged() listener
     int sharedPrefChangedChecker = 0;
 
+    //this variable is used for conditioning the update preferences function
+    int prefDecrement=0;
+
     //list of languages entity class
     List<TranslatedDataEntity> languageDataList=new ArrayList<>();
 
     //room database class
-    TranslationRoomDB translationRoomDB;
+    TranslationRoomDB database;
+
+    //translated data list
+    List<TranslatedDataEntity> entityDataList =new ArrayList<>();
 
     @Nullable
     @Override
@@ -72,6 +78,9 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
 
         //initializing history recyclerview
         recyclerViewHistory = view.findViewById(R.id.recyclerview_history);
+
+        //initializing room DB
+        database =TranslationRoomDB.getInstance(getContext());
 
         //swap languages function
         swapLanguages();
@@ -112,9 +121,13 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerViewHistory.setLayoutManager(linearLayoutManager);
 
+        //getting the list from database
+        entityDataList=database.translationHistoryDao().getAllTranslatedData();
+
         //setting the adapter to the recyclerview
-        translationHistoryAdapter = new TranslationHistoryAdapter(getActivity());
+        translationHistoryAdapter = new TranslationHistoryAdapter(getActivity(), entityDataList);
         recyclerViewHistory.setAdapter(translationHistoryAdapter);
+
     }
 
     public void navigateToFragmentTranslation(View view) {
@@ -129,10 +142,10 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     }
 
     public void checkSharePreference() {
-        srcLang = mPreference.getString(getString(R.string.lang_one), "Lang 1");
-        srcLangCode = mPreference.getString(getString(R.string.lang_one_code), "Lang 1 Code");
-        trgtLang = mPreference.getString(getString(R.string.lang_two), "Lang 2");
-        trgtLangCode = mPreference.getString(getString(R.string.lang_two_code), "Lang 2 Code");
+        srcLang = mPreference.getString(getString(R.string.lang_one), "English");
+        srcLangCode = mPreference.getString(getString(R.string.lang_one_code), "en");
+        trgtLang = mPreference.getString(getString(R.string.lang_two), "Urdu");
+        trgtLangCode = mPreference.getString(getString(R.string.lang_two_code), "ur");
 
         materialLang1.setText(srcLang);
 
@@ -142,10 +155,10 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-
-        //this 'if' condition here is used to check if there is any update/changed in the shared preference values.
-        // This if condition is true when reverseTranslationLanguages() function is called
-
+        /*
+        this 'if' condition here is used to check if there is any update/changed in the shared preference values.
+         This if condition is true when reverseTranslationLanguages() function is called
+        */
         if (sharedPrefChangedChecker >= 1) {
             updateSharedPreferences();
         } else {
@@ -163,7 +176,6 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //Toast.makeText(getContext(), "OnDestroy() called", Toast.LENGTH_LONG).show();
         LanguageListActivity.unregisterPreference(getActivity(), this);
     }
 
@@ -179,27 +191,34 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         trgtLang = tempLang;
         trgtLangCode = tempLangCode;
 
-        //clearing the previously saved shared preference values
-        mEditor.clear().commit();
-
         //incrementing this integer variable here to handle the onSharedPreferenceChanged() interface conditions
         sharedPrefChangedChecker++;
 
-        /**
-         * onSharedPreferenceChanged() listener is called when we add/remove values from shared preference
-         * The putString function below will call onSharedPreferenceChanged() listener,
-         * in which we have conditions to execute a particular piece of code
-         **/
+        /*
+          onSharedPreferenceChanged() listener is called when we add/remove values from shared preference
+          The putString function below will call onSharedPreferenceChanged() listener,
+          in which we have conditions to execute a particular piece of code
+         */
         mEditor.putString(getString(R.string.lang_one), srcLang).apply();
 
         //setting the changed source & target translation languages
         materialLang1.setText(srcLang);
         materialLang2.setText(trgtLang);
+
+        //condition to reset the prefDecrement & sharedPrefChangedChecker values so that the updatePreference function can execute properly
+        //to see more details on this condition, go to FragmentTranslation class, and then go to reserveTranslationLanguages() function
+        if(prefDecrement <=4)
+        {
+            sharedPrefChangedChecker=0;
+            prefDecrement=0;
+        }
     }
 
     public void updateSharedPreferences() {
+        //updates the prefDecrement variable value so that we can reset its values in reserveTranslationLanguages()
+        prefDecrement++;
 
-        mEditor.putString(getString(R.string.lang_one), srcLang).apply();
+        //mEditor.putString(getString(R.string.lang_one), srcLang).apply();
         mEditor.putString(getString(R.string.lang_one_code), srcLangCode).apply();
         mEditor.putString(getString(R.string.lang_two), trgtLang).apply();
         mEditor.putString(getString(R.string.lang_two_code), trgtLangCode).apply();

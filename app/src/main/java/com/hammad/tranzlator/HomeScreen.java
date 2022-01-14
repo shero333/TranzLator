@@ -1,14 +1,18 @@
 package com.hammad.tranzlator;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -16,9 +20,13 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
+import androidx.room.RoomDatabase;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HomeScreen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -26,10 +34,17 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
     NavigationView navigationView;
     BottomNavigationView bottomNavigationView;
 
+    List<TranslatedDataEntity> dataEntityList;
+
+    //initializing database
+    TranslationRoomDB database;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
+
+        database = TranslationRoomDB.getInstance(this);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -61,27 +76,13 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
         NavController navController = Navigation.findNavController(this, R.id.fragment_container);
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
 
-        //bottom navigation view click listener
-        //bottomNavigationView.setOnItemSelectedListener(bottomNav);
-
-        //sets the selected item to translation when application starts
-        // bottomNavigationView.setSelectedItemId(R.id.bottom_nav_translation);
-
-        //By default the home fragement (translate fragment here) will be displayed
-//        getSupportFragmentManager().beginTransaction()
-//                .replace(R.id.fragment_container,new TranslateHomeFragment())
-//                .commit();
-
     }
 
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START))
-        {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-        }
-        else
-        {
+        } else {
             super.onBackPressed();
         }
     }
@@ -113,7 +114,7 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
                 break;
 
             case R.id.nav_drawer_clear_history:
-                Toast.makeText(this, "Clear History", Toast.LENGTH_SHORT).show();
+                alertDialog();
                 break;
 
             case R.id.nav_drawer_privacy_policy:
@@ -125,12 +126,42 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
         return true;
     }
 
-    public void shareAppLink()
-    {
-        Intent intent=new Intent(Intent.ACTION_SEND);
+    public void shareAppLink() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
-        String subSectionLink="Download Tranzlator app from:\n\n\thttps://play.google.com";
-        intent.putExtra(Intent.EXTRA_TEXT,subSectionLink);
-        startActivity(Intent.createChooser(intent,"Share app to"));
+        String subSectionLink = "Download Tranzlator app from:\n\n\thttps://play.google.com";
+        intent.putExtra(Intent.EXTRA_TEXT, subSectionLink);
+        startActivity(Intent.createChooser(intent, "Share app to"));
     }
+
+    public void clearHistory() {
+        //getting the data list from database
+        dataEntityList = database.translationHistoryDao().getAllTranslatedData();
+
+        //delete all data from database
+        database.translationHistoryDao().deleteAllTranslatedData(dataEntityList);
+
+        dataEntityList.clear();
+        dataEntityList.addAll(database.translationHistoryDao().getAllTranslatedData());
+
+        TranslationHistoryAdapter translationHistoryAdapter = new TranslationHistoryAdapter(this, dataEntityList);
+
+        //calling this intent in same activity so that it can refresh the activity and history recyclerview values can be updated
+        Intent intent = new Intent(this, HomeScreen.class);
+        startActivity(intent);
+    }
+
+    public void alertDialog()
+    {
+        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+
+        builder.setTitle("Clear History")
+                .setMessage("want to clear History?")
+                .setCancelable(false)
+                .setPositiveButton("Clear", (dialog, which) -> clearHistory())
+                .setNegativeButton("Cancel", (dialog, which) -> {});
+
+        builder.show();
+    }
+
 }
