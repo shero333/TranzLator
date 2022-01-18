@@ -1,12 +1,8 @@
-package com.hammad.tranzlator;
+package com.hammad.tranzlator.activity;
 
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -20,12 +16,14 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
-import androidx.room.RoomDatabase;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.hammad.tranzlator.R;
+import com.hammad.tranzlator.TranslatedDataEntity;
+import com.hammad.tranzlator.adapter.TranslationHistoryAdapter;
+import com.hammad.tranzlator.TranslationRoomDB;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class HomeScreen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {

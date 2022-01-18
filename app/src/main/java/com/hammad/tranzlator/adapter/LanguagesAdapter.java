@@ -1,4 +1,4 @@
-package com.hammad.tranzlator;
+package com.hammad.tranzlator.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.hammad.tranzlator.R;
+import com.hammad.tranzlator.model.LanguageModel;
 
 import java.util.ArrayList;
 import java.util.List;

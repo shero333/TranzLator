@@ -1,4 +1,4 @@
-package com.hammad.tranzlator;
+package com.hammad.tranzlator.fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.hammad.tranzlator.R;
 
 public class DictionaryFragment extends Fragment
 {

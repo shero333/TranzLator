@@ -1,4 +1,4 @@
-package com.hammad.tranzlator;
+package com.hammad.tranzlator.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,6 +10,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.hammad.tranzlator.R;
 
 public class SplashScreen extends AppCompatActivity {
 
@@ -37,13 +39,10 @@ public class SplashScreen extends AppCompatActivity {
         logoImageView.setAnimation(topAnim);
         sloganTextView.setAnimation(bottomAnim);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        new Handler().postDelayed(() -> {
 
-                Intent intent=new Intent(SplashScreen.this,HomeScreen.class);
-                startActivity(intent);
-            }
+            Intent intent=new Intent(SplashScreen.this, HomeScreen.class);
+            startActivity(intent);
         }, SPLASH_SCREEN);
 
     }

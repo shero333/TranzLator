@@ -1,4 +1,4 @@
-package com.hammad.tranzlator;
+package com.hammad.tranzlator.fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +13,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.hammad.tranzlator.adapter.ConversationAdapter;
+import com.hammad.tranzlator.R;
 
 import java.util.ArrayList;
 

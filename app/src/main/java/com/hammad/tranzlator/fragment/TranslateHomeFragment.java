@@ -1,4 +1,4 @@
-package com.hammad.tranzlator;
+package com.hammad.tranzlator.fragment;
 
 import android.Manifest;
 import android.content.Intent;
@@ -26,6 +26,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textview.MaterialTextView;
+import com.hammad.tranzlator.R;
+import com.hammad.tranzlator.TranslatedDataEntity;
+import com.hammad.tranzlator.adapter.TranslationHistoryAdapter;
+import com.hammad.tranzlator.TranslationRoomDB;
+import com.hammad.tranzlator.activity.LanguageListActivity;
 
 import java.util.ArrayList;
 import java.util.List;

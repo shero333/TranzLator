@@ -1,9 +1,8 @@
-package com.hammad.tranzlator;
+package com.hammad.tranzlator.activity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.InputType;
@@ -11,15 +10,16 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.hammad.tranzlator.adapter.LanguagesAdapter;
+import com.hammad.tranzlator.R;
 
 public class LanguageListActivity extends AppCompatActivity implements LanguagesAdapter.OnLanguageSelectionListener {
 

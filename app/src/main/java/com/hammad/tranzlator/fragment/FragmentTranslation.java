@@ -1,4 +1,4 @@
-package com.hammad.tranzlator;
+package com.hammad.tranzlator.fragment;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -43,6 +43,11 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
 import com.google.cloud.translate.Translation;
+import com.hammad.tranzlator.R;
+import com.hammad.tranzlator.TranslatedDataEntity;
+import com.hammad.tranzlator.activity.TranslationFullScreen;
+import com.hammad.tranzlator.TranslationRoomDB;
+import com.hammad.tranzlator.activity.LanguageListActivity;
 
 import java.io.IOException;
 import java.io.InputStream;

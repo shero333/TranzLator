@@ -1,4 +1,4 @@
-package com.hammad.tranzlator;
+package com.hammad.tranzlator.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.hammad.tranzlator.R;
 
 public class TranslationFullScreen extends AppCompatActivity {
 

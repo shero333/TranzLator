@@ -1,17 +1,19 @@
-package com.hammad.tranzlator;
+package com.hammad.tranzlator.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.hammad.tranzlator.R;
+import com.hammad.tranzlator.TranslatedDataEntity;
+import com.hammad.tranzlator.TranslationRoomDB;
 
 import java.util.List;
 

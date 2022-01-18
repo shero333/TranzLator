@@ -16,16 +16,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TranzLator">
         <activity
-            android:name=".TranslationFullScreen"
+            android:name=".activity.TranslationFullScreen"
             android:exported="true" />
         <activity
-            android:name=".LanguageListActivity"
+            android:name=".activity.LanguageListActivity"
             android:exported="false" />
         <activity
-            android:name=".HomeScreen"
+            android:name=".activity.HomeScreen"
             android:exported="true" />
         <activity
-            android:name=".SplashScreen"
+            android:name=".activity.SplashScreen"
             android:exported="true"
             android:noHistory="true">
             <intent-filter>
