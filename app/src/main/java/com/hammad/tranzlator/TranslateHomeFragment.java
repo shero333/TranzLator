@@ -1,9 +1,13 @@
 package com.hammad.tranzlator;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +15,11 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,8 +31,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TranslateHomeFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+    private static final int REQUEST_CODE_AUDIO = 10;
+
     TextView textViewTranslTransferFragment;
-    ImageView imageViewSwapLang;
+    ImageView imageViewSwapLang,imageViewMic;
     Animation animation;
     RecyclerView recyclerViewHistory;
     TranslationHistoryAdapter translationHistoryAdapter;
@@ -72,6 +80,11 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         //initializing the animation for image view click
         animation = AnimationUtils.loadAnimation(getActivity(), R.anim.img_button_animation);
 
+        //initializing mic image view to move to fragment translation
+        imageViewMic=view.findViewById(R.id.image_view_mic);
+
+        imageViewMic.setOnClickListener(v-> checkAudioPermission());
+
         //initializing material textview which are used to select languages from & to translate
         materialLang1 = view.findViewById(R.id.lang_selector_1);
         materialLang2 = view.findViewById(R.id.lang_selector_2);
@@ -98,6 +111,15 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         checkSharePreference();
 
         return view;
+    }
+
+    public void speechToTextNavigation() {
+
+        Bundle speechBundle=new Bundle();
+
+        speechBundle.putBoolean("micIsPressed",true);
+
+        Navigation.findNavController(requireView()).navigate(R.id.action_bottom_nav_translation_to_fragmentTranslation,speechBundle);
     }
 
     public void languageSelectionHome() {
@@ -222,6 +244,33 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         mEditor.putString(getString(R.string.lang_one_code), srcLangCode).apply();
         mEditor.putString(getString(R.string.lang_two), trgtLang).apply();
         mEditor.putString(getString(R.string.lang_two_code), trgtLangCode).apply();
+    }
+
+    public void checkAudioPermission() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_CODE_AUDIO);
+        } else {
+            speechToTextNavigation();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_CODE_AUDIO && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            speechToTextNavigation();
+        }
+
+        //this condition handles the flow when user selects "Deny & Never Ask again"
+        if (!shouldShowRequestPermissionRationale(permissions[0])) {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            Uri uri = Uri.fromParts("package", requireContext().getPackageName(), null);
+            intent.setData(uri);
+            startActivity(intent);
+        } else {
+            Toast.makeText(getContext(), "Audio permission denied", Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

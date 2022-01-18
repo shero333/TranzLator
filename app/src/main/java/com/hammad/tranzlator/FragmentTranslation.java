@@ -1,15 +1,22 @@
 package com.hammad.tranzlator;
 
+import static android.app.Activity.RESULT_OK;
+
+import android.Manifest;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
+import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -27,6 +34,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -38,9 +46,13 @@ import com.google.cloud.translate.Translation;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuItemClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
+
+    public static final int REQUEST_CODE_AUDIO = 101;
+    public static final int REQUEST_CODE_SPEECH_INPUT = 102;
 
     ImageView editTextImageSpeak;
     ImageView textViewImageVolumeUp, textViewImageMoreOptions;
@@ -67,10 +79,12 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     int sharedPrefChecker = 0;
 
     //this variable is used for conditioning the update preferences function
-    int prefDecrement =0;
+    int prefDecrement = 0;
 
     //TTS for translated text
     TextToSpeech mTTS;
+
+    TextToSpeech textToSpeech;
 
     @Nullable
     @Override
@@ -137,14 +151,27 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         Bundle bundle = getArguments();
 
         /*
-         * This function checks whether bundle object has data or not
-         * if Translation History Adapter item is clicked then bundle object will have retrieved database data, based on recyclerview item
-         */
-        checkBundleData(bundle);
+        This condition checks which data to get from bundle based on the interaction
+        the outer IF condition checks whether there is any data preset in bundle.
+        If data exists, then execute the function based on condition which is true
+        */
+        if(bundle != null) {
+            if (bundle.getBoolean("micIsPressed") == true) {
+                isMicButtonPressed();
+            }
+            else if (bundle.getString("srcLang").length() > 0) {
+                checkBundleData(bundle);
+            }
+        }
+
+        editTextImageSpeak.setOnClickListener(v -> {
+            if (inputEditText.getText().toString().trim().length() == 0) {
+                checkAudioPermission();
+            }
+        });
 
         return view;
     }
-
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
@@ -175,21 +202,23 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+
             if (s.toString().trim().length() > 0) {
                 editTextImageSpeak.setImageResource(R.drawable.ic_arrow_forward);
 
                 editTextImageSpeak.setOnClickListener(v -> {
-                    if (checkInternetConnection()) {
+
+                    if (s.toString().trim().length() == 0) {
+                        checkAudioPermission();
+                    } else if (checkInternetConnection()) {
                         //setting the translation service
                         getTranslateService();
 
                         //condition to check source & target languages
-                        if(sourceLangCode.equals(targetLangCode))
-                        {
+                        if (sourceLangCode.equals(targetLangCode)) {
                             Toast.makeText(requireContext(), "Please select different source & target Translation languages", Toast.LENGTH_LONG).show();
-                        }
-                        else
-                        {
+                        } else {
                             //translating the text
                             textViewTranslation.setText(translate(s.toString(), sourceLangCode, targetLangCode));
 
@@ -377,13 +406,12 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
          */
 
         Log.d("prefValue", "log before condition call: ");
-        if(prefDecrement <=4)
-        {
-            sharedPrefChecker=0;
-            prefDecrement=0;
+        if (prefDecrement <= 4) {
+            sharedPrefChecker = 0;
+            prefDecrement = 0;
 
-            Log.d("prefValue", "pref checker: "+sharedPrefChecker);
-            Log.d("prefValue", "pref decrement: "+prefDecrement);
+            Log.d("prefValue", "pref checker: " + sharedPrefChecker);
+            Log.d("prefValue", "pref decrement: " + prefDecrement);
         }
 
     }
@@ -417,13 +445,12 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
          */
 
         Log.d("prefValue", "log before condition call: ");
-        if(prefDecrement <=4)
-        {
-            sharedPrefChecker=0;
-            prefDecrement=0;
+        if (prefDecrement <= 4) {
+            sharedPrefChecker = 0;
+            prefDecrement = 0;
 
-            Log.d("prefValue", "pref checker: "+sharedPrefChecker);
-            Log.d("prefValue", "pref decrement: "+prefDecrement);
+            Log.d("prefValue", "pref checker: " + sharedPrefChecker);
+            Log.d("prefValue", "pref decrement: " + prefDecrement);
         }
     }
 
@@ -486,13 +513,12 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     public void textToSpeechInitialization() {
         mTTS = new TextToSpeech(getActivity(), status -> {
 
-            if (status == TextToSpeech.SUCCESS)
-            {
+            if (status == TextToSpeech.SUCCESS) {
                 //string which will save locale code for TTS (if TTS is available for particular language
                 String localeCode = "";
 
                 //string which contain code of language for checking TTS
-                String languageCode = mPreference.getString(getString(R.string.lang_two_code),"ur");
+                String languageCode = mPreference.getString(getString(R.string.lang_two_code), "ur");
 
                 for (Locale text : mTTS.getAvailableLanguages()) {
                     if (text.toLanguageTag().contains(languageCode)) {
@@ -503,8 +529,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
                 if (localeCode.isEmpty()) {
                     textViewImageVolumeUp.setVisibility(View.INVISIBLE);
-                }
-                else if (!(localeCode.isEmpty())){
+                } else if (!(localeCode.isEmpty())) {
                     textViewImageVolumeUp.setVisibility(View.VISIBLE);
                 }
 
@@ -524,5 +549,85 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         mTTS.speak(textViewTranslation.getText().toString().trim(), TextToSpeech.QUEUE_FLUSH, null, null);
     }
 
-}
+    public void checkAudioPermission() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_CODE_AUDIO);
+        } else {
+            speechToText();
+        }
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_CODE_AUDIO && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            speechToText();
+        }
+
+        //this condition handles the flow when user selects "Deny & Never Ask again"
+        if (!shouldShowRequestPermissionRationale(permissions[0])) {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            Uri uri = Uri.fromParts("package", requireContext().getPackageName(), null);
+            intent.setData(uri);
+            startActivity(intent);
+        } else {
+            Toast.makeText(getContext(), "Audio permission denied", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void speechToText() {
+
+        String[] localeCode = {""};
+        String langCode = mPreference.getString(getString(R.string.lang_one_code), "en");
+
+        textToSpeech = new TextToSpeech(getActivity(), v -> {
+
+            if (v == TextToSpeech.SUCCESS) {
+                //String localeCode="";
+                for (Locale text : textToSpeech.getAvailableLanguages()) {
+                    if (text.toLanguageTag().contains(langCode)) {
+                        localeCode[0] = text.toLanguageTag();
+                    }
+                }
+
+                if (localeCode[0].trim().length() == 0) {
+                    Toast.makeText(requireContext(), "Speech to Text not available for " + mPreference.getString(getString(R.string.lang_one), ""), Toast.LENGTH_LONG).show();
+                } else if (localeCode[0].trim().length() != 0) {
+
+                    //setting the locale language code
+                    Locale locale = new Locale(localeCode[0]);
+
+                    Intent speechIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                    speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                    speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, localeCode[0]);
+                    speechIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, mPreference.getString(getString(R.string.lang_one), "English"));
+
+                    startActivityForResult(speechIntent, REQUEST_CODE_SPEECH_INPUT);
+                }
+            }
+        });
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_SPEECH_INPUT && resultCode == RESULT_OK && data != null) {
+            //getting the data
+            ArrayList<String> resultedData = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            inputEditText.setText(resultedData.get(0));
+        }
+    }
+
+    public void isMicButtonPressed() {
+        Bundle speechBundle = getArguments();
+
+        if (speechBundle != null) {
+            speechToText();
+        }
+
+    }
+
+}
