@@ -30,7 +30,7 @@ import com.hammad.tranzlator.R;
 import com.hammad.tranzlator.TranslatedDataEntity;
 import com.hammad.tranzlator.adapter.TranslationHistoryAdapter;
 import com.hammad.tranzlator.TranslationRoomDB;
-import com.hammad.tranzlator.activity.LanguageListActivity;
+import com.hammad.tranzlator.activity.TranslationLanguageList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,14 +130,14 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     public void languageSelectionHome() {
         //click listener for lang 1
         materialLang1.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), LanguageListActivity.class);
+            Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
             intent.putExtra("value", "Lang1");
             startActivity(intent);
         });
 
         //click listener for lang 2
         materialLang2.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), LanguageListActivity.class);
+            Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
             intent.putExtra("value", "Lang2");
             startActivity(intent);
         });
@@ -197,13 +197,13 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     @Override
     public void onStart() {
         super.onStart();
-        LanguageListActivity.registerPreference(getActivity(), this);
+        TranslationLanguageList.registerPreference(getActivity(), this);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        LanguageListActivity.unregisterPreference(getActivity(), this);
+        TranslationLanguageList.unregisterPreference(getActivity(), this);
     }
 
     public void reserveTranslationLanguages() {
@@ -268,7 +268,7 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         }
 
         //this condition handles the flow when user selects "Deny & Never Ask again"
-        if (!shouldShowRequestPermissionRationale(permissions[0])) {
+        else if (!shouldShowRequestPermissionRationale(permissions[0])) {
             Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
             Uri uri = Uri.fromParts("package", requireContext().getPackageName(), null);
             intent.setData(uri);

@@ -28,4 +28,11 @@
     <string name="lang_two_code">com.hammad.tranzlator.lang_two_code</string>
     <string name="source_text">Source Text</string>
 
+    <!--key names for conversation fragment shared preferences-->
+
+    <string name="conversation_lang_one">com.hammad.tranzlator.conversation_lang_one</string>
+    <string name="conversation_lang_one_code">com.hammad.tranzlator.conversation_lang_one_code</string>
+    <string name="conversation_lang_two">com.hammad.tranzlator.conversation_lang_two</string>
+    <string name="conversation_lang_two_code">com.hammad.tranzlator.conversation_lang_two_code</string>
+
 </resources>

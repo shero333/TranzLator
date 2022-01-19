@@ -1,10 +1,10 @@
 package com.hammad.tranzlator.model;
 
-public class LanguageModel {
+public class TranslationLanguageModel {
     private String languageName;
     private String languageCode;
 
-    public LanguageModel(String languageName, String languageCode) {
+    public TranslationLanguageModel(String languageName, String languageCode) {
         this.languageName = languageName;
         this.languageCode = languageCode;
     }
