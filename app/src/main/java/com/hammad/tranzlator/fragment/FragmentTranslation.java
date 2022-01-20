@@ -47,7 +47,7 @@ import com.hammad.tranzlator.R;
 import com.hammad.tranzlator.TranslatedDataEntity;
 import com.hammad.tranzlator.activity.TranslationFullScreen;
 import com.hammad.tranzlator.TranslationRoomDB;
-import com.hammad.tranzlator.activity.LanguageListActivity;
+import com.hammad.tranzlator.activity.TranslationLanguageList;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -304,14 +304,14 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     public void languageSelection() {
         //click listener for lang 1
         materialTxtViewLang1.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), LanguageListActivity.class);
+            Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
             intent.putExtra("value", "Lang1");
             startActivity(intent);
         });
 
         //click listener for lang 2
         materialTxtViewLang2.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), LanguageListActivity.class);
+            Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
             intent.putExtra("value", "Lang2");
             startActivity(intent);
         });
@@ -344,13 +344,13 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     @Override
     public void onStart() {
         super.onStart();
-        LanguageListActivity.registerPreference(requireContext(), this);
+        TranslationLanguageList.registerPreference(requireContext(), this);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        LanguageListActivity.unregisterPreference(getActivity(), this);
+        TranslationLanguageList.unregisterPreference(getActivity(), this);
     }
 
     public void copyContent() {
@@ -571,7 +571,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         }
 
         //this condition handles the flow when user selects "Deny & Never Ask again"
-        if (!shouldShowRequestPermissionRationale(permissions[0])) {
+        else if (!shouldShowRequestPermissionRationale(permissions[0])) {
             Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
             Uri uri = Uri.fromParts("package", requireContext().getPackageName(), null);
             intent.setData(uri);
@@ -597,7 +597,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
                 }
 
                 if (localeCode[0].trim().length() == 0) {
-                    Toast.makeText(requireContext(), "Speech to Text not available for " + mPreference.getString(getString(R.string.lang_one), ""), Toast.LENGTH_LONG).show();
+                    Toast.makeText(requireContext(), "Speech not available for " + mPreference.getString(getString(R.string.lang_one), ""), Toast.LENGTH_LONG).show();
                 } else if (localeCode[0].trim().length() != 0) {
 
                     //setting the locale language code

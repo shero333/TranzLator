@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:allowBackup="true"
@@ -16,10 +16,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TranzLator">
         <activity
+            android:name=".ConversationLanguageList"
+            android:exported="true" />
+        <activity
             android:name=".activity.TranslationFullScreen"
             android:exported="true" />
         <activity
-            android:name=".activity.LanguageListActivity"
+            android:name=".activity.TranslationLanguageList"
             android:exported="false" />
         <activity
             android:name=".activity.HomeScreen"
