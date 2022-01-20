@@ -121,8 +121,10 @@ public class ConversationLanguagesAdapter extends RecyclerView.Adapter<Conversat
 
         supportedLanguagesList.add(new ConversationLanguageModel("Welsh","cy"));
 
-    }
+        //for filtering
+        supportedLanguagesListAll=new ArrayList<>(supportedLanguagesList);
 
+    }
 
     @NonNull
     @Override

@@ -210,7 +210,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
 
             if (s.toString().trim().length() > 0) {
-                editTextImageSpeak.setImageResource(R.drawable.ic_arrow_forward);
+                editTextImageSpeak.setImageResource(R.drawable.translate_button);
 
                 editTextImageSpeak.setOnClickListener(v -> {
 
@@ -222,7 +222,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
                         //condition to check source & target languages
                         if (sourceLangCode.equals(targetLangCode)) {
-                            Toast.makeText(requireContext(), "Please select different source & target Translation languages", Toast.LENGTH_LONG).show();
+                            Toast.makeText(requireContext(), "Please select different source & target Translation languages", Toast.LENGTH_SHORT).show();
                         } else {
                             //translating the text
                             textViewTranslation.setText(translate(s.toString(), sourceLangCode, targetLangCode));

@@ -20,7 +20,6 @@ import java.util.List;
 public class TranslationLanguagesAdapter extends RecyclerView.Adapter<TranslationLanguagesAdapter.MyViewHolder> implements Filterable{
 
     List<TranslationLanguageModel> supportedLanguagesList;
-    //List<String> languagesCodes;
     Context context;
 
     //for filtering/searching items in list
