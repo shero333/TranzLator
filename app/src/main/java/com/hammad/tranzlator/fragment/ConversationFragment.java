@@ -38,6 +38,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
 import com.google.cloud.translate.Translation;
+import com.hammad.tranzlator.ConversationDataModel;
 import com.hammad.tranzlator.ConversationLanguageList;
 import com.hammad.tranzlator.R;
 import com.hammad.tranzlator.adapter.ConversationAdapter;
@@ -47,7 +48,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class ConversationFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class ConversationFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener, ConversationAdapter.OnItemChangeListener {
 
     private static final int SPEECH_INPUT_REQUEST_CODE_1 = 1;
     private static final int SPEECH_INPUT_REQUEST_CODE_2 = 2;
@@ -78,7 +79,7 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
     boolean micLeftPressed = false, micRightPressed = false;
 
     //this integer variable is used to handle condition in TTS module
-    int iTTS =0;
+    int iTTS = 0;
 
     //initializing the cloud translation
     Translate translate;
@@ -86,7 +87,13 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
     //TTS for translated text
     TextToSpeech mTTS;
 
-    ArrayList<String> testArray;
+    //Conversation Data Model array list
+    ArrayList<ConversationDataModel> dataModelArrayList=new ArrayList<>();
+
+    ConversationDataModel conversationDataModel;
+
+    String strSpeechToText = "", strTranslatedText = "";
+
 
     @Nullable
     @Override
@@ -114,60 +121,14 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         //initializing conversation recyclerview
         recyclerViewConversation = view.findViewById(R.id.recyclerview_conversation);
 
-        //setting the layout for conversation
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        recyclerViewConversation.setLayoutManager(linearLayoutManager);
-
-
-        testArray = new ArrayList<>();
-        testArray.add("Item_1");
-        testArray.add("Item_2");
-
-        //setting adapter to recyclerview
-        conversationAdapter = new ConversationAdapter(getActivity(), testArray);
-        recyclerViewConversation.setAdapter(conversationAdapter);
+        //setting the recyclerview
+        setupRecyclerview();
 
         // Language 1 click listener
-        imageViewLang1.setOnClickListener(v -> {
-
-            //this boolean handles the condition of audio permission check on which data to pass to Speech to Text
-            micLeftPressed = true;
-
-            //for lang 1 its value is '1'
-            iTTS =1;
-
-            //check internet connection
-            if (checkInternetConnection()) {
-                checkAudioPermission();
-                /*testArray.add("Item_1");
-                adapterPosition();*/
-            } else {
-                Toast.makeText(requireContext(), "No Internet Connection!", Toast.LENGTH_SHORT).show();
-            }
-
-
-        });
+        imageViewLang1.setOnClickListener(v -> languageOneClickListener());
 
         // Language 2 click listener
-        imageViewLang2.setOnClickListener(v -> {
-
-            //this boolean handles the condition of audio permission check on which data to pass to Speech to Text
-            micRightPressed = true;
-
-            //for lang 1 its value is '2'
-            iTTS =2;
-
-            //check internet connection
-            if (checkInternetConnection()) {
-                checkAudioPermission();
-                /*testArray.add("Item_2");
-                adapterPosition();*/
-            }
-            else {
-                Toast.makeText(requireContext(), "No Internet Connection!", Toast.LENGTH_SHORT).show();
-            }
-        });
-
+        imageViewLang2.setOnClickListener(v -> languageTwoClickListener());
 
         //function for selecting source and target languages
         languageSelectionHome();
@@ -181,6 +142,70 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         return view;
     }
 
+    private void setupRecyclerview() {
+        //setting the layout for conversation
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        recyclerViewConversation.setLayoutManager(linearLayoutManager);
+
+        //setting adapter to recyclerview
+        conversationAdapter = new ConversationAdapter(getActivity(),this);
+        recyclerViewConversation.setAdapter(conversationAdapter);
+    }
+
+    private void languageOneClickListener() {
+        //this boolean handles the condition of audio permission check on which data to pass to Speech to Text
+        micLeftPressed = true;
+
+        //for lang 1 its value is '1'
+        /*iTTS =1;*/
+
+        //check internet connection
+        if (checkInternetConnection()) {
+            checkAudioPermission();
+             /*testArray.add("Item_2");
+                adapterPosition();*/
+
+            if (strSpeechToText.length() > 0 && strTranslatedText.length() > 0) {
+                conversationAdapter.addNewItem(1, strSpeechToText, strTranslatedText, trgtLangCode);
+            }
+            //settings to strings to empty again so that no values can be duplicated
+            strSpeechToText = "";
+            strTranslatedText = "";
+
+        } else {
+            Toast.makeText(requireContext(), "No Internet Connection!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void languageTwoClickListener() {
+        //this boolean handles the condition of audio permission check on which data to pass to Speech to Text
+        micRightPressed = true;
+
+        //for lang 1 its value is '2'
+        /* iTTS =2;*/
+
+        //check internet connection
+        if (checkInternetConnection()) {
+            checkAudioPermission();
+
+            if (strSpeechToText.length() > 0 && strTranslatedText.length() > 0) {
+                conversationAdapter.addNewItem(2, strSpeechToText, strTranslatedText, srcLangCode);
+            }
+            //settings to strings to empty again so that no values can be duplicated
+            strSpeechToText = "";
+            strTranslatedText = "";
+
+        } else {
+            Toast.makeText(requireContext(), "No Internet Connection!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void adapterPosition() {
+        /*int newPosition = testArray.size() - 1;
+        conversationAdapter.notifyItemChanged(newPosition);
+        recyclerViewConversation.scrollToPosition(newPosition);*/
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -191,7 +216,11 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
     public void onDestroy() {
         super.onDestroy();
         ConversationLanguageList.unregisterConversationPreference(getActivity(), this);
-        mTTS.shutdown();
+        if(mTTS != null)
+        {
+            mTTS.shutdown();
+        }
+
     }
 
     private void languageSelectionHome() {
@@ -208,16 +237,6 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
             intent.putExtra("value", "Lang2");
             startActivity(intent);
         });
-    }
-
-    /*
-        this function is used to set the recyclerview position to the new scrolled position
-        the goal is to set view on recyclerview as a chat app
-     */
-    private void adapterPosition() {
-        int newPosition = testArray.size() - 1;
-        conversationAdapter.notifyItemChanged(newPosition);
-        recyclerViewConversation.scrollToPosition(newPosition);
     }
 
     private void swapLanguages() {
@@ -359,24 +378,27 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         if (requestCode == SPEECH_INPUT_REQUEST_CODE_1 && resultCode == RESULT_OK && data != null) {
             //getting the data
             ArrayList<String> resultedData = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-            Toast.makeText(requireContext(), "Data 1: " + resultedData.get(0), Toast.LENGTH_LONG).show();
-            String test = resultedData.get(0);
-            translateText(test, srcLangCode, trgtLangCode);
 
-            //inputEditText.setText(resultedData.get(0));
-        } else if (requestCode == SPEECH_INPUT_REQUEST_CODE_2 && resultCode == RESULT_OK && data != null) {
+            //saves the speech to text data in strSpeechToText
+            strSpeechToText = resultedData.get(0);
+
+            //translate function called here
+            translateText(strSpeechToText, srcLangCode, trgtLangCode);
+        }
+        else if (requestCode == SPEECH_INPUT_REQUEST_CODE_2 && resultCode == RESULT_OK && data != null) {
             //getting the data
             ArrayList<String> resultedData = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-            Toast.makeText(requireContext(), "Data 2: " + resultedData.get(0), Toast.LENGTH_LONG).show();
-            String test1 = resultedData.get(0);
-            translateText(test1, trgtLangCode, srcLangCode);
-            //inputEditText.setText(resultedData.get(0));
+
+            //saves the speech to text data in strSpeechToText
+            strSpeechToText = resultedData.get(0);
+
+            //translate function called here
+            translateText(strSpeechToText, trgtLangCode, srcLangCode);
         }
     }
 
     private void translateText(String text, String sourceCode, String targetCode) {
         if (checkInternetConnection()) {
-
             //setting the translation service
             getTranslateService();
 
@@ -384,39 +406,43 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
             if (srcLangCode.equals(trgtLangCode)) {
                 Toast.makeText(requireContext(), "Please select different source & target Translation languages", Toast.LENGTH_SHORT).show();
             } else {
-                //translating the text
-                String translation = translate(text, sourceCode, targetCode);
-                Toast.makeText(requireContext(), translation, Toast.LENGTH_LONG).show();
 
-                //this condition checks text to speech
+                //translating the text
+                strTranslatedText = translate(text, sourceCode, targetCode);
+
+                /*//this condition checks text to speech
                 switch (iTTS)
                 {
                     case 1:
-                        Toast.makeText(requireContext(), "case 1", Toast.LENGTH_SHORT).show();
                         iTTS =0;
+                        //this line assign the code so that we can set its value in Conversation Adapter for TTS
+                       *//* strLangCode=trgtLangCode;*//*
+
                         textToSpeechInitialization(trgtLangCode);
 
-                        new Handler().postDelayed(new Runnable() {
+                        *//*new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                speech(translation);
+                                speech(strTranslatedText);
                             }
-                        },5000);
+                        },5000);*//*
                         break;
 
                     case 2:
-                        Toast.makeText(requireContext(), "case 2", Toast.LENGTH_SHORT).show();
                         iTTS=0;
+                        //this line assign the code so that we can set its value in Conversation Adapter for TTS
+                        *//*strLangCode=srcLangCode;*//*
+
                         textToSpeechInitialization(srcLangCode);
 
-                        new Handler().postDelayed(new Runnable() {
+                        *//*new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 speech(translation);
                             }
-                        },5000);
+                        },5000);*//*
                         break;
-                }
+                }*/
             }
         } else {
             Toast.makeText(requireContext(), "No Internet connection! Cannot be translated", Toast.LENGTH_SHORT).show();
@@ -481,7 +507,6 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         mTTS = new TextToSpeech(getActivity(), status -> {
 
             if (status == TextToSpeech.SUCCESS) {
-                Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show();
                 Locale locale = new Locale(code);
                 mTTS.setLanguage(locale);
 
@@ -489,15 +514,17 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
                 mTTS.setSpeechRate(0.7f);
 
             } else if (status == TextToSpeech.ERROR) {
-                Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
                 Log.d("TTS Initialization TRA", "Error in TTS translated text Initialization");
             }
         });
     }
 
     private void speech(String data) {
-        Toast.makeText(requireContext(), "Speech", Toast.LENGTH_SHORT).show();
         mTTS.speak(data.trim(), TextToSpeech.QUEUE_FLUSH, null, null);
     }
 
+    @Override
+    public void onItemChanged(int position) {
+        Toast.makeText(requireContext(), "Item updated", Toast.LENGTH_SHORT).show();
+    }
 }

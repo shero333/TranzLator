@@ -29,6 +29,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -91,6 +92,9 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
     TextToSpeech textToSpeech;
 
+    //progress bar
+    ProgressBar progressBar;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -123,6 +127,10 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         textViewImageVolumeUp = view.findViewById(R.id.textview_imageview_volume_up);
         textViewImageMoreOptions = view.findViewById(R.id.textview_imageview_more);
         imageViewCopyContent = view.findViewById(R.id.textview_imageview_copy_content);
+
+        /*//initialize progressbar
+        progressBar=view.findViewById(R.id.progress_circular);
+        progressBar.bringToFront();*/
 
         //getting the shared preferences values
         checkSharedPreferences();
@@ -210,7 +218,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
 
             if (s.toString().trim().length() > 0) {
-                editTextImageSpeak.setImageResource(R.drawable.translate_button);
+                editTextImageSpeak.setImageResource(R.drawable.ic_arrow_forward);
 
                 editTextImageSpeak.setOnClickListener(v -> {
 

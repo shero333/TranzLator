@@ -15,4 +15,6 @@
     <color name="colorSecondaryVariant">#2B5292</color>
 
     <color name="colorGrey">#83101010</color>
+
+    <color name="colorLightGrey">#83BFBDBD</color>
 </resources>
