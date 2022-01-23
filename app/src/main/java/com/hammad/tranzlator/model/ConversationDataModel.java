@@ -1,4 +1,4 @@
-package com.hammad.tranzlator;
+package com.hammad.tranzlator.model;
 
 public class ConversationDataModel {
     int buttonPressedID;

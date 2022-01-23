@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TranzLator">
         <activity
-            android:name=".ConversationLanguageList"
+            android:name=".activity.ConversationLanguageList"
             android:exported="true" />
         <activity
             android:name=".activity.TranslationFullScreen"

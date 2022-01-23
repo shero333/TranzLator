@@ -6,13 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.hammad.tranzlator.ConversationDataModel;
+import com.hammad.tranzlator.model.ConversationDataModel;
 import com.hammad.tranzlator.R;
 
 import java.util.ArrayList;
@@ -21,14 +20,19 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
     Context context;
 
-    ArrayList<ConversationDataModel> arrayList=new ArrayList<>();
+    ArrayList<ConversationDataModel> arrayList/*=new ArrayList<>()*/;
 
     ConversationDataModel conversationDataModel=new ConversationDataModel();
-    OnItemChangeListener mOnItemChangeListener;
 
-    public ConversationAdapter(Context context,OnItemChangeListener onItemChangeListener) {
+    OnSpeakerPressedListener mOnSpeakerPressedListener;
+
+    ArrayList<String> testArray;
+
+    public ConversationAdapter(Context context,OnSpeakerPressedListener onSpeakerPressedListener,ArrayList<String> testArray/*ArrayList<ConversationDataModel> arrayList1*/) {
         this.context = context;
-        this.mOnItemChangeListener=onItemChangeListener;
+        mOnSpeakerPressedListener=onSpeakerPressedListener;
+        //arrayList=arrayList1;
+        this.testArray=testArray;
     }
 
     @NonNull
@@ -42,22 +46,22 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     @Override
     public void onBindViewHolder(@NonNull ConversationAdapter.MyViewHolder holder, int position) {
 
-        if(arrayList.get(position).getButtonPressedID()==1)
+        if(/*arrayList.get(position).getButtonPressedID()==1*/testArray.get(position).equals("Item1"))
         {
             holder.cardView1.setVisibility(View.VISIBLE);
 
-            holder.textView1Card1.setText(arrayList.get(position).getSpeechToText());
-            holder.textView2Card1.setText(arrayList.get(position).getTranslatedText());
+            holder.textView1Card1.setText(/*arrayList.get(position).getSpeechToText()*/"Item 1");
+            holder.textView2Card1.setText(/*arrayList.get(position).getTranslatedText()*/"Item 1");
 
             //setting the cardview 2 visibility to gone
             holder.cardView2.setVisibility(View.GONE);
         }
-        else if(arrayList.get(position).getButtonPressedID()==2)
+        else if(/*arrayList.get(position).getButtonPressedID()==2*/testArray.get(position).equals("Item2"))
         {
             holder.cardView2.setVisibility(View.VISIBLE);
 
-            holder.textView1Card2.setText(arrayList.get(position).getSpeechToText());
-            holder.textView2Card2.setText(arrayList.get(position).getTranslatedText());
+            holder.textView1Card2.setText(/*arrayList.get(position).getSpeechToText()*/"Item 2");
+            holder.textView2Card2.setText(/*arrayList.get(position).getTranslatedText()*/"Item 2");
 
             //setting the cardview 1 visibility to gone
             holder.cardView1.setVisibility(View.GONE);
@@ -65,16 +69,16 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
         //click listeners for image buttons which will convert translated text to speech
         holder.imageViewCard1.setOnClickListener(v ->
-                Toast.makeText(context, arrayList.get(position).getCode(), Toast.LENGTH_SHORT).show());
+        mOnSpeakerPressedListener.onSpeakerPressed(arrayList.get(position).getCode(),arrayList.get(position).getTranslatedText()));
 
         holder.imageViewCard2.setOnClickListener(v ->
-                Toast.makeText(context, arrayList.get(position).getCode(), Toast.LENGTH_SHORT).show());
+                mOnSpeakerPressedListener.onSpeakerPressed(arrayList.get(position).getCode(),arrayList.get(position).getTranslatedText()));
 
     }
 
     @Override
     public int getItemCount() {
-        return arrayList.size();
+        return /*arrayList*/testArray.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -112,8 +116,10 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         notifyItemChanged(newPosition);
     }
 
-    public interface OnItemChangeListener{
-        void onItemChanged(int position);
+    public interface OnSpeakerPressedListener
+    {
+        void onSpeakerPressed(String code,String textToSpeech);
     }
+
 
 }

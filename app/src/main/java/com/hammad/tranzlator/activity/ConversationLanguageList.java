@@ -1,4 +1,4 @@
-package com.hammad.tranzlator;
+package com.hammad.tranzlator.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,7 +18,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 
-public class ConversationLanguageList extends AppCompatActivity implements ConversationLanguagesAdapter.OnConversationLanguageSelectionListener{
+import com.hammad.tranzlator.adapter.ConversationLanguagesAdapter;
+import com.hammad.tranzlator.R;
+
+public class ConversationLanguageList extends AppCompatActivity implements ConversationLanguagesAdapter.OnConversationLanguageSelectionListener {
 
     Toolbar toolbar;
     RecyclerView recyclerView;

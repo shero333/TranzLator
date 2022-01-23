@@ -1,6 +1,7 @@
 package com.hammad.tranzlator.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Switch;
@@ -116,7 +117,7 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
                 break;
 
             case R.id.nav_drawer_privacy_policy:
-                Toast.makeText(this, "Privacy Policy", Toast.LENGTH_SHORT).show();
+                privacyPolicy();
                 break;
 
         }
@@ -129,7 +130,7 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
         intent.setType("text/plain");
         String subSectionLink = "Download Tranzlator app from:\n\n\thttps://play.google.com";
         intent.putExtra(Intent.EXTRA_TEXT, subSectionLink);
-        startActivity(Intent.createChooser(intent, "Share app to"));
+        startActivity(Intent.createChooser(intent, "Share via"));
     }
 
     public void clearHistory() {
@@ -160,6 +161,13 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
                 .setNegativeButton("Cancel", (dialog, which) -> {});
 
         builder.show();
+    }
+
+    public void privacyPolicy()
+    {
+        Uri uri=Uri.parse("https://www.google.com");
+        Intent intent=new Intent(Intent.ACTION_VIEW,uri);
+        startActivity(intent);
     }
 
 }

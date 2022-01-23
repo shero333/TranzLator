@@ -22,10 +22,9 @@
             android:textColor="@color/colorPrimary"
             android:textAlignment="center"
             android:textSize="@dimen/_12ssp"
-            android:layout_weight="5"
+            android:layout_weight="7"
             android:drawableEnd="@drawable/ic_arrow_down"
-            android:drawableTint="@color/colorPrimary"
-            android:layout_marginStart="@dimen/_10sdp"/>
+            android:drawableTint="@color/colorPrimary"/>
 
         <ImageView
             android:id="@+id/img_btn_swapping"
@@ -46,7 +45,7 @@
             android:textColor="@color/colorPrimary"
             android:textAlignment="center"
             android:textSize="@dimen/_12ssp"
-            android:layout_weight="5"
+            android:layout_weight="7"
             android:drawableEnd="@drawable/ic_arrow_down"
             android:drawableTint="@color/colorPrimary"/>
 
