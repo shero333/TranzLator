@@ -59,9 +59,6 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     //this variable is used for conditioning the update preferences function
     int prefDecrement=0;
 
-    //list of languages entity class
-    List<TranslatedDataEntity> languageDataList=new ArrayList<>();
-
     //room database class
     TranslationRoomDB database;
 

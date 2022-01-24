@@ -11,28 +11,27 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.hammad.tranzlator.model.ConversationDataModel;
+import com.hammad.tranzlator.ConversationDataEntity;
+import com.hammad.tranzlator.TranslationRoomDB;
 import com.hammad.tranzlator.R;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.MyViewHolder> {
 
     Context context;
 
-    ArrayList<ConversationDataModel> arrayList/*=new ArrayList<>()*/;
-
-    ConversationDataModel conversationDataModel=new ConversationDataModel();
+    List<ConversationDataEntity> list;
 
     OnSpeakerPressedListener mOnSpeakerPressedListener;
 
-    ArrayList<String> testArray;
+    TranslationRoomDB database;
 
-    public ConversationAdapter(Context context,OnSpeakerPressedListener onSpeakerPressedListener,ArrayList<String> testArray/*ArrayList<ConversationDataModel> arrayList1*/) {
+
+    public ConversationAdapter(Context context, OnSpeakerPressedListener onSpeakerPressedListener, List<ConversationDataEntity> arrayList1) {
         this.context = context;
         mOnSpeakerPressedListener=onSpeakerPressedListener;
-        //arrayList=arrayList1;
-        this.testArray=testArray;
+        list =arrayList1;
     }
 
     @NonNull
@@ -46,22 +45,25 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     @Override
     public void onBindViewHolder(@NonNull ConversationAdapter.MyViewHolder holder, int position) {
 
-        if(/*arrayList.get(position).getButtonPressedID()==1*/testArray.get(position).equals("Item1"))
+        ConversationDataEntity conversationDataEntity= list.get(position);
+        database=TranslationRoomDB.getInstance(context);
+
+        if(list.get(position).getConCode()==1)
         {
             holder.cardView1.setVisibility(View.VISIBLE);
 
-            holder.textView1Card1.setText(/*arrayList.get(position).getSpeechToText()*/"Item 1");
-            holder.textView2Card1.setText(/*arrayList.get(position).getTranslatedText()*/"Item 1");
+            holder.textView1Card1.setText(list.get(position).getConSourceText());
+            holder.textView2Card1.setText(list.get(position).getConTranslatedText());
 
             //setting the cardview 2 visibility to gone
             holder.cardView2.setVisibility(View.GONE);
         }
-        else if(/*arrayList.get(position).getButtonPressedID()==2*/testArray.get(position).equals("Item2"))
+        else if(list.get(position).getConCode()==2)
         {
             holder.cardView2.setVisibility(View.VISIBLE);
 
-            holder.textView1Card2.setText(/*arrayList.get(position).getSpeechToText()*/"Item 2");
-            holder.textView2Card2.setText(/*arrayList.get(position).getTranslatedText()*/"Item 2");
+            holder.textView1Card2.setText(list.get(position).getConSourceText());
+            holder.textView2Card2.setText(list.get(position).getConTranslatedText());
 
             //setting the cardview 1 visibility to gone
             holder.cardView1.setVisibility(View.GONE);
@@ -69,16 +71,16 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
         //click listeners for image buttons which will convert translated text to speech
         holder.imageViewCard1.setOnClickListener(v ->
-        mOnSpeakerPressedListener.onSpeakerPressed(arrayList.get(position).getCode(),arrayList.get(position).getTranslatedText()));
+        mOnSpeakerPressedListener.onSpeakerPressed(list.get(position).getTTSCode(), list.get(position).getConTranslatedText()));
 
         holder.imageViewCard2.setOnClickListener(v ->
-                mOnSpeakerPressedListener.onSpeakerPressed(arrayList.get(position).getCode(),arrayList.get(position).getTranslatedText()));
+                mOnSpeakerPressedListener.onSpeakerPressed(list.get(position).getTTSCode(), list.get(position).getConTranslatedText()));
 
     }
 
     @Override
     public int getItemCount() {
-        return /*arrayList*/testArray.size();
+        return list.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -102,18 +104,6 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             imageViewCard1=itemView.findViewById(R.id.img_cardview_1);
             imageViewCard2=itemView.findViewById(R.id.img_cardview_2);
         }
-    }
-
-    public void addNewItem(int id,String speechToText, String translatedText, String code)
-    {
-        conversationDataModel.setButtonPressedID(id);
-        conversationDataModel.setSpeechToText(speechToText);
-        conversationDataModel.setTranslatedText(translatedText);
-        conversationDataModel.setCode(code);
-
-        arrayList.add(conversationDataModel);
-        int newPosition = arrayList.size() - 1;
-        notifyItemChanged(newPosition);
     }
 
     public interface OnSpeakerPressedListener

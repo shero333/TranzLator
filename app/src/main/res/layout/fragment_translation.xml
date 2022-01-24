@@ -39,7 +39,7 @@
             android:backgroundTint="@color/white"
             android:gravity="start"
             android:inputType="textMultiLine"
-            android:minLines="6"
+            android:minLines="8"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp" />
 
@@ -55,18 +55,19 @@
         android:src="@drawable/ic_mic_translation"
         app:layout_constraintBottom_toBottomOf="@+id/text_input_layout_translation"
         app:layout_constraintEnd_toEndOf="@id/text_input_layout_translation"
-        app:tint="@color/colorPrimary" />
+        app:tint="@color/colorPrimary"
+        android:contentDescription="@null"/>
 
     <TextView
         android:id="@+id/textview_translated"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
-        android:background="@drawable/custom_border"
+        android:background="@drawable/gradient_colors"
         android:gravity="start"
-        android:minLines="7"
+        android:minLines="9"
         android:padding="@dimen/_10sdp"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="@dimen/_14sdp"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/text_input_layout_translation" />
@@ -81,7 +82,8 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@id/textview_translated"
         app:layout_constraintStart_toStartOf="parent"
-        app:tint="@color/colorPrimary" />
+        app:tint="@color/white"
+        android:contentDescription="@null"/>
 
     <ImageView
         android:id="@+id/textview_imageview_copy_content"
@@ -93,7 +95,8 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/textview_translated"
         app:layout_constraintStart_toEndOf="@id/textview_imageview_volume_up"
-        app:tint="@color/colorGrey" />
+        app:tint="@color/white"
+        android:contentDescription="@null"/>
 
     <ImageView
         android:id="@+id/textview_imageview_more"
@@ -107,6 +110,7 @@
         app:layout_constraintBottom_toBottomOf="@id/textview_translated"
         app:layout_constraintEnd_toEndOf="@+id/textview_translated"
         app:layout_constraintStart_toEndOf="@id/textview_imageview_copy_content"
-        app:tint="@color/colorGrey" />
+        app:tint="@color/white"
+        android:contentDescription="@null"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

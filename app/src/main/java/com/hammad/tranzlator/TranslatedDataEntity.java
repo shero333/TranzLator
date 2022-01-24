@@ -12,11 +12,12 @@ import java.io.Serializable;
 
 public class TranslatedDataEntity implements Serializable {
 
+    //column names for tables
+
     //column id
     @PrimaryKey(autoGenerate = true)
     private int ID;
 
-    //column names for tables
     @ColumnInfo(name = "sourceLang")
     private String sourceLang;
 

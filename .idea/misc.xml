@@ -46,23 +46,28 @@
         <entry key="..\:/Android_Pratice/TranzLator/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.1" />
         <entry key="..\:/Android_Pratice/TranzLator/app/src/main/res/menu/navigation_drawer_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Android_Pratice/TranzLator/app/src/main/res/menu/textview_translation_menu.xml" value="0.20416666666666666" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable-v24/ic_mic_translation.xml" value="0.2712962962962963" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/custom_border.xml" value="0.24722222222222223" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/custom_border_lang_1.xml" value="0.24722222222222223" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/custom_border_lang_2.xml" value="0.24722222222222223" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/custom_cardview_border.xml" value="0.24722222222222223" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/custom_round_border.xml" value="0.24722222222222223" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/custom_textview_border.xml" value="0.25" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/gradient_colors.xml" value="0.20185185185185187" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/ic_arrow_back.xml" value="0.21666666666666667" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/ic_arrow_forward.xml" value="0.20555555555555555" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/ic_search.xml" value="0.16203703703703703" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/activity_conversation_language_list.xml" value="0.17617753623188406" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/activity_home_screen.xml" value="0.14492753623188406" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/activity_language_list.xml" value="0.13272543059777103" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/activity_splash_screen.xml" value="0.17119565217391305" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/activity_translation_full_screen.xml" value="0.11548913043478261" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragement_conversation.xml" value="0.21784420289855072" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragement_dictionary.xml" value="0.27291666666666664" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragement_languages_list.xml" value="0.22" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragement_translate_home.xml" value="0.21784420289855072" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragment_conversation.xml" value="0.2" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragment_dictionary.xml" value="0.20878623188405798" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragment_translate_home.xml" value="0.17028985507246377" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragment_translation.xml" value="0.19" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/layout_bottom_navigation.xml" value="0.21784420289855072" />
@@ -80,7 +85,6 @@
         <entry key="..\:/Users/hamad/Desktop/Translator/TranslatorAppAndroid/app/src/main/res/layout/activity_translation_full_screen.xml" value="0.17889492753623187" />
         <entry key="..\:/Users/hamad/Desktop/Translator/TranslatorAppAndroid/app/src/main/res/layout/fragment_translate_home.xml" value="0.18704710144927536" />
         <entry key="..\:/Users/hamad/Desktop/Translator/TranslatorAppAndroid/app/src/main/res/layout/fragment_translation.xml" value="0.15" />
-        <entry key="..\:/Users/hamad/Desktop/Translator/TranslatorAppAndroid/app/src/main/res/layout/layout_language_selection.xml" value="0.25" />
         <entry key="..\:/Users/hamad/Desktop/Translator/TranslatorAppAndroid/app/src/main/res/layout/layout_translation_history.xml" value="0.10371376811594203" />
       </map>
     </option>
@@ -90,5 +94,12 @@
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
+  </component>
+  <component name="VisualizationToolProject">
+    <option name="state">
+      <ProjectState>
+        <option name="scale" value="0.2" />
+      </ProjectState>
+    </option>
   </component>
 </project>

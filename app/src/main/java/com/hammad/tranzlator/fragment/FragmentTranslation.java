@@ -164,9 +164,9 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         Bundle bundle = getArguments();
 
         /*
-        This condition checks which data to get from bundle based on the interaction
-        the outer IF condition checks whether there is any data preset in bundle.
-        If data exists, then execute the function based on condition which is true
+            This condition checks which data to get from bundle based on the interaction
+            the outer IF condition checks whether there is any data preset in bundle.
+            If data exists, then execute the function based on condition which is true
         */
         if(bundle != null) {
             if (bundle.getBoolean("micIsPressed") == true) {
@@ -215,7 +215,6 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-
 
             if (s.toString().trim().length() > 0) {
                 editTextImageSpeak.setImageResource(R.drawable.ic_arrow_forward);
@@ -597,7 +596,6 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         textToSpeech = new TextToSpeech(getActivity(), v -> {
 
             if (v == TextToSpeech.SUCCESS) {
-                //String localeCode="";
                 for (Locale text : textToSpeech.getAvailableLanguages()) {
                     if (text.toLanguageTag().contains(langCode)) {
                         localeCode[0] = text.toLanguageTag();

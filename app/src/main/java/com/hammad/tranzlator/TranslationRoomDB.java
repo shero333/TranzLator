@@ -7,7 +7,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 //Add database entities
-@Database(entities = {TranslatedDataEntity.class},version = 1,exportSchema = false)
+@Database(entities = {TranslatedDataEntity.class,ConversationDataEntity.class},version = 1,exportSchema = false)
 
 public abstract class TranslationRoomDB extends RoomDatabase {
 
@@ -35,4 +35,7 @@ public abstract class TranslationRoomDB extends RoomDatabase {
 
     //create DAO
     public abstract TranslationHistoryDao translationHistoryDao();
+
+    //create DAO
+    public abstract ConversationDao conversationDao();
 }

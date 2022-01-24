@@ -8,21 +8,22 @@
 
     <ImageView
         android:id="@+id/image_splash"
-        android:layout_width="@dimen/_200sdp"
-        android:layout_height="@dimen/_200sdp"
-        android:src="@mipmap/ic_launcher"
+        android:layout_width="@dimen/_180sdp"
+        android:layout_height="@dimen/_180sdp"
+        android:src="@drawable/icon"
         android:scaleType="fitXY"
         android:layout_marginTop="@dimen/_130sdp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="@null"/>
 
     <TextView
         android:id="@+id/slogan_splash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Splash Slogan"
-        android:textSize="@dimen/_24ssp"
+        android:text="@string/ready_to_talk_to_world"
+        android:textSize="@dimen/_22ssp"
         android:layout_marginTop="@dimen/_30sdp"
         app:layout_constraintTop_toBottomOf="@id/image_splash"
         app:layout_constraintStart_toStartOf="parent"

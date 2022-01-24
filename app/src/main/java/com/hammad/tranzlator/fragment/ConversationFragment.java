@@ -37,7 +37,8 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
 import com.google.cloud.translate.Translation;
-import com.hammad.tranzlator.model.ConversationDataModel;
+import com.hammad.tranzlator.ConversationDataEntity;
+import com.hammad.tranzlator.TranslationRoomDB;
 import com.hammad.tranzlator.activity.ConversationLanguageList;
 import com.hammad.tranzlator.R;
 import com.hammad.tranzlator.adapter.ConversationAdapter;
@@ -84,15 +85,13 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
     //TTS for translated text
     TextToSpeech mTTS;
 
-    //Conversation Data Model array list
-    ArrayList<ConversationDataModel> dataModelArrayList=new ArrayList<>();
+    //Conversation Data Entity list
+    List<ConversationDataEntity> conversationDataEntityList=new ArrayList<>();
 
-    ConversationDataModel conversationDataModel;
-
-    ArrayList<String> testArray=new ArrayList<>();
+    //room database
+    TranslationRoomDB database;
 
     String strSpeechToText = "", strTranslatedText = "";
-
 
     @Nullable
     @Override
@@ -117,6 +116,9 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         //initializing the animation for image view click
         animation = AnimationUtils.loadAnimation(getActivity(), R.anim.img_button_animation);
 
+        //initializing room database instance
+        database=TranslationRoomDB.getInstance(requireContext());
+
         //initializing conversation recyclerview
         recyclerViewConversation = view.findViewById(R.id.recyclerview_conversation);
 
@@ -138,8 +140,6 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         //function for displaying the source & target languages from list
         checkSharePreference();
 
-        /*testArray.add("Item_1");
-        testArray.add("Item_2");*/
 
         return view;
     }
@@ -149,8 +149,15 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerViewConversation.setLayoutManager(linearLayoutManager);
 
+        //getting all the data from database
+        conversationDataEntityList=database.conversationDao().getAllConversationData();
+
+        //scroll recyclerview to last entered item position
+        int newPosition = conversationDataEntityList.size() - 1;
+        recyclerViewConversation.scrollToPosition(newPosition);
+
         //setting adapter to recyclerview
-        conversationAdapter = new ConversationAdapter(getActivity(),this,testArray/*dataModelArrayList*/);
+        conversationAdapter = new ConversationAdapter(getActivity(), this, conversationDataEntityList);
         recyclerViewConversation.setAdapter(conversationAdapter);
     }
 
@@ -158,26 +165,9 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         //this boolean handles the condition of audio permission check on which data to pass to Speech to Text
         micLeftPressed = true;
 
-         //testArray.add("Item1");
-        //dataModelArrayList.add(new ConversationDataModel(1,"source text","translated text","cod"));
-        //adapterPosition();
-
         //check internet connection
         if (checkInternetConnection()) {
             checkAudioPermission();
-            //micLeftPressed = true;
-
-            if (strSpeechToText.length() > 0 && strTranslatedText.length() > 0) {
-                //conversationDataModel=new ConversationDataModel(1,strSpeechToText,strTranslatedText,trgtLangCode);
-                //dataModelArrayList.add(new ConversationDataModel(1,strSpeechToText,strTranslatedText,trgtLangCode));
-                //adapterPosition();
-                testArray.add("Item1");
-                adapterPosition();
-            }
-            //settings to strings to empty again so that no values can be duplicated
-            strSpeechToText = "";
-            strTranslatedText = "";
-
         } else {
             Toast.makeText(requireContext(), "No Internet Connection!", Toast.LENGTH_SHORT).show();
         }
@@ -187,36 +177,17 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         //this boolean handles the condition of audio permission check on which data to pass to Speech to Text
         micRightPressed = true;
 
-        //testArray.add("Item2");
-        //dataModelArrayList.add(new ConversationDataModel(2,"src text","trans text","cod"));
-        //adapterPosition();
-
-
         //check internet connection
         if (checkInternetConnection()) {
             checkAudioPermission();
-            micRightPressed = true;
-
-            if (/*strSpeechToText.length() > 0 && strTranslatedText.length() > 0*/micRightPressed) {
-                //conversationDataModel=new ConversationDataModel(2,strSpeechToText,strTranslatedText,srcLangCode);
-                dataModelArrayList.add(new ConversationDataModel(2,strSpeechToText,strTranslatedText,srcLangCode));
-                adapterPosition();
-                //conversationAdapter.addNewItem(2, strSpeechToText, strTranslatedText, srcLangCode);
-                /*dataModelArrayList.add(new ConversationDataModel(2,"src text","trans text","cod"));
-                adapterPosition();*/
-            }
-            //settings to strings to empty again so that no values can be duplicated
-            strSpeechToText = "";
-            strTranslatedText = "";
-
         } else {
             Toast.makeText(requireContext(), "No Internet Connection!", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void adapterPosition() {
-        int newPosition = /*dataModelArrayList*/testArray.size() - 1;
-        conversationAdapter.notifyItemChanged(newPosition);
+        int newPosition = conversationDataEntityList.size() - 1;
+        conversationAdapter.notifyItemInserted(newPosition);
         recyclerViewConversation.scrollToPosition(newPosition);
     }
 
@@ -230,8 +201,7 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
     public void onDestroy() {
         super.onDestroy();
         ConversationLanguageList.unregisterConversationPreference(getActivity(), this);
-        if(mTTS != null)
-        {
+        if (mTTS != null) {
             mTTS.shutdown();
         }
     }
@@ -285,8 +255,10 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         materialLang1.setText(srcLang);
         materialLang2.setText(trgtLang);
 
-        //condition to reset the prefDecrement & sharedPrefChangedChecker values so that the updatePreference function can execute properly
-        //to see more details on this condition, go to FragmentTranslation class, and then go to reserveTranslationLanguages() function
+        /*
+            condition to reset the prefDecrement & sharedPrefChangedChecker values so that the updatePreference function can execute properly
+            to see more details on this condition, go to FragmentTranslation class, and then go to reserveTranslationLanguages() function
+        */
         if (prefDecrement <= 4) {
             sharedPrefChangedChecker = 0;
             prefDecrement = 0;
@@ -321,7 +293,6 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         //updates the prefDecrement variable value so that we can reset its values in reserveTranslationLanguages()
         prefDecrement++;
 
-        //mEditor.putString(getString(R.string.lang_one), srcLang).apply();
         mEditor.putString(getString(R.string.conversation_lang_one_code), srcLangCode).apply();
         mEditor.putString(getString(R.string.conversation_lang_two), trgtLang).apply();
         mEditor.putString(getString(R.string.conversation_lang_two_code), trgtLangCode).apply();
@@ -349,15 +320,13 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         if (requestCode == AUDIO_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             //handling the clicks of which speech to text button was clicked
             if (micLeftPressed) {
                 //setting the to false again here to handles the click listener for respective speech to text button
                 micLeftPressed = false;
                 speechToText(srcLang, srcLangCode, SPEECH_INPUT_REQUEST_CODE_1);
-            }
-            else if (micRightPressed) {
+            } else if (micRightPressed) {
                 //setting the to false again here to handles the click listener for respective speech to text button
                 micRightPressed = false;
                 speechToText(trgtLang, trgtLangCode, SPEECH_INPUT_REQUEST_CODE_2);
@@ -376,12 +345,10 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
     }
 
     public void speechToText(String languageName, String languageCode, int REQUEST_CODE) {
-
         Intent speechIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, languageCode);
         speechIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, languageName);
-
         startActivityForResult(speechIntent, REQUEST_CODE);
     }
 
@@ -397,9 +364,8 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
             strSpeechToText = resultedData.get(0);
 
             //translate function called here
-            translateText(strSpeechToText, srcLangCode, trgtLangCode);
-        }
-        else if (requestCode == SPEECH_INPUT_REQUEST_CODE_2 && resultCode == RESULT_OK && data != null) {
+            translateText(strSpeechToText, srcLangCode, trgtLangCode, 1);
+        } else if (requestCode == SPEECH_INPUT_REQUEST_CODE_2 && resultCode == RESULT_OK && data != null) {
             //getting the data
             ArrayList<String> resultedData = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
 
@@ -407,11 +373,12 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
             strSpeechToText = resultedData.get(0);
 
             //translate function called here
-            translateText(strSpeechToText, trgtLangCode, srcLangCode);
+            translateText(strSpeechToText, trgtLangCode, srcLangCode, 2);
         }
     }
 
-    private void translateText(String text, String sourceCode, String targetCode) {
+    private void translateText(String text, String sourceCode, String targetCode, int requestCode) {
+
         if (checkInternetConnection()) {
             //setting the translation service
             getTranslateService();
@@ -419,10 +386,28 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
             //condition to check source & target languages
             if (srcLangCode.equals(trgtLangCode)) {
                 Toast.makeText(requireContext(), "Please select different source & target Translation languages", Toast.LENGTH_SHORT).show();
-            }
-            else {
+            } else {
+
                 //translating the text
                 strTranslatedText = translate(text, sourceCode, targetCode);
+
+                //this condition checks which mic was pressed and displays that particular view
+                if (requestCode == 1) {
+                    //this sets the left side view of Conversation adapter view
+                    conversationDataEntityList.add(new ConversationDataEntity(1, strSpeechToText, strTranslatedText, trgtLangCode));
+                    adapterPosition();
+
+                    //saving data to database
+                    saveToDatabase(1,strSpeechToText,strTranslatedText,trgtLangCode);
+                } else if (requestCode == 2) {
+                    //this sets the left side view of Conversation adapter view
+                    conversationDataEntityList.add(new ConversationDataEntity(2, strSpeechToText, strTranslatedText, srcLangCode));
+                    adapterPosition();
+
+                    //saving data to database
+                    saveToDatabase(2,strSpeechToText,strTranslatedText,srcLangCode);
+                }
+
             }
         } else {
             Toast.makeText(requireContext(), "No Internet connection! Cannot be translated", Toast.LENGTH_SHORT).show();
@@ -483,7 +468,7 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         return stringCode;
     }
 
-    private void textToSpeechInitialization(String code,String textToSpeech) {
+    private void textToSpeechInitialization(String code, String textToSpeech) {
         mTTS = new TextToSpeech(getActivity(), status -> {
 
             if (status == TextToSpeech.SUCCESS) {
@@ -508,6 +493,20 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
 
     @Override
     public void onSpeakerPressed(String code, String textToSpeech) {
-        textToSpeechInitialization(code,textToSpeech);
+        textToSpeechInitialization(code, textToSpeech);
+    }
+
+    private void saveToDatabase(int conversationBtnPressed, String speechToText, String translatedText, String textToSpeechCode) {
+        if (speechToText.trim().length() != 0 && translatedText.trim().length() != 0) {
+            TranslationRoomDB translationRoomDB = TranslationRoomDB.getInstance(requireContext());
+            ConversationDataEntity conversationDataEntity=new ConversationDataEntity();
+
+            conversationDataEntity.setConCode(conversationBtnPressed);
+            conversationDataEntity.setConSourceText(speechToText);
+            conversationDataEntity.setConTranslatedText(translatedText);
+            conversationDataEntity.setTTSCode(textToSpeechCode);
+
+            translationRoomDB.conversationDao().addConversationData(conversationDataEntity);
+        }
     }
 }

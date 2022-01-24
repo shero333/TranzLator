@@ -8,11 +8,11 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="colorPrimary">#2B5292</color>
-    <color name="colorPrimaryVariant">#2B5292</color>
+    <color name="colorPrimary">#378cf7</color>
+    <color name="colorPrimaryVariant">#378cf7</color>
 
-    <color name="colorSecondary">#2B5292</color>
-    <color name="colorSecondaryVariant">#2B5292</color>
+    <color name="colorSecondary">#378cf7</color>
+    <color name="colorSecondaryVariant">#378cf7</color>
 
     <color name="colorGrey">#83101010</color>
 
