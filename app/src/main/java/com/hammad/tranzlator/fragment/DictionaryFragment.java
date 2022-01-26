@@ -1,7 +1,9 @@
 package com.hammad.tranzlator.fragment;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,6 +30,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.hammad.tranzlator.DictionaryModel;
 import com.hammad.tranzlator.R;
 import com.hammad.tranzlator.VolleySingleton;
 import com.hammad.tranzlator.adapter.DictionaryAdapter;
@@ -35,6 +39,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,6 +53,9 @@ public class DictionaryFragment extends Fragment {
     ImageView imageViewSpeech;
     RecyclerView recyclerView;
     DictionaryAdapter adapter;
+    List<DictionaryModel> dictionaryModelList=new ArrayList<>();
+
+    ProgressDialog progressDialog;
 
 
     @Nullable
@@ -57,11 +67,10 @@ public class DictionaryFragment extends Fragment {
         //function to initialize view
         initializeViews(view);
 
-        //setting the recyclerview
-        setupRecyclerview();
-
         textInputEditText.addTextChangedListener(textWatcher);
 
+        //initializing the progress dialog
+        initializeProgressDialog();
 
         return view;
     }
@@ -86,7 +95,7 @@ public class DictionaryFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         //setting the adapter
-        adapter = new DictionaryAdapter(requireContext());
+        adapter = new DictionaryAdapter(requireContext(),dictionaryModelList);
         recyclerView.setAdapter(adapter);
     }
 
@@ -116,6 +125,7 @@ public class DictionaryFragment extends Fragment {
                             //hides soft input keyboard
                             hideSoftInputKeyboard(v);
                             //calling this function where meaning is searched in API
+                            //DictionaryAsyncTask asyncTask=new DictionaryAsyncTask(getActivity());
                             getMeaning(textInputEditText.getText().toString().trim());
                         }
                     }
@@ -123,10 +133,13 @@ public class DictionaryFragment extends Fragment {
                 });
             } else {
                 //setting to visibility to "Invisible"
-                textViewWord.setVisibility(View.INVISIBLE);
-                textViewPhonetic.setVisibility(View.INVISIBLE);
-                imageViewSpeech.setVisibility(View.INVISIBLE);
-                recyclerView.setVisibility(View.INVISIBLE);
+                textViewWord.setVisibility(View.GONE);
+                textViewPhonetic.setVisibility(View.GONE);
+                imageViewSpeech.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.GONE);
+
+                //clear the DictionaryModel list so that no previous data in list can be used
+                dictionaryModelList.clear();
             }
         }
 
@@ -167,6 +180,30 @@ public class DictionaryFragment extends Fragment {
                     }
                 });
 
+                //getting the 'meanings' JSON Array
+                JSONArray meaningsJsonArray=mainJsonObject.getJSONArray("meanings");
+
+                if(meaningsJsonArray.length() >= 1)
+                {
+                    for(int i=0;i<meaningsJsonArray.length();i++)
+                    {
+                        JSONObject partOfSpeechJsonObject=meaningsJsonArray.getJSONObject(i);
+                        String partOfSpeech=partOfSpeechJsonObject.getString("partOfSpeech");
+
+                        JSONArray definitionsJsonArray=partOfSpeechJsonObject.getJSONArray("definitions");
+
+                        JSONObject definitionsJsonObject=definitionsJsonArray.getJSONObject(0);
+
+                        String definition=definitionsJsonObject.getString("definition").trim();
+                        String example=definitionsJsonObject.getString("example").trim();
+
+                        dictionaryModelList.add(new DictionaryModel(partOfSpeech,definition,example));
+                    }
+                }
+
+                //setting the recyclerview
+                setupRecyclerview();
+
                 //setting the views visibility to true
                 setViewsVisibility();
 
@@ -176,11 +213,11 @@ public class DictionaryFragment extends Fragment {
 
         }, error -> {
             showToast("Sorry! we couldn't find definition(s) for the word",1);
-            //Toast.makeText(requireContext(), "Sorry! we couldn't find definition(s) for the word", Toast.LENGTH_LONG).show();
         });
 
         //instantiating the VolleySingleton Class
-        VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(jsonArrayRequest);
+        VolleySingleton volleySingleton=new VolleySingleton();
+        volleySingleton.getInstance(requireContext()).addToRequestQueue(jsonArrayRequest);
     }
 
     private void playPhoneticAudio(String audioUri)
@@ -228,5 +265,60 @@ public class DictionaryFragment extends Fragment {
         InputMethodManager inputMethodManager =(InputMethodManager)getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+
+    private void initializeProgressDialog()
+    {
+        progressDialog=new ProgressDialog(requireContext());
+        progressDialog.setContentView(R.layout.layout_progress_dialog);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+    }
+
+    /*private static class DictionaryAsyncTask extends AsyncTask<String,Void,Void>{
+        private WeakReference<FragmentActivity> weakReference;
+
+        DictionaryAsyncTask(FragmentActivity activity)
+        {
+            weakReference=new WeakReference<>(activity);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            FragmentActivity dictionaryFragment = weakReference.get();
+
+            if (dictionaryFragment == null || dictionaryFragment.getActivity().isFinishing()) {
+                return;
+            }
+
+            dictionaryFragment.progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            FragmentActivity dictionaryFragment = weakReference.get();
+
+            if (dictionaryFragment == null || dictionaryFragment.getActivity().isFinishing()) {
+
+            }
+            dictionaryFragment.getMeaning(strings[0]);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            super.onPostExecute(unused);
+
+            FragmentActivity dictionaryFragment = weakReference.get();
+
+            if (dictionaryFragment == null || dictionaryFragment*//*.getActivity()*//*.isFinishing()) {
+                return;
+            }
+
+            *//*dictionaryFragment.*//*weakReference.progressDialog.dismiss();
+        }
+
+
+    }*/
 
 }

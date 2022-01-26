@@ -42,7 +42,7 @@
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="@dimen/_26ssp"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dictionary_edit_text_layout"
         tools:visibility="gone"/>
@@ -57,7 +57,7 @@
         android:textAlignment="center"
         android:textColor="@color/colorGrey"
         android:textSize="@dimen/_14ssp"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/txt_word" />
 
@@ -67,7 +67,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/ic_volume_up"
         app:tint="@color/colorPrimary"
-        android:visibility="invisible"
+        android:visibility="gone"
         android:layout_marginStart="@dimen/_10sdp"
         android:layout_marginBottom="@dimen/_20sdp"
         app:layout_constraintTop_toBottomOf="@+id/txt_word"
@@ -81,10 +81,9 @@
         android:layout_marginStart="@dimen/_20sdp"
         android:layout_marginEnd="@dimen/_20sdp"
         android:layout_marginTop="@dimen/_10sdp"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/txt_phonetic"
-        app:layout_constraintStart_toStartOf="parent"
-        android:padding="@dimen/_10sdp"/>
+        app:layout_constraintStart_toStartOf="parent"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
