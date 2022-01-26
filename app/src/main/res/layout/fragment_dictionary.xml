@@ -1,33 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/dictionary_edit_text_layout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_20sdp"
+        android:layout_marginTop="@dimen/_80sdp"
+        android:layout_marginEnd="@dimen/_20sdp"
+        android:hint="search Word"
+        app:counterEnabled="true"
+        app:counterTextColor="@color/colorPrimary"
+        app:endIconMode="clear_text"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginStart="@dimen/_20sdp"
-        android:layout_marginEnd="@dimen/_20sdp"
-        android:layout_marginTop="@dimen/_80sdp"
-        android:hint="Enter text here"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        app:counterTextColor="@color/colorPrimary"
         app:startIconDrawable="@drawable/ic_search"
-        app:startIconTint="@color/colorPrimary"
-        app:counterEnabled="true"
-        app:endIconMode="clear_text">
+        app:startIconTint="@color/colorPrimary">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/dictionary_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"/>
+            android:inputType="text"
+            android:imeOptions="actionSend"/>
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/txt_word"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_45sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:text="hello"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_26ssp"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dictionary_edit_text_layout"
+        tools:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/txt_phonetic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_45sdp"
+        android:layout_marginTop="@dimen/_3sdp"
+        android:text="həˈləʊ"
+        android:textAlignment="center"
+        android:textColor="@color/colorGrey"
+        android:textSize="@dimen/_14ssp"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txt_word" />
+
+    <ImageView
+        android:id="@+id/img_speech"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_volume_up"
+        app:tint="@color/colorPrimary"
+        android:visibility="invisible"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginBottom="@dimen/_20sdp"
+        app:layout_constraintTop_toBottomOf="@+id/txt_word"
+        app:layout_constraintBottom_toBottomOf="@id/txt_phonetic"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview_dictionary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_20sdp"
+        android:layout_marginEnd="@dimen/_20sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@id/txt_phonetic"
+        app:layout_constraintStart_toStartOf="parent"
+        android:padding="@dimen/_10sdp"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

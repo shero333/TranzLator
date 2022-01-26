@@ -20,6 +20,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.hammad.tranzlator.BuildConfig;
 import com.hammad.tranzlator.R;
 import com.hammad.tranzlator.TranslatedDataEntity;
 import com.hammad.tranzlator.adapter.TranslationHistoryAdapter;
@@ -128,7 +129,7 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
     public void shareAppLink() {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
-        String subSectionLink = "Download Tranzlator app from:\n\n\thttps://play.google.com";
+        String subSectionLink = "Download Tranzlator app from:\n\n\t\"https://play.google.com/store/apps/details?id="+ BuildConfig.APPLICATION_ID;
         intent.putExtra(Intent.EXTRA_TEXT, subSectionLink);
         startActivity(Intent.createChooser(intent, "Share via"));
     }
