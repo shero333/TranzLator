@@ -35,5 +35,9 @@
     <string name="conversation_lang_two">com.hammad.tranzlator.conversation_lang_two</string>
     <string name="conversation_lang_two_code">com.hammad.tranzlator.conversation_lang_two_code</string>
     <string name="fetching_results">Fetching results...</string>
+    <string name="_1">1</string>
+    <string name="definition">definition</string>
+    <string name="part_of_speech">part of speech</string>
+    <string name="example">example</string>
 
 </resources>
