@@ -6,11 +6,9 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,13 +22,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -43,7 +38,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -196,17 +190,61 @@ public class DictionaryFragment extends Fragment {
 
                 if (meaningsJsonArray.length() >= 1) {
                     for (int i = 0; i < meaningsJsonArray.length(); i++) {
+
+                        //getting the JSON object at index 'i' of the "meanings" JSON array
                         JSONObject partOfSpeechJsonObject = meaningsJsonArray.getJSONObject(i);
                         String partOfSpeech = partOfSpeechJsonObject.getString("partOfSpeech");
 
+                        //JSON array 'definitions'
                         JSONArray definitionsJsonArray = partOfSpeechJsonObject.getJSONArray("definitions");
 
                         JSONObject definitionsJsonObject = definitionsJsonArray.getJSONObject(0);
 
+                        //objects in JSON 'definitions' array
                         String definition = definitionsJsonObject.getString("definition").trim();
                         String example = definitionsJsonObject.getString("example").trim();
 
-                        dictionaryModelList.add(new DictionaryModel(partOfSpeech, definition, example));
+                        //sub array(inner array) in JSON Array 'definitions'
+                        JSONArray synonymsJsonArray=definitionsJsonObject.getJSONArray("synonyms");
+
+                        List<String> synonyms=new ArrayList<>();
+
+                        //searching synonyms in API
+                        if(synonymsJsonArray.length() > 0)
+                        {
+                            for(int j=0; j<synonymsJsonArray.length() ;j++)
+                            {
+                                if(synonymsJsonArray.length() == 1)
+                                {
+                                    synonyms.add(synonymsJsonArray.getString(0));
+                                    break;
+                                }
+                                else if(synonymsJsonArray.length() == 2)
+                                {
+                                    synonyms.add(synonymsJsonArray.getString(0));
+                                    synonyms.add(synonymsJsonArray.getString(1));
+                                    break;
+                                }
+                                else if(synonymsJsonArray.length() == 3)
+                                {
+                                    synonyms.add(synonymsJsonArray.getString(0));
+                                    synonyms.add(synonymsJsonArray.getString(1));
+                                    synonyms.add(synonymsJsonArray.getString(2));
+                                    break;
+                                }
+                                else if(synonymsJsonArray.length() >= 4)
+                                {
+                                    synonyms.add(0,synonymsJsonArray.getString(0));
+                                    synonyms.add(1,synonymsJsonArray.getString(1));
+                                    synonyms.add(2,synonymsJsonArray.getString(2));
+                                    synonyms.add(3,synonymsJsonArray.getString(3));
+                                    break;
+                                }
+                            }
+
+                        }
+
+                        dictionaryModelList.add(new DictionaryModel(partOfSpeech, definition, example,synonyms));
                     }
                 }
 
@@ -287,5 +325,11 @@ public class DictionaryFragment extends Fragment {
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED;
 
         return isConnected;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        progressDialog.dismiss();
     }
 }

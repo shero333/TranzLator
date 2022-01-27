@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/_10sdp">
+    android:layout_marginBottom="@dimen/_15sdp">
 
     <TextView
         android:id="@+id/text_increment"
@@ -39,6 +39,17 @@
         tools:layout_editor_absoluteY="22dp" />
 
     <TextView
+        android:id="@+id/text_part_of_speech_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Part of Speech"
+        android:textSize="@dimen/_13ssp"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"
+        android:layout_marginTop="@dimen/_15sdp"
+        app:layout_constraintTop_toBottomOf="@id/barrier"/>
+
+    <TextView
         android:id="@+id/text_part_of_speech"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -46,9 +57,20 @@
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="@dimen/_13ssp"
-        android:layout_marginTop="@dimen/_5sdp"
-        app:layout_constraintTop_toBottomOf="@id/barrier"
+        android:layout_marginTop="@dimen/_3sdp"
+        app:layout_constraintTop_toBottomOf="@id/text_part_of_speech_2"
         app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/text_example_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Example"
+        android:textSize="@dimen/_13ssp"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"
+        android:layout_marginTop="@dimen/_10sdp"
+        app:layout_constraintTop_toBottomOf="@id/text_part_of_speech"/>
 
     <TextView
         android:id="@+id/text_example"
@@ -58,8 +80,30 @@
         android:textColor="@color/black"
         android:textSize="@dimen/_13ssp"
         android:textStyle="italic"
-        android:layout_marginTop="@dimen/_5sdp"
-        app:layout_constraintTop_toBottomOf="@id/text_part_of_speech"
+        android:layout_marginTop="@dimen/_3sdp"
+        app:layout_constraintTop_toBottomOf="@id/text_example_2"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/text_synonyms_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Synonyms"
+        android:textSize="@dimen/_13ssp"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"
+        android:layout_marginTop="@dimen/_10sdp"
+        app:layout_constraintTop_toBottomOf="@id/text_example"/>
+
+    <TextView
+        android:id="@+id/text_synonyms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_13ssp"
+        android:textStyle="normal"
+        android:layout_marginTop="@dimen/_3sdp"
+        app:layout_constraintTop_toBottomOf="@id/text_synonyms_2"
         app:layout_constraintStart_toStartOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

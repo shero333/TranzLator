@@ -41,9 +41,19 @@ public class DictionaryAdapter extends RecyclerView.Adapter<DictionaryAdapter.My
             holder.textViewIncrement.setVisibility(View.GONE);
         }
 
-        holder.textViewDefinition.setText(modelList.get(position).getDefinition().trim());
         holder.textViewPartOfSpeech.setText(modelList.get(position).getPartOfSpeech().trim());
+        holder.textViewDefinition.setText(modelList.get(position).getDefinition().trim());
         holder.textViewExample.setText(modelList.get(position).getExample().trim());
+
+        //checking if any synonyms exist in list
+        if (modelList.get(position).synonyms.size() > 0) {
+            for (int a = 0; a < modelList.get(position).synonyms.size(); a++) {
+                holder.textViewSynonyms.append(modelList.get(position).synonyms.get(a) + "\n");
+            }
+        } else if (modelList.get(position).synonyms.size() == 0) {
+            holder.textViewSynonyms.setVisibility(View.GONE);
+            holder.textViewSynonyms2.setVisibility(View.GONE);
+        }
 
     }
 
@@ -54,15 +64,23 @@ public class DictionaryAdapter extends RecyclerView.Adapter<DictionaryAdapter.My
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView textViewIncrement, textViewDefinition, textViewPartOfSpeech, textViewExample;
+        TextView textViewIncrement, textViewDefinition, textViewPartOfSpeech, textViewExample, textViewSynonyms;
+        TextView textViewPartOfSpeech2, textViewExample2, textViewSynonyms2;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
             textViewIncrement = itemView.findViewById(R.id.text_increment);
             textViewDefinition = itemView.findViewById(R.id.text_definition);
+
+            textViewPartOfSpeech2 = itemView.findViewById(R.id.text_part_of_speech_2);
             textViewPartOfSpeech = itemView.findViewById(R.id.text_part_of_speech);
+
+            textViewExample2 = itemView.findViewById(R.id.text_example_2);
             textViewExample = itemView.findViewById(R.id.text_example);
+
+            textViewSynonyms2 = itemView.findViewById(R.id.text_synonyms_2);
+            textViewSynonyms = itemView.findViewById(R.id.text_synonyms);
         }
     }
 }
