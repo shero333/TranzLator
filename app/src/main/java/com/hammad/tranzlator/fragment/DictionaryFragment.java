@@ -2,11 +2,15 @@ package com.hammad.tranzlator.fragment;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,9 +57,9 @@ public class DictionaryFragment extends Fragment {
     ImageView imageViewSpeech;
     RecyclerView recyclerView;
     DictionaryAdapter adapter;
-    List<DictionaryModel> dictionaryModelList=new ArrayList<>();
+    List<DictionaryModel> dictionaryModelList = new ArrayList<>();
 
-    ProgressDialog progressDialog;
+     ProgressDialog progressDialog;
 
 
     @Nullable
@@ -70,7 +74,7 @@ public class DictionaryFragment extends Fragment {
         textInputEditText.addTextChangedListener(textWatcher);
 
         //initializing the progress dialog
-        initializeProgressDialog();
+        //initializeProgressDialog();
 
         return view;
     }
@@ -95,7 +99,7 @@ public class DictionaryFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         //setting the adapter
-        adapter = new DictionaryAdapter(requireContext(),dictionaryModelList);
+        adapter = new DictionaryAdapter(requireContext(), dictionaryModelList);
         recyclerView.setAdapter(adapter);
     }
 
@@ -115,18 +119,24 @@ public class DictionaryFragment extends Fragment {
                     if (actionId == EditorInfo.IME_ACTION_SEND) {
 
                         //this if condition checks whether the string contains any space between words
-                        if(checkWhiteSpace(textInputEditText.getText().toString().trim()))
-                        {
+                        if (checkWhiteSpace(textInputEditText.getText().toString().trim())) {
                             //custom toast function
-                            showToast("Please enter single word",0);
-                        }
-                        else if(!(checkWhiteSpace(textInputEditText.getText().toString().trim())))
-                        {
+                            showToast("Please enter single word", 0);
+                        } else if (!(checkWhiteSpace(textInputEditText.getText().toString().trim()))) {
                             //hides soft input keyboard
                             hideSoftInputKeyboard(v);
-                            //calling this function where meaning is searched in API
-                            //DictionaryAsyncTask asyncTask=new DictionaryAsyncTask(getActivity());
-                            getMeaning(textInputEditText.getText().toString().trim());
+
+                            //checking internet connection
+                            if (checkInternetConnection()) {
+                                //calling the initialize progress dialog to show progress dialog while fetching data from API
+                                initializeProgressDialog();
+
+                                //calling this function where meaning is searched in API
+                                getMeaning(textInputEditText.getText().toString().trim());
+                            } else {
+                                Toast.makeText(requireContext(), "No Internet Connection!", Toast.LENGTH_SHORT).show();
+                            }
+
                         }
                     }
                     return true;
@@ -164,8 +174,8 @@ public class DictionaryFragment extends Fragment {
 
                 //JSON Array to get phonetic array from API which contains the phonetic  and audio
                 // (For example, the word 'Hello' phonetic is 'həˈləʊ')
-                JSONArray phoneticJsonArray=mainJsonObject.getJSONArray("phonetics");
-                JSONObject phoneticJsonObject=phoneticJsonArray.getJSONObject(0);
+                JSONArray phoneticJsonArray = mainJsonObject.getJSONArray("phonetics");
+                JSONObject phoneticJsonObject = phoneticJsonArray.getJSONObject(0);
 
                 //setting the phonetic text to textview
                 textViewPhonetic.setText(phoneticJsonObject.getString("text"));
@@ -181,23 +191,22 @@ public class DictionaryFragment extends Fragment {
                 });
 
                 //getting the 'meanings' JSON Array
-                JSONArray meaningsJsonArray=mainJsonObject.getJSONArray("meanings");
+                JSONArray meaningsJsonArray = mainJsonObject.getJSONArray("meanings");
 
-                if(meaningsJsonArray.length() >= 1)
-                {
-                    for(int i=0;i<meaningsJsonArray.length();i++)
-                    {
-                        JSONObject partOfSpeechJsonObject=meaningsJsonArray.getJSONObject(i);
-                        String partOfSpeech=partOfSpeechJsonObject.getString("partOfSpeech");
 
-                        JSONArray definitionsJsonArray=partOfSpeechJsonObject.getJSONArray("definitions");
+                if (meaningsJsonArray.length() >= 1) {
+                    for (int i = 0; i < meaningsJsonArray.length(); i++) {
+                        JSONObject partOfSpeechJsonObject = meaningsJsonArray.getJSONObject(i);
+                        String partOfSpeech = partOfSpeechJsonObject.getString("partOfSpeech");
 
-                        JSONObject definitionsJsonObject=definitionsJsonArray.getJSONObject(0);
+                        JSONArray definitionsJsonArray = partOfSpeechJsonObject.getJSONArray("definitions");
 
-                        String definition=definitionsJsonObject.getString("definition").trim();
-                        String example=definitionsJsonObject.getString("example").trim();
+                        JSONObject definitionsJsonObject = definitionsJsonArray.getJSONObject(0);
 
-                        dictionaryModelList.add(new DictionaryModel(partOfSpeech,definition,example));
+                        String definition = definitionsJsonObject.getString("definition").trim();
+                        String example = definitionsJsonObject.getString("example").trim();
+
+                        dictionaryModelList.add(new DictionaryModel(partOfSpeech, definition, example));
                     }
                 }
 
@@ -207,118 +216,76 @@ public class DictionaryFragment extends Fragment {
                 //setting the views visibility to true
                 setViewsVisibility();
 
+                progressDialog.hide();
+
             } catch (Exception e) {
                 e.printStackTrace();
+                progressDialog.hide();
             }
 
         }, error -> {
-            showToast("Sorry! we couldn't find definition(s) for the word",1);
+            showToast("Sorry! we couldn't find definition(s) for the word", 1);
+            progressDialog.hide();
         });
 
         //instantiating the VolleySingleton Class
-        VolleySingleton volleySingleton=new VolleySingleton();
+        VolleySingleton volleySingleton = new VolleySingleton();
         volleySingleton.getInstance(requireContext()).addToRequestQueue(jsonArrayRequest);
     }
 
-    private void playPhoneticAudio(String audioUri)
-    {
-        if(audioUri != null)
-        {
-            MediaPlayer mediaPlayer=new MediaPlayer();
+    private void playPhoneticAudio(String audioUri) {
+        if (audioUri != null) {
+            MediaPlayer mediaPlayer = new MediaPlayer();
 
             try {
-                mediaPlayer.setDataSource("https:"+audioUri);
+                mediaPlayer.setDataSource("https:" + audioUri);
                 mediaPlayer.prepare();
                 mediaPlayer.start();
-            }catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
     }
 
-    private void setViewsVisibility()
-    {
+    private void setViewsVisibility() {
         textViewWord.setVisibility(View.VISIBLE);
         textViewPhonetic.setVisibility(View.VISIBLE);
         imageViewSpeech.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.VISIBLE);
     }
 
-    private boolean checkWhiteSpace(String word)
-    {
+    private boolean checkWhiteSpace(String word) {
         Pattern pattern = Pattern.compile("\\s");
         Matcher matcher = pattern.matcher(word);
-        boolean found = matcher.find();
-        return found;
+        return matcher.find();
     }
 
-    private void showToast(String message,int value)
-    {
-        Toast toast=Toast.makeText(requireContext(),message,value);
-        toast.setGravity(Gravity.CENTER_VERTICAL,0,0);
+    private void showToast(String message, int value) {
+        Toast toast = Toast.makeText(requireContext(), message, value);
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
         toast.show();
     }
 
-    private void hideSoftInputKeyboard(View view)
-    {
-        InputMethodManager inputMethodManager =(InputMethodManager)getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+    private void hideSoftInputKeyboard(View view) {
+        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     private void initializeProgressDialog()
     {
         progressDialog=new ProgressDialog(requireContext());
+        progressDialog.show();
         progressDialog.setContentView(R.layout.layout_progress_dialog);
-        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
     }
 
-    /*private static class DictionaryAsyncTask extends AsyncTask<String,Void,Void>{
-        private WeakReference<FragmentActivity> weakReference;
+    private boolean checkInternetConnection() {
+        boolean isConnected;
+        //check internet connection
+        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        DictionaryAsyncTask(FragmentActivity activity)
-        {
-            weakReference=new WeakReference<>(activity);
-        }
+        isConnected = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED;
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            FragmentActivity dictionaryFragment = weakReference.get();
-
-            if (dictionaryFragment == null || dictionaryFragment.getActivity().isFinishing()) {
-                return;
-            }
-
-            dictionaryFragment.progressDialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(String... strings) {
-            FragmentActivity dictionaryFragment = weakReference.get();
-
-            if (dictionaryFragment == null || dictionaryFragment.getActivity().isFinishing()) {
-
-            }
-            dictionaryFragment.getMeaning(strings[0]);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void unused) {
-            super.onPostExecute(unused);
-
-            FragmentActivity dictionaryFragment = weakReference.get();
-
-            if (dictionaryFragment == null || dictionaryFragment*//*.getActivity()*//*.isFinishing()) {
-                return;
-            }
-
-            *//*dictionaryFragment.*//*weakReference.progressDialog.dismiss();
-        }
-
-
-    }*/
-
+        return isConnected;
+    }
 }

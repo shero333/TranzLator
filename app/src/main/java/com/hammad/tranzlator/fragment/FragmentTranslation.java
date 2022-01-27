@@ -12,7 +12,9 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -52,6 +54,7 @@ import com.hammad.tranzlator.activity.TranslationLanguageList;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -128,9 +131,9 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         textViewImageMoreOptions = view.findViewById(R.id.textview_imageview_more);
         imageViewCopyContent = view.findViewById(R.id.textview_imageview_copy_content);
 
-        /*//initialize progressbar
+        //initialize progressbar
         progressBar=view.findViewById(R.id.progress_circular);
-        progressBar.bringToFront();*/
+        progressBar.bringToFront();
 
         //getting the shared preferences values
         checkSharedPreferences();
@@ -231,22 +234,30 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
                         if (sourceLangCode.equals(targetLangCode)) {
                             Toast.makeText(requireContext(), "Please select different source & target Translation languages", Toast.LENGTH_SHORT).show();
                         } else {
+                            //progressBar.setVisibility(View.VISIBLE);
                             //translating the text
-                            textViewTranslation.setText(translate(s.toString(), sourceLangCode, targetLangCode));
+                            //textViewTranslation.setText(translate(s.toString(), sourceLangCode, targetLangCode));
+                            TranslationAsyncTask asyncTask=new TranslationAsyncTask(FragmentTranslation.this);
+                            asyncTask.execute(s.toString(), sourceLangCode, targetLangCode);
+                            Log.d("Async", "after async called");
 
                             //function for checking the TTS (text to speech) of language
                             textToSpeechInitialization();
+                            Log.d("Async", "after TTS called");
 
+                            Log.d("Async", "before DB called");
                             //saving the data to DB
-                            saveToDatabase();
+                            /*saveToDatabase();*/
+                            Log.d("Async", "after DB called");
 
-                            //setting the visibility of textview where translated text is set
+                            /*//setting the visibility of textview where translated text is set
                             textViewTranslation.setVisibility(View.VISIBLE);
 
                             imageViewCopyContent.setVisibility(View.VISIBLE);
-                            textViewImageMoreOptions.setVisibility(View.VISIBLE);
+                            textViewImageMoreOptions.setVisibility(View.VISIBLE);*/
 
                             textViewImageVolumeUp.setOnClickListener(view -> speech());
+
                         }
 
 
@@ -262,6 +273,9 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
                 textViewImageVolumeUp.setVisibility(View.GONE);
                 imageViewCopyContent.setVisibility(View.GONE);
                 textViewImageMoreOptions.setVisibility(View.GONE);
+
+                //setting the progress bar visiblity to gone
+                progressBar.setVisibility(View.GONE);
             }
         }
 
@@ -641,4 +655,60 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
     }
 
+    private static class TranslationAsyncTask extends AsyncTask<String,Void,String> {
+
+        private WeakReference<FragmentTranslation> translationWeakReference;
+
+        public TranslationAsyncTask(FragmentTranslation translation) {
+            this.translationWeakReference = new WeakReference<>(translation);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //weak reference to the context of this function
+            FragmentTranslation fragment=translationWeakReference.get();
+            if(fragment==null || fragment.getActivity().isFinishing())
+            {
+                return;
+            }
+            fragment.progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            FragmentTranslation fragment=translationWeakReference.get();
+            if(fragment==null || fragment.getActivity().isFinishing()) {
+
+            }
+            return fragment.translate(strings[0],strings[1],strings[2]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            //weak reference to the context of this function
+            FragmentTranslation fragment=translationWeakReference.get();
+            if(fragment==null || fragment.getActivity().isFinishing())
+            {
+                return;
+            }
+
+            //setting the progress bar visibility to gone
+            fragment.progressBar.setVisibility(View.GONE);
+
+            //setting the resturned text to textview
+            fragment.textViewTranslation.setText(s);
+
+            //setting the visibility of textview where translated text is set
+            fragment.textViewTranslation.setVisibility(View.VISIBLE);
+
+            fragment.imageViewCopyContent.setVisibility(View.VISIBLE);
+            fragment.textViewImageMoreOptions.setVisibility(View.VISIBLE);
+
+            //saving data to database here because data is saved to DB when both iput edit tex and text view translation have length greater than zero
+            fragment.saveToDatabase();
+        }
+    }
 }

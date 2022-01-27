@@ -306,13 +306,31 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
             if (micLeftPressed) {
                 //setting the to false again here to handles the click listener for respective speech to text button
                 micLeftPressed = false;
-                //function calling
+
+                //checking if source & target languages are same (English(US) & English(UK) are same)
+                if(trimLanguageCode(srcLangCode).equals(trimLanguageCode(trgtLangCode)))
+                {
+                    Toast.makeText(requireContext(), "Please select different source & target Translation languages", Toast.LENGTH_SHORT).show();
+                }else{
+
+                    //function calling
                 speechToText(srcLang, srcLangCode, SPEECH_INPUT_REQUEST_CODE_1);
+                }
+
             } else if (micRightPressed) {
                 //setting the to false again here to handles the click listener for respective speech to text button
                 micRightPressed = false;
-                //function calling
-                speechToText(trgtLang, trgtLangCode, SPEECH_INPUT_REQUEST_CODE_2);
+
+                //checking if source & target languages are same (English(US) & English(UK) are same)
+                if(trimLanguageCode(srcLangCode).equals(trimLanguageCode(trgtLangCode)))
+                {
+                    Toast.makeText(requireContext(), "Please select different source & target Translation languages", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    //function calling
+                    speechToText(trgtLang, trgtLangCode, SPEECH_INPUT_REQUEST_CODE_2);
+                }
+
             }
         }
     }
