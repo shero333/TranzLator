@@ -26,7 +26,8 @@
             android:exported="false" />
         <activity
             android:name=".activity.HomeScreen"
-            android:exported="true" />
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".activity.SplashScreen"
             android:exported="true"

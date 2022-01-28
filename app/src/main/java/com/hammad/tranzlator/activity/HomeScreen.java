@@ -22,9 +22,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.hammad.tranzlator.BuildConfig;
 import com.hammad.tranzlator.R;
-import com.hammad.tranzlator.TranslatedDataEntity;
-import com.hammad.tranzlator.adapter.TranslationHistoryAdapter;
+import com.hammad.tranzlator.entities.TranslatedDataEntity;
 import com.hammad.tranzlator.TranslationRoomDB;
+import com.hammad.tranzlator.adapter.TranslationHistoryAdapter;
 
 import java.util.List;
 
@@ -99,8 +99,11 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
                 modeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     if (modeSwitch.isChecked()) {
                         Toast.makeText(HomeScreen.this, "Switch checked", Toast.LENGTH_SHORT).show();
+                        //AppCompatDelegate.setDefaultNightMode((AppCompatDelegate.MODE_NIGHT_YES));
+
                     } else if (!modeSwitch.isChecked()) {
                         Toast.makeText(HomeScreen.this, "Switch un-checked", Toast.LENGTH_SHORT).show();
+                        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                     }
                 });
                 break;

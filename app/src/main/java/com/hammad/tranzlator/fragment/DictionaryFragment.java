@@ -29,9 +29,9 @@ import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.hammad.tranzlator.DictionaryModel;
+import com.hammad.tranzlator.model.DictionaryModel;
 import com.hammad.tranzlator.R;
-import com.hammad.tranzlator.VolleySingleton;
+import com.hammad.tranzlator.volleyLibrary.VolleySingleton;
 import com.hammad.tranzlator.adapter.DictionaryAdapter;
 
 import org.json.JSONArray;
@@ -52,9 +52,7 @@ public class DictionaryFragment extends Fragment {
     RecyclerView recyclerView;
     DictionaryAdapter adapter;
     List<DictionaryModel> dictionaryModelList = new ArrayList<>();
-
-     ProgressDialog progressDialog;
-
+    ProgressDialog progressDialog;
 
     @Nullable
     @Override
@@ -66,9 +64,6 @@ public class DictionaryFragment extends Fragment {
         initializeViews(view);
 
         textInputEditText.addTextChangedListener(textWatcher);
-
-        //initializing the progress dialog
-        //initializeProgressDialog();
 
         return view;
     }
@@ -91,6 +86,7 @@ public class DictionaryFragment extends Fragment {
         //setup linear layout
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setHasFixedSize(false);
 
         //setting the adapter
         adapter = new DictionaryAdapter(requireContext(), dictionaryModelList);
@@ -169,20 +165,37 @@ public class DictionaryFragment extends Fragment {
                 //JSON Array to get phonetic array from API which contains the phonetic  and audio
                 // (For example, the word 'Hello' phonetic is 'həˈləʊ')
                 JSONArray phoneticJsonArray = mainJsonObject.getJSONArray("phonetics");
-                JSONObject phoneticJsonObject = phoneticJsonArray.getJSONObject(0);
 
-                //setting the phonetic text to textview
-                textViewPhonetic.setText(phoneticJsonObject.getString("text"));
-
-                imageViewSpeech.setOnClickListener(v ->
+                /*
+                    this condition checks if phonetics array (phonetic text and audio speech) is available or not
+                    if available displays the views & if false set the visibility of views to gone
+                */
+                if(phoneticJsonArray.length() >0)
                 {
-                    try {
-                        //setting the phonetic audio to media play
-                        playPhoneticAudio(phoneticJsonObject.getString("audio"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                });
+                    JSONObject phoneticJsonObject = phoneticJsonArray.getJSONObject(0);
+
+                    //setting the phonetic text to textview
+                    textViewPhonetic.setText(phoneticJsonObject.getString("text"));
+
+                    imageViewSpeech.setOnClickListener(v ->
+                    {
+                        try {
+                            //setting the phonetic audio to media play
+                            playPhoneticAudio(phoneticJsonObject.getString("audio"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    });
+
+                    //setting the views to visible here
+                    textViewPhonetic.setVisibility(View.VISIBLE);
+                    imageViewSpeech.setVisibility(View.VISIBLE);
+                }
+                else
+                {
+                    textViewPhonetic.setVisibility(View.GONE);
+                    imageViewSpeech.setVisibility(View.GONE);
+                }
 
                 //getting the 'meanings' JSON Array
                 JSONArray meaningsJsonArray = mainJsonObject.getJSONArray("meanings");
@@ -205,46 +218,37 @@ public class DictionaryFragment extends Fragment {
                         String example = definitionsJsonObject.getString("example").trim();
 
                         //sub array(inner array) in JSON Array 'definitions'
-                        JSONArray synonymsJsonArray=definitionsJsonObject.getJSONArray("synonyms");
+                        JSONArray synonymsJsonArray = definitionsJsonObject.getJSONArray("synonyms");
 
-                        List<String> synonyms=new ArrayList<>();
+                        List<String> synonyms = new ArrayList<>();
 
                         //searching synonyms in API
-                        if(synonymsJsonArray.length() > 0)
-                        {
-                            for(int j=0; j<synonymsJsonArray.length() ;j++)
-                            {
-                                if(synonymsJsonArray.length() == 1)
-                                {
-                                    synonyms.add(synonymsJsonArray.getString(0));
+                        if (synonymsJsonArray.length() > 0) {
+                            for (int j = 0; j < synonymsJsonArray.length(); j++) {
+                                if (synonymsJsonArray.length() == 1) {
+                                    synonyms.add(0, synonymsJsonArray.getString(0));
                                     break;
-                                }
-                                else if(synonymsJsonArray.length() == 2)
-                                {
-                                    synonyms.add(synonymsJsonArray.getString(0));
-                                    synonyms.add(synonymsJsonArray.getString(1));
+                                } else if (synonymsJsonArray.length() == 2) {
+                                    synonyms.add(0, synonymsJsonArray.getString(0));
+                                    synonyms.add(1, synonymsJsonArray.getString(1));
                                     break;
-                                }
-                                else if(synonymsJsonArray.length() == 3)
-                                {
-                                    synonyms.add(synonymsJsonArray.getString(0));
-                                    synonyms.add(synonymsJsonArray.getString(1));
-                                    synonyms.add(synonymsJsonArray.getString(2));
+                                } else if (synonymsJsonArray.length() == 3) {
+                                    synonyms.add(0, synonymsJsonArray.getString(0));
+                                    synonyms.add(1, synonymsJsonArray.getString(1));
+                                    synonyms.add(2, synonymsJsonArray.getString(2));
                                     break;
-                                }
-                                else if(synonymsJsonArray.length() >= 4)
-                                {
-                                    synonyms.add(0,synonymsJsonArray.getString(0));
-                                    synonyms.add(1,synonymsJsonArray.getString(1));
-                                    synonyms.add(2,synonymsJsonArray.getString(2));
-                                    synonyms.add(3,synonymsJsonArray.getString(3));
+                                } else if (synonymsJsonArray.length() >= 4) {
+                                    synonyms.add(0, synonymsJsonArray.getString(0));
+                                    synonyms.add(1, synonymsJsonArray.getString(1));
+                                    synonyms.add(2, synonymsJsonArray.getString(2));
+                                    synonyms.add(3, synonymsJsonArray.getString(3));
                                     break;
                                 }
                             }
 
                         }
 
-                        dictionaryModelList.add(new DictionaryModel(partOfSpeech, definition, example,synonyms));
+                        dictionaryModelList.add(new DictionaryModel(partOfSpeech, definition, example, synonyms));
                     }
                 }
 
@@ -287,8 +291,6 @@ public class DictionaryFragment extends Fragment {
 
     private void setViewsVisibility() {
         textViewWord.setVisibility(View.VISIBLE);
-        textViewPhonetic.setVisibility(View.VISIBLE);
-        imageViewSpeech.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.VISIBLE);
     }
 
@@ -309,9 +311,8 @@ public class DictionaryFragment extends Fragment {
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    private void initializeProgressDialog()
-    {
-        progressDialog=new ProgressDialog(requireContext());
+    private void initializeProgressDialog() {
+        progressDialog = new ProgressDialog(requireContext());
         progressDialog.show();
         progressDialog.setContentView(R.layout.layout_progress_dialog);
     }
@@ -330,6 +331,18 @@ public class DictionaryFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        progressDialog.dismiss();
+        if(progressDialog !=null)
+        {
+            progressDialog.dismiss();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(progressDialog !=null)
+        {
+            progressDialog.dismiss();
+        }
     }
 }

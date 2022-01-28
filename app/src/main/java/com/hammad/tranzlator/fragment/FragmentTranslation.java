@@ -3,6 +3,7 @@ package com.hammad.tranzlator.fragment;
 import static android.app.Activity.RESULT_OK;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -14,13 +15,13 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,6 +30,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
@@ -47,7 +50,7 @@ import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
 import com.google.cloud.translate.Translation;
 import com.hammad.tranzlator.R;
-import com.hammad.tranzlator.TranslatedDataEntity;
+import com.hammad.tranzlator.entities.TranslatedDataEntity;
 import com.hammad.tranzlator.activity.TranslationFullScreen;
 import com.hammad.tranzlator.TranslationRoomDB;
 import com.hammad.tranzlator.activity.TranslationLanguageList;
@@ -119,6 +122,9 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
         //input text initialization
         inputEditText = view.findViewById(R.id.edittext_input_layout_translation);
+        //setting the ime type to action done with multiline edit text
+        inputEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        inputEditText.setRawInputType(InputType.TYPE_CLASS_TEXT);
 
         //image view related to edit text initialization
         editTextImageSpeak = view.findViewById(R.id.edittext_imageview_speak_translation);
@@ -224,6 +230,9 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
                 editTextImageSpeak.setOnClickListener(v -> {
 
+                    //hiding the soft input keyboard
+                    hideSoftInputKeyboard(v);
+
                     if (s.toString().trim().length() == 0) {
                         checkAudioPermission();
                     } else if (checkInternetConnection()) {
@@ -234,32 +243,14 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
                         if (sourceLangCode.equals(targetLangCode)) {
                             Toast.makeText(requireContext(), "Please select different source & target Translation languages", Toast.LENGTH_SHORT).show();
                         } else {
-                            //progressBar.setVisibility(View.VISIBLE);
-                            //translating the text
-                            //textViewTranslation.setText(translate(s.toString(), sourceLangCode, targetLangCode));
                             TranslationAsyncTask asyncTask=new TranslationAsyncTask(FragmentTranslation.this);
                             asyncTask.execute(s.toString(), sourceLangCode, targetLangCode);
-                            Log.d("Async", "after async called");
 
                             //function for checking the TTS (text to speech) of language
                             textToSpeechInitialization();
-                            Log.d("Async", "after TTS called");
-
-                            Log.d("Async", "before DB called");
-                            //saving the data to DB
-                            /*saveToDatabase();*/
-                            Log.d("Async", "after DB called");
-
-                            /*//setting the visibility of textview where translated text is set
-                            textViewTranslation.setVisibility(View.VISIBLE);
-
-                            imageViewCopyContent.setVisibility(View.VISIBLE);
-                            textViewImageMoreOptions.setVisibility(View.VISIBLE);*/
 
                             textViewImageVolumeUp.setOnClickListener(view -> speech());
-
                         }
-
 
                     } else {
                         Toast.makeText(getContext(), "No Internet connection! Cannot be translated", Toast.LENGTH_SHORT).show();
@@ -710,5 +701,10 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
             //saving data to database here because data is saved to DB when both iput edit tex and text view translation have length greater than zero
             fragment.saveToDatabase();
         }
+    }
+
+    private void hideSoftInputKeyboard(View view) {
+        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

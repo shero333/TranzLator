@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.hammad.tranzlator.DictionaryModel;
+import com.hammad.tranzlator.model.DictionaryModel;
 import com.hammad.tranzlator.R;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class DictionaryAdapter extends RecyclerView.Adapter<DictionaryAdapter.My
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
         if (modelList.size() > 1) {
-            holder.textViewIncrement.setText("" + (position + 1));
+            holder.textViewIncrement.setText("" + (position + 1)+".");
         } else {
             holder.textViewIncrement.setVisibility(View.GONE);
         }
@@ -48,7 +48,7 @@ public class DictionaryAdapter extends RecyclerView.Adapter<DictionaryAdapter.My
         //checking if any synonyms exist in list
         if (modelList.get(position).synonyms.size() > 0) {
             for (int a = 0; a < modelList.get(position).synonyms.size(); a++) {
-                holder.textViewSynonyms.append(modelList.get(position).synonyms.get(a) + "\n");
+                holder.textViewSynonyms.append("⦿\t\t"+modelList.get(position).synonyms.get(a) + "\n");
             }
         } else if (modelList.get(position).synonyms.size() == 0) {
             holder.textViewSynonyms.setVisibility(View.GONE);

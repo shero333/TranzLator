@@ -6,8 +6,11 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
+import com.hammad.tranzlator.entities.ConversationDataEntity;
+import com.hammad.tranzlator.entities.TranslatedDataEntity;
+
 //Add database entities
-@Database(entities = {TranslatedDataEntity.class,ConversationDataEntity.class},version = 1,exportSchema = false)
+@Database(entities = {TranslatedDataEntity.class, ConversationDataEntity.class},version = 1,exportSchema = false)
 
 public abstract class TranslationRoomDB extends RoomDatabase {
 

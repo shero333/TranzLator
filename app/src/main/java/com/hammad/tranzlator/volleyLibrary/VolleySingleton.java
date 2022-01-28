@@ -1,4 +1,4 @@
-package com.hammad.tranzlator;
+package com.hammad.tranzlator.volleyLibrary;
 
 import android.content.Context;
 import android.graphics.Bitmap;

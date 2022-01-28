@@ -1,4 +1,4 @@
-package com.hammad.tranzlator;
+package com.hammad.tranzlator.entities;
 
 
 import androidx.room.ColumnInfo;

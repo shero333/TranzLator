@@ -12,7 +12,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hammad.tranzlator.R;
-import com.hammad.tranzlator.TranslatedDataEntity;
+import com.hammad.tranzlator.entities.TranslatedDataEntity;
 import com.hammad.tranzlator.TranslationRoomDB;
 
 import java.util.List;

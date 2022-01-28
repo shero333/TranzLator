@@ -24,7 +24,7 @@
         android:textAlignment="center"
         android:text="@string/fetching_results"
         android:padding="@dimen/_5sdp"
-        android:layout_marginStart="@dimen/_30sdp"
+        android:layout_marginStart="@dimen/_20sdp"
         android:layout_marginTop="@dimen/_7sdp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@id/progress_circular"/>

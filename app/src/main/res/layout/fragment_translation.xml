@@ -41,7 +41,7 @@
             android:inputType="textMultiLine"
             android:minLines="8"
             android:textColor="@color/black"
-            android:textSize="@dimen/_14ssp" />
+            android:textSize="@dimen/_14ssp"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 

@@ -7,6 +7,8 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
+import com.hammad.tranzlator.entities.TranslatedDataEntity;
+
 import java.util.List;
 
 @Dao

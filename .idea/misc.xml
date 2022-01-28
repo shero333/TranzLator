@@ -52,6 +52,7 @@
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/custom_border_lang_1.xml" value="0.24722222222222223" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/custom_border_lang_2.xml" value="0.24722222222222223" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/custom_cardview_border.xml" value="0.24722222222222223" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/custom_dictionary_border.xml" value="0.23148148148148148" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/custom_round_border.xml" value="0.24722222222222223" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/custom_textview_border.xml" value="0.25" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/gradient_colors.xml" value="0.20185185185185187" />
@@ -68,14 +69,14 @@
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragement_languages_list.xml" value="0.22" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragement_translate_home.xml" value="0.21784420289855072" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragment_conversation.xml" value="0.2" />
-        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragment_dictionary.xml" value="0.1" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragment_dictionary.xml" value="0.15" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragment_translate_home.xml" value="0.17028985507246377" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/fragment_translation.xml" value="0.19" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/layout_bottom_navigation.xml" value="0.21784420289855072" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/layout_conversation.xml" value="0.2" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/layout_conversation_lang_1.xml" value="0.25" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/layout_conversation_lang_2.xml" value="0.21784420289855072" />
-        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/layout_dictionary.xml" value="0.25" />
+        <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/layout_dictionary.xml" value="0.22" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/layout_language_list.xml" value="0.25" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/layout_language_selection.xml" value="0.2" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/layout/layout_nav_drawer_header.xml" value="0.21784420289855072" />

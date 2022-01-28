@@ -37,7 +37,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
 import com.google.cloud.translate.Translation;
-import com.hammad.tranzlator.ConversationDataEntity;
+import com.hammad.tranzlator.entities.ConversationDataEntity;
 import com.hammad.tranzlator.TranslationRoomDB;
 import com.hammad.tranzlator.activity.ConversationLanguageList;
 import com.hammad.tranzlator.R;
