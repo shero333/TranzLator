@@ -35,9 +35,19 @@
     <string name="conversation_lang_two">com.hammad.tranzlator.conversation_lang_two</string>
     <string name="conversation_lang_two_code">com.hammad.tranzlator.conversation_lang_two_code</string>
     <string name="fetching_results">Fetching results...</string>
+
+    <!--key name for Theme shared preferences-->
+    <string name="pref_theme">com.hammad.tranzlator.pref_theme</string>
+
     <string name="_1">1</string>
     <string name="definition">definition</string>
     <string name="part_of_speech">part of speech</string>
     <string name="example">example</string>
+    <string name="entered_text">entered text</string>
+    <string name="lang_2">Lang 2</string>
+    <string name="lang_1">Lang 1</string>
+    <string name="search_word">search Word</string>
+    <string name="hello">hello</string>
+    <string name="h_l">həˈləʊ</string>
 
 </resources>

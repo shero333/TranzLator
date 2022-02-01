@@ -6,8 +6,10 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +27,17 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.material.textview.MaterialTextView;
 import com.hammad.tranzlator.R;
+import com.hammad.tranzlator.activity.HomeScreen;
 import com.hammad.tranzlator.entities.TranslatedDataEntity;
 import com.hammad.tranzlator.adapter.TranslationHistoryAdapter;
 import com.hammad.tranzlator.TranslationRoomDB;
@@ -64,6 +75,17 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
 
     //translated data list
     List<TranslatedDataEntity> entityDataList =new ArrayList<>();
+
+    //Interstitial Ad initialization
+    private InterstitialAd mInterstitialAd;
+
+    //initializing the Mobile Ads in onCreate of fragment
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //ads initialization
+        MobileAds.initialize(requireContext(), initializationStatus -> {});
+    }
 
     @Nullable
     @Override
@@ -195,12 +217,16 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     public void onStart() {
         super.onStart();
         TranslationLanguageList.registerPreference(getActivity(), this);
+        //loading the Ad
+        loadAd();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         TranslationLanguageList.unregisterPreference(getActivity(), this);
+        //setting the InterstitialAd to null
+        mInterstitialAd =null;
     }
 
     public void reserveTranslationLanguages() {
@@ -273,6 +299,65 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         } else {
             Toast.makeText(getContext(), "Audio permission denied", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void loadAd() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        InterstitialAd.load(requireContext(), "ca-app-pub-3940256099942544/1033173712", adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                super.onAdLoaded(interstitialAd);
+                mInterstitialAd = interstitialAd;
+
+                //showing the ad
+                showAd();
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                super.onAdFailedToLoad(loadAdError);
+                mInterstitialAd = null;
+            }
+        });
+    }
+
+    public void showAd()
+    {
+        //checking if ad is loaded or not
+        if (mInterstitialAd != null) {
+            mInterstitialAd.show(requireActivity());
+
+            mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                @Override
+                public void onAdDismissedFullScreenContent() {
+                    super.onAdDismissedFullScreenContent();
+                    mInterstitialAd=null;
+                }
+
+                //this prevents ad from showing it second time
+                @Override
+                public void onAdShowedFullScreenContent() {
+                    super.onAdShowedFullScreenContent();
+                    mInterstitialAd=null;
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        //assigning the null value to interstitial ad to avoid running it in background which is a violation of AdMob policies
+        mInterstitialAd=null;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        //setting the InterstitialAd to null
+        mInterstitialAd =null;
     }
 
 }

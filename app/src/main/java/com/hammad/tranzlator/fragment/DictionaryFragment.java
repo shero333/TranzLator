@@ -9,6 +9,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.hammad.tranzlator.model.DictionaryModel;
@@ -54,6 +63,28 @@ public class DictionaryFragment extends Fragment {
     List<DictionaryModel> dictionaryModelList = new ArrayList<>();
     ProgressDialog progressDialog;
 
+    //Interstitial Ad initialization
+    private InterstitialAd mInterstitialAd;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        //ads initialization
+        MobileAds.initialize(requireContext(), new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        //loading the Ad
+        loadAd();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -67,6 +98,7 @@ public class DictionaryFragment extends Fragment {
 
         return view;
     }
+
 
     private void initializeViews(View view) {
         //initializing  material edit text
@@ -335,6 +367,8 @@ public class DictionaryFragment extends Fragment {
         {
             progressDialog.dismiss();
         }
+        //setting the InterstitialAd to null
+        mInterstitialAd =null;
     }
 
     @Override
@@ -343,6 +377,60 @@ public class DictionaryFragment extends Fragment {
         if(progressDialog !=null)
         {
             progressDialog.dismiss();
+        }
+        //setting the InterstitialAd to null
+        mInterstitialAd =null;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        //assigning the null value to interstitial ad to avoid running it in background which is a violation of AdMob policies
+        mInterstitialAd=null;
+    }
+
+    public void loadAd() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        InterstitialAd.load(requireContext(), "ca-app-pub-3940256099942544/1033173712", adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                super.onAdLoaded(interstitialAd);
+                mInterstitialAd = interstitialAd;
+
+                //showing the ad
+                showAd();
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                super.onAdFailedToLoad(loadAdError);
+                mInterstitialAd = null;
+            }
+        });
+    }
+
+    public void showAd()
+    {
+        //checking if ad is loaded or not
+        if (mInterstitialAd != null) {
+            mInterstitialAd.show(requireActivity());
+
+            mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                @Override
+                public void onAdDismissedFullScreenContent() {
+                    super.onAdDismissedFullScreenContent();
+                    mInterstitialAd=null;
+                }
+
+                //this prevents ad from showing it second time
+                @Override
+                public void onAdShowedFullScreenContent() {
+                    super.onAdShowedFullScreenContent();
+                    mInterstitialAd=null;
+                }
+            });
         }
     }
 }

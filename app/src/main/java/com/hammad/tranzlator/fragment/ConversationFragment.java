@@ -11,6 +11,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -32,16 +33,22 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
 import com.google.cloud.translate.Translation;
-import com.hammad.tranzlator.entities.ConversationDataEntity;
+import com.hammad.tranzlator.R;
 import com.hammad.tranzlator.TranslationRoomDB;
 import com.hammad.tranzlator.activity.ConversationLanguageList;
-import com.hammad.tranzlator.R;
 import com.hammad.tranzlator.adapter.ConversationAdapter;
+import com.hammad.tranzlator.entities.ConversationDataEntity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -86,12 +93,22 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
     TextToSpeech mTTS;
 
     //Conversation Data Entity list
-    List<ConversationDataEntity> conversationDataEntityList=new ArrayList<>();
+    List<ConversationDataEntity> conversationDataEntityList = new ArrayList<>();
 
     //room database
     TranslationRoomDB database;
 
     String strSpeechToText = "", strTranslatedText = "";
+
+    //Interstitial Ad initialization
+    private InterstitialAd mInterstitialAd;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //ads initialization
+        MobileAds.initialize(requireContext(), initializationStatus -> {});
+    }
 
     @Nullable
     @Override
@@ -117,7 +134,7 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         animation = AnimationUtils.loadAnimation(getActivity(), R.anim.img_button_animation);
 
         //initializing room database instance
-        database=TranslationRoomDB.getInstance(requireContext());
+        database = TranslationRoomDB.getInstance(requireContext());
 
         //initializing conversation recyclerview
         recyclerViewConversation = view.findViewById(R.id.recyclerview_conversation);
@@ -140,7 +157,6 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         //function for displaying the source & target languages from list
         checkSharePreference();
 
-
         return view;
     }
 
@@ -150,7 +166,7 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         recyclerViewConversation.setLayoutManager(linearLayoutManager);
 
         //getting all the data from database
-        conversationDataEntityList=database.conversationDao().getAllConversationData();
+        conversationDataEntityList = database.conversationDao().getAllConversationData();
 
         //scroll recyclerview to last entered item position
         int newPosition = conversationDataEntityList.size() - 1;
@@ -195,6 +211,8 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
     public void onStart() {
         super.onStart();
         ConversationLanguageList.registerConversationPreference(getActivity(), this);
+        //loading the Ad
+        loadAd();
     }
 
     @Override
@@ -204,6 +222,8 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         if (mTTS != null) {
             mTTS.shutdown();
         }
+        //setting the InterstitialAd to null
+        mInterstitialAd =null;
     }
 
     private void languageSelectionHome() {
@@ -308,13 +328,12 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
                 micLeftPressed = false;
 
                 //checking if source & target languages are same (English(US) & English(UK) are same)
-                if(trimLanguageCode(srcLangCode).equals(trimLanguageCode(trgtLangCode)))
-                {
+                if (trimLanguageCode(srcLangCode).equals(trimLanguageCode(trgtLangCode))) {
                     Toast.makeText(requireContext(), "Please select different source & target Translation languages", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
 
                     //function calling
-                speechToText(srcLang, srcLangCode, SPEECH_INPUT_REQUEST_CODE_1);
+                    speechToText(srcLang, srcLangCode, SPEECH_INPUT_REQUEST_CODE_1);
                 }
 
             } else if (micRightPressed) {
@@ -322,11 +341,9 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
                 micRightPressed = false;
 
                 //checking if source & target languages are same (English(US) & English(UK) are same)
-                if(trimLanguageCode(srcLangCode).equals(trimLanguageCode(trgtLangCode)))
-                {
+                if (trimLanguageCode(srcLangCode).equals(trimLanguageCode(trgtLangCode))) {
                     Toast.makeText(requireContext(), "Please select different source & target Translation languages", Toast.LENGTH_SHORT).show();
-                }
-                else {
+                } else {
                     //function calling
                     speechToText(trgtLang, trgtLangCode, SPEECH_INPUT_REQUEST_CODE_2);
                 }
@@ -416,14 +433,14 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
                     adapterPosition();
 
                     //saving data to database
-                    saveToDatabase(1,strSpeechToText,strTranslatedText,trgtLangCode);
+                    saveToDatabase(1, strSpeechToText, strTranslatedText, trgtLangCode);
                 } else if (requestCode == 2) {
                     //this sets the left side view of Conversation adapter view
                     conversationDataEntityList.add(new ConversationDataEntity(2, strSpeechToText, strTranslatedText, srcLangCode));
                     adapterPosition();
 
                     //saving data to database
-                    saveToDatabase(2,strSpeechToText,strTranslatedText,srcLangCode);
+                    saveToDatabase(2, strSpeechToText, strTranslatedText, srcLangCode);
                 }
 
             }
@@ -517,7 +534,7 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
     private void saveToDatabase(int conversationBtnPressed, String speechToText, String translatedText, String textToSpeechCode) {
         if (speechToText.trim().length() != 0 && translatedText.trim().length() != 0) {
             TranslationRoomDB translationRoomDB = TranslationRoomDB.getInstance(requireContext());
-            ConversationDataEntity conversationDataEntity=new ConversationDataEntity();
+            ConversationDataEntity conversationDataEntity = new ConversationDataEntity();
 
             conversationDataEntity.setConCode(conversationBtnPressed);
             conversationDataEntity.setConSourceText(speechToText);
@@ -526,5 +543,61 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
 
             translationRoomDB.conversationDao().addConversationData(conversationDataEntity);
         }
+    }
+
+    public void loadAd() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        InterstitialAd.load(requireContext(), "ca-app-pub-3940256099942544/1033173712", adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                super.onAdLoaded(interstitialAd);
+                mInterstitialAd = interstitialAd;
+                //showing the ad
+                showAd();
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                super.onAdFailedToLoad(loadAdError);
+                mInterstitialAd = null;
+            }
+        });
+    }
+
+    public void showAd() {
+        //checking if ad is loaded or not
+        if (mInterstitialAd != null) {
+            mInterstitialAd.show(requireActivity());
+
+            mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                @Override
+                public void onAdDismissedFullScreenContent() {
+                    super.onAdDismissedFullScreenContent();
+                    mInterstitialAd = null;
+                }
+
+                //this prevents ad from showing it second time
+                @Override
+                public void onAdShowedFullScreenContent() {
+                    super.onAdShowedFullScreenContent();
+                    mInterstitialAd = null;
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        //assigning the null value to interstitial ad to avoid running it in background which is a violation of AdMob policies
+        mInterstitialAd = null;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        //setting the InterstitialAd to null
+        mInterstitialAd =null;
     }
 }
