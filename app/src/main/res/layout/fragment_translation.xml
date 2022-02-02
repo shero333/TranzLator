@@ -3,114 +3,132 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="@dimen/_50sdp"
-    android:padding="@dimen/_5sdp">
+    android:layout_marginTop="@dimen/_45sdp">
 
-    <ProgressBar
-        android:id="@+id/progress_circular"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/text_input_layout_translation"
-        app:layout_constraintBottom_toBottomOf="@+id/text_input_layout_translation"/>
-
-    <include
-        android:id="@+id/appbar_1"
-        layout="@layout/layout_language_selection" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_layout_translation"
+    <FrameLayout
+        android:id="@+id/translate_banner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_15sdp"
-        android:background="@drawable/custom_border"
-        android:hint="@string/tap_to_enter_text"
-        app:endIconMode="clear_text"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appbar_1">
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edittext_input_layout_translation"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/translate_banner"
+        android:layout_marginTop="@dimen/_50sdp"
+        android:padding="@dimen/_5sdp">
+
+        <ProgressBar
+            android:id="@+id/progress_circular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/text_input_layout_translation"
+            app:layout_constraintBottom_toBottomOf="@+id/text_input_layout_translation"/>
+
+        <include
+            android:id="@+id/appbar_1"
+            layout="@layout/layout_language_selection"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_input_layout_translation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_15sdp"
             android:background="@drawable/custom_border"
-            android:backgroundTint="@color/white"
+            android:hint="@string/tap_to_enter_text"
+            app:endIconMode="clear_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/appbar_1">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edittext_input_layout_translation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/custom_border"
+                android:backgroundTint="@color/white"
+                android:gravity="start"
+                android:inputType="textMultiLine"
+                android:minLines="8"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_14ssp"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageView
+            android:id="@+id/edittext_imageview_speak_translation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_70sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:src="@drawable/ic_mic_translation"
+            app:layout_constraintBottom_toBottomOf="@+id/text_input_layout_translation"
+            app:layout_constraintEnd_toEndOf="@id/text_input_layout_translation"
+            app:tint="@color/colorPrimary"
+            android:contentDescription="@null"/>
+
+        <TextView
+            android:id="@+id/textview_translated"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:background="@drawable/gradient_colors"
             android:gravity="start"
-            android:inputType="textMultiLine"
-            android:minLines="8"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_14ssp"/>
+            android:minLines="9"
+            android:padding="@dimen/_10sdp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_14sdp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/text_input_layout_translation" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <ImageView
+            android:id="@+id/textview_imageview_volume_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_190sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:src="@drawable/ic_volume_up"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@id/textview_translated"
+            app:layout_constraintStart_toStartOf="parent"
+            app:tint="@color/white"
+            android:contentDescription="@null"/>
 
-    <ImageView
-        android:id="@+id/edittext_imageview_speak_translation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_70sdp"
-        android:layout_marginEnd="@dimen/_15sdp"
-        android:layout_marginBottom="@dimen/_15sdp"
-        android:src="@drawable/ic_mic_translation"
-        app:layout_constraintBottom_toBottomOf="@+id/text_input_layout_translation"
-        app:layout_constraintEnd_toEndOf="@id/text_input_layout_translation"
-        app:tint="@color/colorPrimary"
-        android:contentDescription="@null"/>
+        <ImageView
+            android:id="@+id/textview_imageview_copy_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:src="@drawable/ic_copy_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/textview_translated"
+            app:layout_constraintStart_toEndOf="@id/textview_imageview_volume_up"
+            app:tint="@color/white"
+            android:contentDescription="@null"/>
 
-    <TextView
-        android:id="@+id/textview_translated"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:background="@drawable/gradient_colors"
-        android:gravity="start"
-        android:minLines="9"
-        android:padding="@dimen/_10sdp"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_14sdp"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/text_input_layout_translation" />
+        <ImageView
+            android:id="@+id/textview_imageview_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_13sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:src="@drawable/ic_more"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/textview_translated"
+            app:layout_constraintEnd_toEndOf="@+id/textview_translated"
+            app:layout_constraintStart_toEndOf="@id/textview_imageview_copy_content"
+            app:tint="@color/white"
+            android:contentDescription="@null"/>
 
-    <ImageView
-        android:id="@+id/textview_imageview_volume_up"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_190sdp"
-        android:layout_marginBottom="@dimen/_15sdp"
-        android:src="@drawable/ic_volume_up"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@id/textview_translated"
-        app:layout_constraintStart_toStartOf="parent"
-        app:tint="@color/white"
-        android:contentDescription="@null"/>
-
-    <ImageView
-        android:id="@+id/textview_imageview_copy_content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_15sdp"
-        android:layout_marginBottom="@dimen/_15sdp"
-        android:src="@drawable/ic_copy_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/textview_translated"
-        app:layout_constraintStart_toEndOf="@id/textview_imageview_volume_up"
-        app:tint="@color/white"
-        android:contentDescription="@null"/>
-
-    <ImageView
-        android:id="@+id/textview_imageview_more"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_13sdp"
-        android:layout_marginEnd="@dimen/_15sdp"
-        android:layout_marginBottom="@dimen/_15sdp"
-        android:src="@drawable/ic_more"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/textview_translated"
-        app:layout_constraintEnd_toEndOf="@+id/textview_translated"
-        app:layout_constraintStart_toEndOf="@id/textview_imageview_copy_content"
-        app:tint="@color/white"
-        android:contentDescription="@null"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

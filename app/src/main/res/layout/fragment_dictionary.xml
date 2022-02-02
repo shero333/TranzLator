@@ -3,90 +3,103 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginTop="@dimen/_45sdp">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/dictionary_edit_text_layout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <FrameLayout
+        android:id="@+id/dictionary_banner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_20sdp"
-        android:layout_marginTop="@dimen/_80sdp"
-        android:layout_marginEnd="@dimen/_20sdp"
-        android:hint="@string/search_word"
-        app:counterEnabled="true"
-        app:counterTextColor="@color/colorPrimary"
-        app:endIconMode="clear_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:startIconDrawable="@drawable/ic_search"
-        app:startIconTint="@color/colorPrimary">
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/dictionary_edit_text"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/dictionary_banner">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/dictionary_edit_text_layout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
-            android:imeOptions="actionSend"/>
+            android:layout_marginStart="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_60sdp"
+            android:layout_marginEnd="@dimen/_20sdp"
+            android:hint="@string/search_word"
+            app:counterEnabled="true"
+            app:counterTextColor="@color/colorPrimary"
+            app:endIconMode="clear_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:startIconDrawable="@drawable/ic_search"
+            app:startIconTint="@color/colorPrimary">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/dictionary_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:imeOptions="actionSend"/>
 
-    <TextView
-        android:id="@+id/txt_word"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_45sdp"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:text="@string/hello"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textSize="@dimen/_26ssp"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dictionary_edit_text_layout"
-        tools:visibility="gone"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
-        android:id="@+id/txt_phonetic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_45sdp"
-        android:layout_marginTop="@dimen/_3sdp"
-        android:text="@string/h_l"
-        android:textAlignment="center"
-        android:textColor="@color/colorGrey"
-        android:textSize="@dimen/_14ssp"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txt_word" />
+        <TextView
+            android:id="@+id/txt_word"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_45sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:text="@string/hello"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_26ssp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dictionary_edit_text_layout"
+            tools:visibility="gone"/>
 
-    <ImageView
-        android:id="@+id/img_speech"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_volume_up"
-        app:tint="@color/colorPrimary"
-        android:visibility="gone"
-        android:layout_marginStart="@dimen/_10sdp"
-        android:layout_marginBottom="@dimen/_20sdp"
-        app:layout_constraintTop_toBottomOf="@+id/txt_word"
-        app:layout_constraintBottom_toBottomOf="@id/txt_phonetic"
-        app:layout_constraintStart_toStartOf="parent"
-        android:contentDescription="@null"/>
+        <TextView
+            android:id="@+id/txt_phonetic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_45sdp"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:text="@string/h_l"
+            android:textAlignment="center"
+            android:textColor="@color/colorGrey"
+            android:textSize="@dimen/_14ssp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txt_word" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerview_dictionary"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginStart="@dimen/_20sdp"
-        android:layout_marginEnd="@dimen/_20sdp"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:layout_marginBottom="@dimen/_50sdp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txt_phonetic"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        <ImageView
+            android:id="@+id/img_speech"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_volume_up"
+            app:tint="@color/colorPrimary"
+            android:visibility="gone"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_20sdp"
+            app:layout_constraintTop_toBottomOf="@+id/txt_word"
+            app:layout_constraintBottom_toBottomOf="@id/txt_phonetic"
+            app:layout_constraintStart_toStartOf="parent"
+            android:contentDescription="@null"/>
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview_dictionary"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/_20sdp"
+            android:layout_marginEnd="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_50sdp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txt_phonetic"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

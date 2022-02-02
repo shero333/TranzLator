@@ -9,13 +9,16 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,7 +31,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
@@ -63,26 +69,24 @@ public class DictionaryFragment extends Fragment {
     List<DictionaryModel> dictionaryModelList = new ArrayList<>();
     ProgressDialog progressDialog;
 
-    //Interstitial Ad initialization
-    private InterstitialAd mInterstitialAd;
+    //banner AdView
+    private AdView mAdView;
+
+    //frame layout which holds the adaptive banner ad
+    FrameLayout bannerFrameLayout;
+
+    private AdRequest adRequest;
+
+    String adUnitId="ca-app-pub-3940256099942544/6300978111";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //ads initialization
-        MobileAds.initialize(requireContext(), new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
-        });
-    }
+        //initialize AdMob
+        MobileAds.initialize(requireContext(), initializationStatus -> {});
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        //loading the Ad
-        loadAd();
+        adRequest= new AdRequest.Builder().build();
     }
 
     @Nullable
@@ -96,9 +100,25 @@ public class DictionaryFragment extends Fragment {
 
         textInputEditText.addTextChangedListener(textWatcher);
 
+        //instantiating banner frame layout
+        bannerFrameLayout=view.findViewById(R.id.dictionary_banner);
+        //initializing adview
+        mAdView=new AdView(requireContext());
+        mAdView.setAdUnitId(adUnitId);
+        //setting the adview to frame layout
+        bannerFrameLayout.addView(mAdView);
+
+        //setting the ad size for adaptive banner ad
+        AdSize adSize = getAdSize();
+        mAdView.setAdSize(adSize);
+
+        //loading ad into add view
+        mAdView.loadAd(adRequest);
+        //calling the ad listener here
+        adListener();
+
         return view;
     }
-
 
     private void initializeViews(View view) {
         //initializing  material edit text
@@ -367,8 +387,11 @@ public class DictionaryFragment extends Fragment {
         {
             progressDialog.dismiss();
         }
-        //setting the InterstitialAd to null
-        mInterstitialAd =null;
+
+        if(mAdView != null)
+        {
+            mAdView.destroy();
+        }
     }
 
     @Override
@@ -378,59 +401,58 @@ public class DictionaryFragment extends Fragment {
         {
             progressDialog.dismiss();
         }
-        //setting the InterstitialAd to null
-        mInterstitialAd =null;
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        //assigning the null value to interstitial ad to avoid running it in background which is a violation of AdMob policies
-        mInterstitialAd=null;
-    }
-
-    public void loadAd() {
-        AdRequest adRequest = new AdRequest.Builder().build();
-
-        InterstitialAd.load(requireContext(), "ca-app-pub-3940256099942544/1033173712", adRequest, new InterstitialAdLoadCallback() {
+    private void adListener()
+    {
+        mAdView.setAdListener(new AdListener() {
             @Override
-            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                super.onAdLoaded(interstitialAd);
-                mInterstitialAd = interstitialAd;
-
-                //showing the ad
-                showAd();
+            public void onAdClosed() {
+                super.onAdClosed();
             }
 
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 super.onAdFailedToLoad(loadAdError);
-                mInterstitialAd = null;
+                /*//loading ad into add view
+                mAdView.loadAd(adRequest);*/
+            }
+
+            @Override
+            public void onAdOpened() {
+                super.onAdOpened();
+            }
+
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+            }
+
+            @Override
+            public void onAdClicked() {
+                super.onAdClicked();
+            }
+
+            @Override
+            public void onAdImpression() {
+                super.onAdImpression();
             }
         });
     }
 
-    public void showAd()
-    {
-        //checking if ad is loaded or not
-        if (mInterstitialAd != null) {
-            mInterstitialAd.show(requireActivity());
+    private AdSize getAdSize() {
+        // Determine the screen width (less decorations) to use for the ad width
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics(outMetrics);
 
-            mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                @Override
-                public void onAdDismissedFullScreenContent() {
-                    super.onAdDismissedFullScreenContent();
-                    mInterstitialAd=null;
-                }
+        float widthPixels = outMetrics.widthPixels;
+        float density = outMetrics.density;
 
-                //this prevents ad from showing it second time
-                @Override
-                public void onAdShowedFullScreenContent() {
-                    super.onAdShowedFullScreenContent();
-                    mInterstitialAd=null;
-                }
-            });
-        }
+        int adWidth = (int) (widthPixels / density);
+
+        // Step 3 - Get adaptive ad size and return for setting on the ad view.
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(requireContext(), adWidth);
     }
+
 }

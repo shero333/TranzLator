@@ -6,15 +6,16 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.util.Log;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,17 +28,14 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.material.textview.MaterialTextView;
 import com.hammad.tranzlator.R;
-import com.hammad.tranzlator.activity.HomeScreen;
 import com.hammad.tranzlator.entities.TranslatedDataEntity;
 import com.hammad.tranzlator.adapter.TranslationHistoryAdapter;
 import com.hammad.tranzlator.TranslationRoomDB;
@@ -76,15 +74,24 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     //translated data list
     List<TranslatedDataEntity> entityDataList =new ArrayList<>();
 
-    //Interstitial Ad initialization
-    private InterstitialAd mInterstitialAd;
+    //banner AdView
+    private AdView mAdView;
 
-    //initializing the Mobile Ads in onCreate of fragment
+    //frame layout which holds the adaptive banner ad
+    FrameLayout bannerFrameLayout;
+
+    private AdRequest adRequest;
+
+    String adUnitId="ca-app-pub-3940256099942544/6300978111";
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //ads initialization
+
+        //initialize AdMob
         MobileAds.initialize(requireContext(), initializationStatus -> {});
+
+         adRequest= new AdRequest.Builder().build();
     }
 
     @Nullable
@@ -118,6 +125,24 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
 
         //initializing room DB
         database =TranslationRoomDB.getInstance(getContext());
+
+        //instantiating banner frame layout
+        bannerFrameLayout=view.findViewById(R.id.translate_home_banner);
+        //initializing adview
+        mAdView=new AdView(requireContext());
+        mAdView.setAdUnitId(adUnitId);
+        //setting the adview to frame layout
+        bannerFrameLayout.addView(mAdView);
+
+
+        //setting the ad size for adaptive banner ad
+        AdSize adSize = getAdSize();
+        mAdView.setAdSize(adSize);
+
+        //loading ad into add view
+        mAdView.loadAd(adRequest);
+        //calling the ad listener here
+        adListener();
 
         //swap languages function
         swapLanguages();
@@ -217,16 +242,17 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     public void onStart() {
         super.onStart();
         TranslationLanguageList.registerPreference(getActivity(), this);
-        //loading the Ad
-        loadAd();
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
+        if(mAdView != null)
+        {
+            mAdView.destroy();
+        }
         TranslationLanguageList.unregisterPreference(getActivity(), this);
-        //setting the InterstitialAd to null
-        mInterstitialAd =null;
+
+        super.onDestroy();
     }
 
     public void reserveTranslationLanguages() {
@@ -301,63 +327,56 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         }
     }
 
-    public void loadAd() {
-        AdRequest adRequest = new AdRequest.Builder().build();
-
-        InterstitialAd.load(requireContext(), "ca-app-pub-3940256099942544/1033173712", adRequest, new InterstitialAdLoadCallback() {
+    private void adListener()
+    {
+        mAdView.setAdListener(new AdListener() {
             @Override
-            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                super.onAdLoaded(interstitialAd);
-                mInterstitialAd = interstitialAd;
-
-                //showing the ad
-                showAd();
+            public void onAdClosed() {
+                super.onAdClosed();
             }
 
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 super.onAdFailedToLoad(loadAdError);
-                mInterstitialAd = null;
+                /*//loading ad into add view
+                mAdView.loadAd(adRequest);*/
+            }
+
+            @Override
+            public void onAdOpened() {
+                super.onAdOpened();
+            }
+
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+            }
+
+            @Override
+            public void onAdClicked() {
+                super.onAdClicked();
+            }
+
+            @Override
+            public void onAdImpression() {
+                super.onAdImpression();
             }
         });
     }
 
-    public void showAd()
-    {
-        //checking if ad is loaded or not
-        if (mInterstitialAd != null) {
-            mInterstitialAd.show(requireActivity());
+    private AdSize getAdSize() {
+        // Determine the screen width (less decorations) to use for the ad width
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics(outMetrics);
 
-            mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                @Override
-                public void onAdDismissedFullScreenContent() {
-                    super.onAdDismissedFullScreenContent();
-                    mInterstitialAd=null;
-                }
+        float widthPixels = outMetrics.widthPixels;
+        float density = outMetrics.density;
 
-                //this prevents ad from showing it second time
-                @Override
-                public void onAdShowedFullScreenContent() {
-                    super.onAdShowedFullScreenContent();
-                    mInterstitialAd=null;
-                }
-            });
-        }
-    }
+        int adWidth = (int) (widthPixels / density);
 
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        //assigning the null value to interstitial ad to avoid running it in background which is a violation of AdMob policies
-        mInterstitialAd=null;
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        //setting the InterstitialAd to null
-        mInterstitialAd =null;
+        // Step 3 - Get adaptive ad size and return for setting on the ad view.
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(requireContext(), adWidth);
     }
 
 }

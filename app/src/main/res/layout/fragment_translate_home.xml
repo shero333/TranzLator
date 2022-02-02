@@ -3,14 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="@dimen/_50sdp"
-    android:layout_marginBottom="@dimen/_50sdp"
-    android:padding="@dimen/_10sdp">
+    android:layout_marginTop="@dimen/_45sdp"
+    android:layout_marginBottom="@dimen/_50sdp">
+
+    <FrameLayout
+        android:id="@+id/translate_home_banner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <LinearLayout
+        android:id="@+id/linear_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="@dimen/_10sdp"
+        app:layout_constraintTop_toBottomOf="@id/translate_home_banner"
+        android:layout_marginTop="@dimen/_45sdp">
 
         <include
             android:id="@+id/appbar_translate"
@@ -48,7 +57,8 @@
                     android:src="@drawable/ic_mic"
                     app:layout_constraintBottom_toBottomOf="@id/textview_enter_text"
                     app:layout_constraintEnd_toEndOf="@id/textview_enter_text"
-                    app:tint="@color/colorPrimary" />
+                    app:tint="@color/colorPrimary"
+                    android:contentDescription="@null"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </FrameLayout>

@@ -100,15 +100,6 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
 
     String strSpeechToText = "", strTranslatedText = "";
 
-    //Interstitial Ad initialization
-    private InterstitialAd mInterstitialAd;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //ads initialization
-        MobileAds.initialize(requireContext(), initializationStatus -> {});
-    }
 
     @Nullable
     @Override
@@ -211,8 +202,7 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
     public void onStart() {
         super.onStart();
         ConversationLanguageList.registerConversationPreference(getActivity(), this);
-        //loading the Ad
-        loadAd();
+
     }
 
     @Override
@@ -222,8 +212,6 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         if (mTTS != null) {
             mTTS.shutdown();
         }
-        //setting the InterstitialAd to null
-        mInterstitialAd =null;
     }
 
     private void languageSelectionHome() {
@@ -286,8 +274,8 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
     }
 
     private void checkSharePreference() {
-        srcLang = mPreference.getString(getString(R.string.conversation_lang_one), "English (United Kingdom)");
-        srcLangCode = mPreference.getString(getString(R.string.conversation_lang_one_code), "en-GB");
+        srcLang = mPreference.getString(getString(R.string.conversation_lang_one), "English (United States)");
+        srcLangCode = mPreference.getString(getString(R.string.conversation_lang_one_code), "en-US");
         trgtLang = mPreference.getString(getString(R.string.conversation_lang_two), "Urdu (Pakistan)");
         trgtLangCode = mPreference.getString(getString(R.string.conversation_lang_two_code), "ur-PK");
 
@@ -545,59 +533,4 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         }
     }
 
-    public void loadAd() {
-        AdRequest adRequest = new AdRequest.Builder().build();
-
-        InterstitialAd.load(requireContext(), "ca-app-pub-3940256099942544/1033173712", adRequest, new InterstitialAdLoadCallback() {
-            @Override
-            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                super.onAdLoaded(interstitialAd);
-                mInterstitialAd = interstitialAd;
-                //showing the ad
-                showAd();
-            }
-
-            @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                super.onAdFailedToLoad(loadAdError);
-                mInterstitialAd = null;
-            }
-        });
-    }
-
-    public void showAd() {
-        //checking if ad is loaded or not
-        if (mInterstitialAd != null) {
-            mInterstitialAd.show(requireActivity());
-
-            mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                @Override
-                public void onAdDismissedFullScreenContent() {
-                    super.onAdDismissedFullScreenContent();
-                    mInterstitialAd = null;
-                }
-
-                //this prevents ad from showing it second time
-                @Override
-                public void onAdShowedFullScreenContent() {
-                    super.onAdShowedFullScreenContent();
-                    mInterstitialAd = null;
-                }
-            });
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        //assigning the null value to interstitial ad to avoid running it in background which is a violation of AdMob policies
-        mInterstitialAd = null;
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        //setting the InterstitialAd to null
-        mInterstitialAd =null;
-    }
 }

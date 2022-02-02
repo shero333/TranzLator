@@ -23,7 +23,9 @@ import android.speech.tts.TextToSpeech;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +34,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
@@ -43,6 +46,14 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -101,6 +112,26 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     //progress bar
     ProgressBar progressBar;
 
+    //banner AdView
+    private AdView mAdView;
+
+    //frame layout which holds the adaptive banner ad
+    FrameLayout bannerFrameLayout;
+
+    private AdRequest adRequest;
+
+    String adUnitId="ca-app-pub-3940256099942544/6300978111";
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        //initialize AdMob
+        MobileAds.initialize(requireContext(), initializationStatus -> {});
+
+        adRequest= new AdRequest.Builder().build();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -140,6 +171,23 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         //initialize progressbar
         progressBar=view.findViewById(R.id.progress_circular);
         progressBar.bringToFront();
+
+        //instantiating banner frame layout
+        bannerFrameLayout=view.findViewById(R.id.translate_banner);
+        //initializing adview
+        mAdView=new AdView(requireContext());
+        mAdView.setAdUnitId(adUnitId);
+        //setting the adview to frame layout
+        bannerFrameLayout.addView(mAdView);
+
+        //setting the ad size for adaptive banner ad
+        AdSize adSize = getAdSize();
+        mAdView.setAdSize(adSize);
+
+        //loading ad into add view
+        mAdView.loadAd(adRequest);
+        //calling the ad listener here
+        adListener();
 
         //getting the shared preferences values
         checkSharedPreferences();
@@ -361,8 +409,12 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
+        if(mAdView != null)
+        {
+            mAdView.destroy();
+        }
         TranslationLanguageList.unregisterPreference(getActivity(), this);
+        super.onDestroy();
     }
 
     public void copyContent() {
@@ -707,4 +759,57 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+
+    private void adListener()
+    {
+        mAdView.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                super.onAdFailedToLoad(loadAdError);
+                /*//loading ad into add view
+                mAdView.loadAd(adRequest);*/
+            }
+
+            @Override
+            public void onAdOpened() {
+                super.onAdOpened();
+            }
+
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+            }
+
+            @Override
+            public void onAdClicked() {
+                super.onAdClicked();
+            }
+
+            @Override
+            public void onAdImpression() {
+                super.onAdImpression();
+            }
+        });
+    }
+
+    private AdSize getAdSize() {
+        // Determine the screen width (less decorations) to use for the ad width
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics(outMetrics);
+
+        float widthPixels = outMetrics.widthPixels;
+        float density = outMetrics.density;
+
+        int adWidth = (int) (widthPixels / density);
+
+        // Step 3 - Get adaptive ad size and return for setting on the ad view.
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(requireContext(), adWidth);
+    }
+
 }

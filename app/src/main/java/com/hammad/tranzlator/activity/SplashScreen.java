@@ -55,10 +55,7 @@ public class SplashScreen extends AppCompatActivity {
         sloganTextView.setAnimation(bottomAnim);
 
         //ads initialization
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
+        MobileAds.initialize(this, initializationStatus -> {
         });
 
         //loading the ads
@@ -119,5 +116,17 @@ public class SplashScreen extends AppCompatActivity {
             Intent intent = new Intent(SplashScreen.this, HomeScreen.class);
             startActivity(intent);
         }
+    }
+
+    @Override
+    protected void onStop() {
+        mInterstitialAd=null;
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mInterstitialAd=null;
+        super.onDestroy();
     }
 }
