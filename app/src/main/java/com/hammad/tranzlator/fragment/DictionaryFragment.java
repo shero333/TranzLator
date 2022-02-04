@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -35,19 +34,14 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.hammad.tranzlator.model.DictionaryModel;
 import com.hammad.tranzlator.R;
-import com.hammad.tranzlator.volleyLibrary.VolleySingleton;
 import com.hammad.tranzlator.adapter.DictionaryAdapter;
+import com.hammad.tranzlator.model.DictionaryModel;
+import com.hammad.tranzlator.volleyLibrary.VolleySingleton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,6 +71,7 @@ public class DictionaryFragment extends Fragment {
 
     private AdRequest adRequest;
 
+    //adaptive banner ad unit id
     String adUnitId="ca-app-pub-3940256099942544/6300978111";
 
     @Override
@@ -382,16 +377,17 @@ public class DictionaryFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         if(progressDialog !=null)
         {
             progressDialog.dismiss();
         }
 
+        //destroy the adview of adaptive banner ad
         if(mAdView != null)
         {
             mAdView.destroy();
         }
+        super.onDestroy();
     }
 
     @Override
@@ -400,6 +396,24 @@ public class DictionaryFragment extends Fragment {
         if(progressDialog !=null)
         {
             progressDialog.dismiss();
+        }
+    }
+
+    /* Called when leaving the activity */
+    @Override
+    public void onPause() {
+        if (mAdView != null) {
+            mAdView.pause();
+        }
+        super.onPause();
+    }
+
+    /* Called when returning to the activity */
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mAdView != null) {
+            mAdView.resume();
         }
     }
 
@@ -414,8 +428,6 @@ public class DictionaryFragment extends Fragment {
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 super.onAdFailedToLoad(loadAdError);
-                /*//loading ad into add view
-                mAdView.loadAd(adRequest);*/
             }
 
             @Override
@@ -451,7 +463,7 @@ public class DictionaryFragment extends Fragment {
 
         int adWidth = (int) (widthPixels / density);
 
-        // Step 3 - Get adaptive ad size and return for setting on the ad view.
+        // Get adaptive ad size and return for setting on the ad view.
         return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(requireContext(), adWidth);
     }
 

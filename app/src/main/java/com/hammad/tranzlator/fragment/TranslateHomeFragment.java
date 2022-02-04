@@ -82,6 +82,7 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
 
     private AdRequest adRequest;
 
+    //adaptive banner ad unit id
     String adUnitId="ca-app-pub-3940256099942544/6300978111";
 
     @Override
@@ -128,12 +129,13 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
 
         //instantiating banner frame layout
         bannerFrameLayout=view.findViewById(R.id.translate_home_banner);
+
         //initializing adview
         mAdView=new AdView(requireContext());
         mAdView.setAdUnitId(adUnitId);
+
         //setting the adview to frame layout
         bannerFrameLayout.addView(mAdView);
-
 
         //setting the ad size for adaptive banner ad
         AdSize adSize = getAdSize();
@@ -227,8 +229,8 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         /*
-        this 'if' condition here is used to check if there is any update/changed in the shared preference values.
-         This if condition is true when reverseTranslationLanguages() function is called
+            this 'if' condition here is used to check if there is any update/changed in the shared preference values.
+            This if condition is true when reverseTranslationLanguages() function is called
         */
         if (sharedPrefChangedChecker >= 1) {
             updateSharedPreferences();
@@ -246,6 +248,7 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
 
     @Override
     public void onDestroy() {
+        //destroy the adview of adaptive banner
         if(mAdView != null)
         {
             mAdView.destroy();
@@ -253,6 +256,24 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         TranslationLanguageList.unregisterPreference(getActivity(), this);
 
         super.onDestroy();
+    }
+
+    /* Called when leaving the activity */
+    @Override
+    public void onPause() {
+        if (mAdView != null) {
+            mAdView.pause();
+        }
+        super.onPause();
+    }
+
+    /* Called when returning to the activity */
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mAdView != null) {
+            mAdView.resume();
+        }
     }
 
     public void reserveTranslationLanguages() {
@@ -271,9 +292,9 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         sharedPrefChangedChecker++;
 
         /*
-          onSharedPreferenceChanged() listener is called when we add/remove values from shared preference
-          The putString function below will call onSharedPreferenceChanged() listener,
-          in which we have conditions to execute a particular piece of code
+            onSharedPreferenceChanged() listener is called when we add/remove values from shared preference
+            The putString function below will call onSharedPreferenceChanged() listener,
+            in which we have conditions to execute a particular piece of code
          */
         mEditor.putString(getString(R.string.lang_one), srcLang).apply();
 
@@ -281,8 +302,10 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         materialLang1.setText(srcLang);
         materialLang2.setText(trgtLang);
 
-        //condition to reset the prefDecrement & sharedPrefChangedChecker values so that the updatePreference function can execute properly
-        //to see more details on this condition, go to FragmentTranslation class, and then go to reserveTranslationLanguages() function
+        /*
+            condition to reset the prefDecrement & sharedPrefChangedChecker values so that the updatePreference function can execute properly
+            to see more details on this condition, go to FragmentTranslation class, and then go to reserveTranslationLanguages() function
+        */
         if(prefDecrement <=4)
         {
             sharedPrefChangedChecker=0;
@@ -338,8 +361,6 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 super.onAdFailedToLoad(loadAdError);
-                /*//loading ad into add view
-                mAdView.loadAd(adRequest);*/
             }
 
             @Override
@@ -375,7 +396,7 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
 
         int adWidth = (int) (widthPixels / density);
 
-        // Step 3 - Get adaptive ad size and return for setting on the ad view.
+        // Get adaptive ad size and return for setting on the ad view.
         return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(requireContext(), adWidth);
     }
 

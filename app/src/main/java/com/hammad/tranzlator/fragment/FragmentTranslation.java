@@ -120,6 +120,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
     private AdRequest adRequest;
 
+    //adaptive banner ad unit id
     String adUnitId="ca-app-pub-3940256099942544/6300978111";
 
     @Override
@@ -390,10 +391,6 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-
-        Log.d("prefValue", "sharedPrefChecker value : " + sharedPrefChecker);
-        Log.d("prefValue", "decremented value : " + prefDecrement);
-
         if (sharedPrefChecker >= 1) {
             updateSharedPreferences();
         } else {
@@ -409,12 +406,31 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
     @Override
     public void onDestroy() {
+        //destroy adview for banner ad with activity onDestroy()
         if(mAdView != null)
         {
             mAdView.destroy();
         }
         TranslationLanguageList.unregisterPreference(getActivity(), this);
         super.onDestroy();
+    }
+
+    /* Called when leaving the activity */
+    @Override
+    public void onPause() {
+        if (mAdView != null) {
+            mAdView.pause();
+        }
+        super.onPause();
+    }
+
+    /* Called when returning to the activity */
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mAdView != null) {
+            mAdView.resume();
+        }
     }
 
     public void copyContent() {
@@ -469,18 +485,14 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         textViewTranslation.setText(translatingText);
 
         /*
-         * This condition will assign '0' value to sharedPrefChecker variable.
-         * This is because we have 4 preference values to update. When preference change is called, (4 times called in our case)
-         * It will assign again '0' value to preference so that if we only want to change one language from language list we can do it
+            This condition will assign '0' value to sharedPrefChecker variable.
+            This is because we have 4 preference values to update. When preference change is called, (4 times called in our case)
+            It will assign again '0' value to preference so that if we only want to change one language from language list we can do it
          */
 
-        Log.d("prefValue", "log before condition call: ");
         if (prefDecrement <= 4) {
             sharedPrefChecker = 0;
             prefDecrement = 0;
-
-            Log.d("prefValue", "pref checker: " + sharedPrefChecker);
-            Log.d("prefValue", "pref decrement: " + prefDecrement);
         }
 
     }
@@ -508,18 +520,14 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         materialTxtViewLang2.setText(targetLang);
 
         /*
-         * This condition will assign '0' value to sharedPrefChecker variable.
-         * This is because we have 4 preference values to update. When preference change is called, (4 times called in our case)
-         * It will assign again '0' value to preference so that if we only want to change one language from language list we can do it
+            This condition will assign '0' value to sharedPrefChecker variable.
+            This is because we have 4 preference values to update. When preference change is called, (4 times called in our case)
+            It will assign again '0' value to preference so that if we only want to change one language from language list we can do it
          */
 
-        Log.d("prefValue", "log before condition call: ");
         if (prefDecrement <= 4) {
             sharedPrefChecker = 0;
             prefDecrement = 0;
-
-            Log.d("prefValue", "pref checker: " + sharedPrefChecker);
-            Log.d("prefValue", "pref decrement: " + prefDecrement);
         }
     }
 
@@ -771,8 +779,6 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 super.onAdFailedToLoad(loadAdError);
-                /*//loading ad into add view
-                mAdView.loadAd(adRequest);*/
             }
 
             @Override
@@ -808,7 +814,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
         int adWidth = (int) (widthPixels / density);
 
-        // Step 3 - Get adaptive ad size and return for setting on the ad view.
+        // Get adaptive ad size and return for setting on the ad view.
         return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(requireContext(), adWidth);
     }
 

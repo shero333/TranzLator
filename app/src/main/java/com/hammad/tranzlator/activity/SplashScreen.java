@@ -1,26 +1,21 @@
 package com.hammad.tranzlator.activity;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PersistableBundle;
-import android.util.Log;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.hammad.tranzlator.R;
@@ -116,17 +111,5 @@ public class SplashScreen extends AppCompatActivity {
             Intent intent = new Intent(SplashScreen.this, HomeScreen.class);
             startActivity(intent);
         }
-    }
-
-    @Override
-    protected void onStop() {
-        mInterstitialAd=null;
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        mInterstitialAd=null;
-        super.onDestroy();
     }
 }

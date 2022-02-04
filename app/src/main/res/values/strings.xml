@@ -50,4 +50,7 @@
     <string name="hello">hello</string>
     <string name="h_l">həˈləʊ</string>
 
+    <!-- custom style for unified adview in theme.xml-->
+    <string name="ad_attribution">Ad</string>
+
 </resources>
