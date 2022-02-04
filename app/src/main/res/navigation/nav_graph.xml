@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/bottom_nav_translation"
-        android:name="com.hammad.tranzlator.fragment.TranslateHomeFragment"
+        android:name="com.hammad.translator.fragment.TranslateHomeFragment"
         android:label="TranslateHomeFragment" >
         <action
             android:id="@+id/action_bottom_nav_translation_to_fragmentTranslation"
@@ -14,14 +14,14 @@
     </fragment>
     <fragment
         android:id="@+id/bottom_nav_conversation"
-        android:name="com.hammad.tranzlator.fragment.ConversationFragment"
+        android:name="com.hammad.translator.fragment.ConversationFragment"
         android:label="ConversationFragment" />
     <fragment
         android:id="@+id/bottom_nav_dictionary"
-        android:name="com.hammad.tranzlator.fragment.DictionaryFragment"
+        android:name="com.hammad.translator.fragment.DictionaryFragment"
         android:label="DictionaryFragment" />
     <fragment
         android:id="@+id/fragmentTranslation"
-        android:name="com.hammad.tranzlator.fragment.FragmentTranslation"
+        android:name="com.hammad.translator.fragment.FragmentTranslation"
         android:label="FragmentTranslation" />
 </navigation>

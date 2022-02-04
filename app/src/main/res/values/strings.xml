@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">TranzLator</string>
+    <string name="app_name">Translator</string>
     <string name="navigation_drawer_open">Open Navigation Drawer</string>
     <string name="navigation_drawer_close">Close Navigation Drawer</string>
-    <string name="tranzlator">TranzLator</string>
+    <string name="tranzlator">Translator</string>
     <string name="ready_to_talk_to_world">Ready to talk to world?</string>
     <string name="share">Share</string>
     <string name="full_screen">Full Screen</string>
@@ -22,22 +22,22 @@
 
     <!--key names for shared preferences-->
 
-    <string name="lang_one">com.hammad.tranzlator.lang_one</string>
-    <string name="lang_one_code">com.hammad.tranzlator.lang_one_code</string>
-    <string name="lang_two">com.hammad.tranzlator.lang_two</string>
-    <string name="lang_two_code">com.hammad.tranzlator.lang_two_code</string>
+    <string name="lang_one">com.hammad.translator.lang_one</string>
+    <string name="lang_one_code">com.hammad.translator.lang_one_code</string>
+    <string name="lang_two">com.hammad.translator.lang_two</string>
+    <string name="lang_two_code">com.hammad.translator.lang_two_code</string>
     <string name="source_text">Source Text</string>
 
     <!--key names for conversation fragment shared preferences-->
 
-    <string name="conversation_lang_one">com.hammad.tranzlator.conversation_lang_one</string>
-    <string name="conversation_lang_one_code">com.hammad.tranzlator.conversation_lang_one_code</string>
-    <string name="conversation_lang_two">com.hammad.tranzlator.conversation_lang_two</string>
-    <string name="conversation_lang_two_code">com.hammad.tranzlator.conversation_lang_two_code</string>
+    <string name="conversation_lang_one">com.hammad.translator.conversation_lang_one</string>
+    <string name="conversation_lang_one_code">com.hammad.translator.conversation_lang_one_code</string>
+    <string name="conversation_lang_two">com.hammad.translator.conversation_lang_two</string>
+    <string name="conversation_lang_two_code">com.hammad.translator.conversation_lang_two_code</string>
     <string name="fetching_results">Fetching results...</string>
 
     <!--key name for Theme shared preferences-->
-    <string name="pref_theme">com.hammad.tranzlator.pref_theme</string>
+    <string name="pref_theme">com.hammad.translator.pref_theme</string>
 
     <string name="_1">1</string>
     <string name="definition">definition</string>

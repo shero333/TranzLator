@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.hammad.tranzlator">
+    package="com.hammad.translator">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -16,20 +16,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TranzLator">
         <activity
-            android:name=".activity.ConversationLanguageList"
+            android:name="com.hammad.translator.activity.ConversationLanguageList"
             android:exported="true" />
         <activity
-            android:name=".activity.TranslationFullScreen"
+            android:name="com.hammad.translator.activity.TranslationFullScreen"
             android:exported="true" />
         <activity
-            android:name=".activity.TranslationLanguageList"
+            android:name="com.hammad.translator.activity.TranslationLanguageList"
             android:exported="false" />
         <activity
-            android:name=".activity.HomeScreen"
+            android:name="com.hammad.translator.activity.HomeScreen"
             android:exported="true"
             android:windowSoftInputMode="adjustPan"/>
         <activity
-            android:name=".activity.SplashScreen"
+            android:name="com.hammad.translator.activity.SplashScreen"
             android:exported="true"
             android:noHistory="true">
             <intent-filter>
