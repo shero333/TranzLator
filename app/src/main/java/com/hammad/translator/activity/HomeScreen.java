@@ -131,7 +131,7 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
                 if(isDarkModeEnabled)
                 {
                     modeSwitch.setChecked(true);
-                    AppCompatDelegate.setDefaultNightMode((AppCompatDelegate.MODE_NIGHT_YES));
+                   /* AppCompatDelegate.setDefaultNightMode((AppCompatDelegate.MODE_NIGHT_YES));*/
                 }
 
                 modeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -165,7 +165,6 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
             case R.id.nav_drawer_privacy_policy:
                 privacyPolicy();
                 break;
-
         }
 
         return true;

@@ -41,7 +41,6 @@ public class SplashScreen extends AppCompatActivity {
 
     public static int prefCounter=0;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
