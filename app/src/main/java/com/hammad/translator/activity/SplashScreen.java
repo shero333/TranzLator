@@ -1,8 +1,10 @@
 package com.hammad.translator.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
@@ -29,12 +32,33 @@ public class SplashScreen extends AppCompatActivity {
     TextView sloganTextView;
     private InterstitialAd mInterstitialAd;
 
+    //shared preference for storing the switched theme (Dark or Light) value/status
+    SharedPreferences preference;
+    SharedPreferences.Editor prefEditor;
+
+    //variable for checking whether dark theme is applied or not
+    boolean isDarkModeEnabled = false;
+
+    public static int prefCounter=0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        //initializing preferences
+        initializePreference();
+
+        //getting the theme saved value from preference
+        isDarkModeEnabled=preference.getBoolean(getString(R.string.pref_theme),false);
+
+        if(isDarkModeEnabled)
+        {
+            prefCounter++;
+            AppCompatDelegate.setDefaultNightMode((AppCompatDelegate.MODE_NIGHT_YES));
+        }
 
         //initializing animations
         topAnim = AnimationUtils.loadAnimation(this, R.anim.top_anim);
@@ -48,16 +72,18 @@ public class SplashScreen extends AppCompatActivity {
         logoImageView.setAnimation(topAnim);
         sloganTextView.setAnimation(bottomAnim);
 
-        //ads initialization
-        MobileAds.initialize(this, initializationStatus -> {
-        });
+        if(prefCounter<=1) {
+            //ads initialization
+            MobileAds.initialize(this, initializationStatus -> {
+            });
 
-        //loading the ads
-        loadAd();
+            //loading the ads
+            loadAd();
 
-        //delaying the splash screen for 3.5 seconds
-        //loading the ad
-        new Handler().postDelayed(this::showAd, SPLASH_SCREEN);
+            //delaying the splash screen for 3.5 seconds
+            //loading the ad
+            new Handler().postDelayed(this::showAd, SPLASH_SCREEN);
+        }
 
     }
 
@@ -113,7 +139,6 @@ public class SplashScreen extends AppCompatActivity {
         }
     }
 
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -125,5 +150,10 @@ public class SplashScreen extends AppCompatActivity {
 
         mInterstitialAd = null;
         super.onDestroy();
+    }
+
+    private void initializePreference() {
+        preference = PreferenceManager.getDefaultSharedPreferences(this);
+        prefEditor = preference.edit();
     }
 }

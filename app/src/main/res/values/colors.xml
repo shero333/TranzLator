@@ -18,4 +18,6 @@
 
     <color name="colorLightGrey">#83BFBDBD</color>
 
+    <color name="colorRatingBar">#F32011</color>
+
 </resources>

@@ -1,12 +1,12 @@
 <com.google.android.gms.ads.formats.UnifiedNativeAdView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="#FFFFFF"
         android:padding="@dimen/_10sdp"
         android:minHeight="@dimen/_50sdp"
         android:orientation="vertical">
@@ -56,6 +56,7 @@
                             android:id="@+id/ad_advertiser"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
+                            android:textColor="?android:attr/textColorPrimary"
                             android:gravity="bottom"
                             android:textSize="@dimen/_14ssp"
                             android:textStyle="bold"/>
@@ -66,7 +67,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:isIndicator="true"
-                            android:progressTint="#F6E127"
+                            tools:rating="4"
+                            android:progressTint="@color/colorRatingBar"
                             android:numStars="5"
                             android:stepSize="0.5" />
                     </LinearLayout>
@@ -83,6 +85,7 @@
                     android:id="@+id/ad_body"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:layout_marginEnd="@dimen/_20sdp"
                     android:textSize="@dimen/_12ssp" />
 
@@ -105,6 +108,7 @@
                         android:id="@+id/ad_price"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="?android:attr/textColorPrimary"
                         android:paddingLeft="@dimen/_5sdp"
                         android:paddingStart="@dimen/_5sdp"
                         android:paddingRight="@dimen/_5sdp"
@@ -115,6 +119,7 @@
                         android:id="@+id/ad_store"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="?android:attr/textColorPrimary"
                         android:paddingLeft="@dimen/_5sdp"
                         android:paddingStart="@dimen/_5sdp"
                         android:paddingRight="@dimen/_5sdp"

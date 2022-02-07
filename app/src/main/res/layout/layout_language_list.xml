@@ -10,9 +10,9 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:textColor="@color/black"
+        android:textColor="?android:attr/textColorPrimary"
         android:textSize="@dimen/_12ssp"
-        android:text="Testing Text"
+        android:text="@string/testing_text"
         android:layout_margin="@dimen/_10sdp"
         android:padding="@dimen/_8sdp"
         android:background="@drawable/custom_language_list_border"/>

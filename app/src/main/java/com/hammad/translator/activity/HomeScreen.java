@@ -87,6 +87,9 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
+        //getting the theme saved value from preference
+        isDarkModeEnabled = preference.getBoolean(getString(R.string.pref_theme), false);
+
         //setting the onClick for navigation view items
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -105,17 +108,6 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
         //setting up the navigation component
         NavController navController = Navigation.findNavController(this, R.id.fragment_container);
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
-
-        /*//getting the theme saved value from preference
-        isDarkModeEnabled = preference.getBoolean(getString(R.string.pref_theme), false);
-
-        //checking theme preference value
-        if (isDarkModeEnabled) {
-            AppCompatDelegate.setDefaultNightMode((AppCompatDelegate.MODE_NIGHT_YES));
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        }*/
-
     }
 
     @Override
@@ -136,20 +128,24 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
             case R.id.nav_drawer_dark_mode:
                 Switch modeSwitch = (Switch) item.getActionView();
 
+                if(isDarkModeEnabled)
+                {
+                    modeSwitch.setChecked(true);
+                    AppCompatDelegate.setDefaultNightMode((AppCompatDelegate.MODE_NIGHT_YES));
+                }
+
                 modeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     if (modeSwitch.isChecked()) {
-                        /*AppCompatDelegate.setDefaultNightMode((AppCompatDelegate.MODE_NIGHT_YES));
+                        AppCompatDelegate.setDefaultNightMode((AppCompatDelegate.MODE_NIGHT_YES));
                         //saving the theme to preference
                         prefEditor.putBoolean(getString(R.string.pref_theme), true);
-                        prefEditor.apply();*/
-                        Toast.makeText(this, "checked!", Toast.LENGTH_SHORT).show();
+                        prefEditor.apply();
 
                     } else if (!modeSwitch.isChecked()) {
-                        /*AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                         //saving the theme to preference
                         prefEditor.putBoolean(getString(R.string.pref_theme), false);
-                        prefEditor.apply();*/
-                        Toast.makeText(this, "un-checked!", Toast.LENGTH_SHORT).show();
+                        prefEditor.apply();
                     }
                 });
                 break;

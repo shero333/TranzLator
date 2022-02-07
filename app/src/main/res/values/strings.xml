@@ -46,11 +46,12 @@
     <string name="entered_text">entered text</string>
     <string name="lang_2">Lang 2</string>
     <string name="lang_1">Lang 1</string>
-    <string name="search_word">search Word</string>
+    <string name="search_word">Search Word</string>
     <string name="hello">hello</string>
     <string name="h_l">həˈləʊ</string>
 
     <!-- custom style for unified adview in theme.xml-->
     <string name="ad_attribution">Ad</string>
+    <string name="testing_text">Testing Text</string>
 
 </resources>

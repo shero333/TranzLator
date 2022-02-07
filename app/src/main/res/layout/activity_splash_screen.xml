@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="?android:attr/textColorPrimary"
     tools:context=".activity.SplashScreen">
 
     <ImageView
         android:id="@+id/image_splash"
         android:layout_width="@dimen/_180sdp"
         android:layout_height="@dimen/_180sdp"
-        android:src="@drawable/icon"
+        android:src="@drawable/icon_header"
         android:scaleType="fitXY"
         android:layout_marginTop="@dimen/_130sdp"
         app:layout_constraintTop_toTopOf="parent"
@@ -24,6 +25,7 @@
         android:layout_height="wrap_content"
         android:text="@string/ready_to_talk_to_world"
         android:textSize="@dimen/_22ssp"
+        android:textColor="?android:attr/textColorPrimary"
         android:layout_marginTop="@dimen/_30sdp"
         app:layout_constraintTop_toBottomOf="@id/image_splash"
         app:layout_constraintStart_toStartOf="parent"
