@@ -318,8 +318,7 @@ public class DictionaryFragment extends Fragment {
         });
 
         //instantiating the VolleySingleton Class
-        VolleySingleton volleySingleton = new VolleySingleton();
-        volleySingleton.getInstance(requireContext()).addToRequestQueue(jsonArrayRequest);
+        VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(jsonArrayRequest);
     }
 
     private void playPhoneticAudio(String audioUri) {

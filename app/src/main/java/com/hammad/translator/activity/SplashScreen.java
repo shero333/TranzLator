@@ -3,6 +3,7 @@ package com.hammad.translator.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -22,12 +23,10 @@ import com.hammad.translator.R;
 
 public class SplashScreen extends AppCompatActivity {
 
+    static int SPLASH_SCREEN = 3500;
     Animation topAnim, bottomAnim;
     ImageView logoImageView;
     TextView sloganTextView;
-
-    static int SPLASH_SCREEN = 3500;
-
     private InterstitialAd mInterstitialAd;
 
 
@@ -80,8 +79,7 @@ public class SplashScreen extends AppCompatActivity {
         });
     }
 
-    public void showAd()
-    {
+    public void showAd() {
         //checking if ad is loaded or not
         if (mInterstitialAd != null) {
             mInterstitialAd.show(SplashScreen.this);
@@ -91,11 +89,12 @@ public class SplashScreen extends AppCompatActivity {
                 public void onAdDismissedFullScreenContent() {
                     super.onAdDismissedFullScreenContent();
 
+                    mInterstitialAd = null;
+
                     //moving to Home Screen
                     Intent intent = new Intent(SplashScreen.this, HomeScreen.class);
                     startActivity(intent);
-
-                    mInterstitialAd = null;
+                    finish();
                 }
 
                 //this function make sure no ad is loaded for second time
@@ -106,10 +105,25 @@ public class SplashScreen extends AppCompatActivity {
                     mInterstitialAd = null;
                 }
             });
-        } else{
+        } else {
             //if there is no internet connection, then no ad will be loaded and app will move onto Home Screen
             Intent intent = new Intent(SplashScreen.this, HomeScreen.class);
             startActivity(intent);
+            finish();
         }
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mInterstitialAd = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        mInterstitialAd = null;
+        super.onDestroy();
     }
 }

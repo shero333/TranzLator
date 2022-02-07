@@ -5,8 +5,10 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -52,13 +54,10 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
     SharedPreferences.Editor prefEditor;
 
     //variable for checking whether dark theme is applied or not
-    boolean isDarkModeEnabled=false;
+    boolean isDarkModeEnabled = false;
 
     //Interstitial Ad initialization
     private InterstitialAd mInterstitialAd;
-
-    //for checking the preference count
-    static int checkPreferenceCount=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,22 +106,16 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
         NavController navController = Navigation.findNavController(this, R.id.fragment_container);
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
 
-        //incrementing the preference checking count
-        checkPreferenceCount++;
+        /*//getting the theme saved value from preference
+        isDarkModeEnabled = preference.getBoolean(getString(R.string.pref_theme), false);
 
+        //checking theme preference value
+        if (isDarkModeEnabled) {
+            AppCompatDelegate.setDefaultNightMode((AppCompatDelegate.MODE_NIGHT_YES));
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }*/
 
-        if(checkPreferenceCount==1)
-        {
-            //getting the theme saved value from preference
-            isDarkModeEnabled = preference.getBoolean(getString(R.string.pref_theme), false);
-
-            //checking theme preference value
-            if (isDarkModeEnabled) {
-                AppCompatDelegate.setDefaultNightMode((AppCompatDelegate.MODE_NIGHT_YES));
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            }
-        }
     }
 
     @Override
@@ -145,17 +138,18 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
 
                 modeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     if (modeSwitch.isChecked()) {
-                        AppCompatDelegate.setDefaultNightMode((AppCompatDelegate.MODE_NIGHT_YES));
-
+                        /*AppCompatDelegate.setDefaultNightMode((AppCompatDelegate.MODE_NIGHT_YES));
                         //saving the theme to preference
                         prefEditor.putBoolean(getString(R.string.pref_theme), true);
-                        prefEditor.apply();
+                        prefEditor.apply();*/
+                        Toast.makeText(this, "checked!", Toast.LENGTH_SHORT).show();
 
                     } else if (!modeSwitch.isChecked()) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                        /*AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                         //saving the theme to preference
                         prefEditor.putBoolean(getString(R.string.pref_theme), false);
-                        prefEditor.apply();
+                        prefEditor.apply();*/
+                        Toast.makeText(this, "un-checked!", Toast.LENGTH_SHORT).show();
                     }
                 });
                 break;
@@ -230,6 +224,7 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
     }
 
     public void loadAd() {
+        Log.d("HOME_SCREEN", "loadAd: fun called");
         AdRequest adRequest = new AdRequest.Builder().build();
 
         InterstitialAd.load(HomeScreen.this, "ca-app-pub-3940256099942544/1033173712", adRequest, new InterstitialAdLoadCallback() {
@@ -237,12 +232,14 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
             public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                 super.onAdLoaded(interstitialAd);
                 mInterstitialAd = interstitialAd;
+                Log.d("HOME_SCREEN", "onAdLoaded: called");
             }
 
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 super.onAdFailedToLoad(loadAdError);
                 mInterstitialAd = null;
+                Log.d("HOME_SCREEN", "onAdFailedToLoad: called");
             }
         });
     }
@@ -258,11 +255,9 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
                     super.onAdDismissedFullScreenContent();
 
                     mInterstitialAd = null;
-
                     //calling this intent in same activity so that it can refresh the activity and history recyclerview values can be updated
                     Intent intent = new Intent(HomeScreen.this, HomeScreen.class);
                     startActivity(intent);
-
                 }
 
                 //this prevents ad from showing it second time
