@@ -52,11 +52,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/custom_border"
-                android:backgroundTint="@color/white"
                 android:gravity="start"
                 android:inputType="textMultiLine"
                 android:minLines="8"
-                android:textColor="@color/black"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="@dimen/_14ssp"/>
 
         </com.google.android.material.textfield.TextInputLayout>
