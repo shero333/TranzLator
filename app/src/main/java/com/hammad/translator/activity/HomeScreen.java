@@ -8,7 +8,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -208,7 +207,7 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
     }
 
     public void privacyPolicy() {
-        Uri uri = Uri.parse("https://www.google.com");
+        Uri uri = Uri.parse("https://risibleapps.blogspot.com/2022/02/privacy-policy-at-risibleapps-we.html");
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(intent);
     }
@@ -219,22 +218,31 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
     }
 
     public void loadAd() {
-        Log.d("HOME_SCREEN", "loadAd: fun called");
+
+       String interstitialAdId="";
+       if(BuildConfig.DEBUG)
+       {
+           interstitialAdId="ca-app-pub-3940256099942544/1033173712";
+           Log.i("INTER_AD_ID", "if called: "+interstitialAdId);
+       }
+       else {
+           interstitialAdId=getString(R.string.interstitial_ad_id);
+           Log.i("INTER_AD_ID", "else called: "+interstitialAdId);
+       }
+
         AdRequest adRequest = new AdRequest.Builder().build();
 
-        InterstitialAd.load(HomeScreen.this, "ca-app-pub-3940256099942544/1033173712", adRequest, new InterstitialAdLoadCallback() {
+        InterstitialAd.load(HomeScreen.this, interstitialAdId, adRequest, new InterstitialAdLoadCallback() {
             @Override
             public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                 super.onAdLoaded(interstitialAd);
                 mInterstitialAd = interstitialAd;
-                Log.d("HOME_SCREEN", "onAdLoaded: called");
             }
 
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 super.onAdFailedToLoad(loadAdError);
                 mInterstitialAd = null;
-                Log.d("HOME_SCREEN", "onAdFailedToLoad: called");
             }
         });
     }
@@ -281,5 +289,11 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
         //assigning the null value to interstitial ad to avoid running it in background which is a violation of AdMob policies
         mInterstitialAd = null;
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mInterstitialAd = null;
+        super.onDestroy();
     }
 }

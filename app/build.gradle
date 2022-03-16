@@ -71,8 +71,6 @@ dependencies {
     implementation 'com.android.volley:volley:1.2.1'
 
     //google AdMob dependency
-
-
     implementation 'com.google.android.gms:play-services-ads:19.7.0'
 
     testImplementation 'junit:junit:'

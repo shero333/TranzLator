@@ -58,6 +58,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
 import com.google.cloud.translate.Translation;
+import com.hammad.translator.BuildConfig;
 import com.hammad.translator.R;
 import com.hammad.translator.entities.TranslatedDataEntity;
 import com.hammad.translator.activity.TranslationFullScreen;
@@ -119,7 +120,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     private AdRequest adRequest;
 
     //adaptive banner ad unit id
-    String adUnitId="ca-app-pub-3940256099942544/6300978111";
+    String adUnitId=""/*getString(R.string.banner_ad_id)*//*"ca-app-pub-3940256099942544/6300978111"*/;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -129,6 +130,17 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         MobileAds.initialize(requireContext(), initializationStatus -> {});
 
         adRequest= new AdRequest.Builder().build();
+
+        //cheking whether app is running in release/debug version
+        if(BuildConfig.DEBUG)
+        {
+            adUnitId="ca-app-pub-3940256099942544/6300978111";
+            Log.i("FRAG_TRANS_AD_ID", "if called: "+adUnitId);
+        }
+        else{
+            adUnitId=getString(R.string.banner_ad_id);
+            Log.i("FRAG_TRANS_AD_ID", "else called: "+adUnitId);
+        }
     }
 
     @Nullable

@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -38,13 +39,13 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.hammad.translator.BuildConfig;
 import com.hammad.translator.R;
 import com.hammad.translator.adapter.DictionaryAdapter;
 import com.hammad.translator.model.DictionaryModel;
 import com.hammad.translator.volleyLibrary.VolleySingleton;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public class DictionaryFragment extends Fragment {
     private AdRequest adRequest;
 
     //adaptive banner ad unit id
-    String adUnitId="ca-app-pub-3940256099942544/6300978111";
+    String adUnitId=""/*getString(R.string.banner_ad_id)*//*"ca-app-pub-3940256099942544/6300978111"*/;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,6 +83,17 @@ public class DictionaryFragment extends Fragment {
         MobileAds.initialize(requireContext(), initializationStatus -> {});
 
         adRequest= new AdRequest.Builder().build();
+
+        //checking whether app is running in release/debug version
+        if(BuildConfig.DEBUG)
+        {
+            adUnitId="ca-app-pub-3940256099942544/6300978111";
+            Log.i("FRAG_DICT_AD_ID", "if called: "+adUnitId);
+        }
+        else{
+            adUnitId=getString(R.string.banner_ad_id);
+            Log.i("FRAG_DICT_AD_ID", "else called: "+adUnitId);
+        }
     }
 
     @Nullable
@@ -219,24 +231,55 @@ public class DictionaryFragment extends Fragment {
                 */
                 if(phoneticJsonArray.length() >0)
                 {
-                    JSONObject phoneticJsonObject = phoneticJsonArray.getJSONObject(0);
-
-                    //setting the phonetic text to textview
-                    textViewPhonetic.setText(phoneticJsonObject.getString("text"));
-
-                    imageViewSpeech.setOnClickListener(v ->
+                    String phoneticText="",audioUrl="";
+                    for (int i=0;i< phoneticJsonArray.length(); i++)
                     {
-                        try {
-                            //setting the phonetic audio to media play
-                            playPhoneticAudio(phoneticJsonObject.getString("audio"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    });
+                        JSONObject phoneticJsonObject = phoneticJsonArray.getJSONObject(i);
 
-                    //setting the views to visible here
-                    textViewPhonetic.setVisibility(View.VISIBLE);
-                    imageViewSpeech.setVisibility(View.VISIBLE);
+                        if(phoneticJsonObject.has("text") && phoneticJsonObject.has("audio"))
+                        {
+                            if(phoneticJsonObject.getString("text").length() != 0 && phoneticJsonObject.getString("audio").length() != 0)
+                            {
+                                phoneticText=phoneticJsonObject.getString("text");
+                                audioUrl=phoneticJsonObject.getString("audio");
+                            }
+                            else if(phoneticJsonObject.getString("text").length() != 0)
+                            {
+                                phoneticText=phoneticJsonObject.getString("text");
+                            }
+                        }
+                        else
+                        {
+                            textViewPhonetic.setVisibility(View.GONE);
+                            imageViewSpeech.setVisibility(View.GONE);
+                        }
+
+                        //setting the views to visible here
+                        textViewPhonetic.setVisibility(View.VISIBLE);
+                        imageViewSpeech.setVisibility(View.VISIBLE);
+
+                        //setting the phonetic text to textview
+                        if(phoneticText.length() != 0)
+                        {
+                            textViewPhonetic.setText(phoneticText);
+                        }
+                        else if(phoneticText.length() == 0){
+                            textViewPhonetic.setVisibility(View.GONE);
+                        }
+
+                        if(audioUrl.length() !=0 )
+                        {
+                            String finalAudioUrl = audioUrl;
+                            imageViewSpeech.setOnClickListener(v ->
+                            {
+                                playPhoneticAudio(finalAudioUrl);
+                            });
+                        }
+                        else{
+                            imageViewSpeech.setVisibility(View.GONE);
+                        }
+
+                    }
                 }
                 else
                 {
@@ -262,7 +305,13 @@ public class DictionaryFragment extends Fragment {
 
                         //objects in JSON 'definitions' array
                         String definition = definitionsJsonObject.getString("definition").trim();
-                        String example = definitionsJsonObject.getString("example").trim();
+
+                        String example ="";
+
+                        if(definitionsJsonObject.has("example"))
+                        {
+                            example=definitionsJsonObject.getString("example").trim();
+                        }
 
                         //sub array(inner array) in JSON Array 'definitions'
                         JSONArray synonymsJsonArray = definitionsJsonObject.getJSONArray("synonyms");
@@ -326,7 +375,7 @@ public class DictionaryFragment extends Fragment {
             MediaPlayer mediaPlayer = new MediaPlayer();
 
             try {
-                mediaPlayer.setDataSource("https:" + audioUri);
+                mediaPlayer.setDataSource(/*"https:" +*/ audioUri);
                 mediaPlayer.prepare();
                 mediaPlayer.start();
             } catch (Exception ex) {

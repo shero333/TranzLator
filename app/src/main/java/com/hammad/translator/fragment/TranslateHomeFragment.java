@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +36,7 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.textview.MaterialTextView;
+import com.hammad.translator.BuildConfig;
 import com.hammad.translator.R;
 import com.hammad.translator.entities.TranslatedDataEntity;
 import com.hammad.translator.adapter.TranslationHistoryAdapter;
@@ -83,7 +85,7 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     private AdRequest adRequest;
 
     //adaptive banner ad unit id
-    String adUnitId="ca-app-pub-3940256099942544/6300978111";
+    String adUnitId=""/*getString(R.string.banner_ad_id)*//*"ca-app-pub-3940256099942544/6300978111"*/;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,6 +95,17 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         MobileAds.initialize(requireContext(), initializationStatus -> {});
 
          adRequest= new AdRequest.Builder().build();
+
+         //checking whether app is running in release/debug version
+        if(BuildConfig.DEBUG)
+        {
+            adUnitId="ca-app-pub-3940256099942544/6300978111";
+            Log.i("FRAG_TRANS_HOME_AD_ID", "if called: "+adUnitId);
+        }
+        else {
+            adUnitId=getString(R.string.banner_ad_id);
+            Log.i("FRAG_TRANS_HOME_AD_ID", "else called: "+adUnitId);
+        }
     }
 
     @Nullable

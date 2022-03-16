@@ -9,8 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.hammad.translator.model.DictionaryModel;
 import com.hammad.translator.R;
+import com.hammad.translator.model.DictionaryModel;
 
 import java.util.List;
 
@@ -43,7 +43,17 @@ public class DictionaryAdapter extends RecyclerView.Adapter<DictionaryAdapter.My
 
         holder.textViewPartOfSpeech.setText(modelList.get(position).getPartOfSpeech().trim());
         holder.textViewDefinition.setText(modelList.get(position).getDefinition().trim());
-        holder.textViewExample.setText(modelList.get(position).getExample().trim());
+
+        if(modelList.get(position).getExample().trim().length() !=0)
+        {
+            holder.textViewExample.setText(modelList.get(position).getExample().trim());
+        }
+        else
+        {
+            holder.textViewExample.setVisibility(View.GONE);
+            holder.textViewExample2.setVisibility(View.GONE);
+        }
+
 
         //checking if any synonyms exist in list
         if (modelList.get(position).synonyms.size() > 0) {

@@ -22,6 +22,7 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.hammad.translator.BuildConfig;
 import com.hammad.translator.R;
 
 public class SplashScreen extends AppCompatActivity {
@@ -87,9 +88,22 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     public void loadAd() {
+
+        //checking whether app is running on release/debug version
+        String interstitialAdId="";
+        if(BuildConfig.DEBUG)
+        {
+            interstitialAdId="ca-app-pub-3940256099942544/1033173712";
+            Log.i("INTER_AD_ID", "if called: "+interstitialAdId);
+        }
+        else {
+            interstitialAdId=getString(R.string.interstitial_ad_id);
+            Log.i("INTER_AD_ID", "else called: "+interstitialAdId);
+        }
+
         AdRequest adRequest = new AdRequest.Builder().build();
 
-        InterstitialAd.load(this, "ca-app-pub-3940256099942544/1033173712", adRequest, new InterstitialAdLoadCallback() {
+        InterstitialAd.load(this, interstitialAdId, adRequest, new InterstitialAdLoadCallback() {
             @Override
             public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                 super.onAdLoaded(interstitialAd);

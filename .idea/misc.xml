@@ -46,6 +46,15 @@
         <entry key="..\:/Android_Pratice/TranzLator/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.1" />
         <entry key="..\:/Android_Pratice/TranzLator/app/src/main/res/menu/navigation_drawer_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Android_Pratice/TranzLator/app/src/main/res/menu/textview_translation_menu.xml" value="0.20416666666666666" />
+        <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/drawable/ic_dark_mode.xml" value="0.15885416666666666" />
+        <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/layout/activity_home_screen.xml" value="0.27291666666666664" />
+        <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/layout/activity_translation_full_screen.xml" value="0.27291666666666664" />
+        <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/layout/ad_unified.xml" value="0.22" />
+        <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/layout/fragment_translate_home.xml" value="0.27291666666666664" />
+        <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/layout/fragment_translation.xml" value="0.27291666666666664" />
+        <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/layout/layout_bottom_navigation.xml" value="0.33" />
+        <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.27291666666666664" />
+        <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/menu/navigation_drawer_menu.xml" value="0.14270833333333333" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable-v24/ic_mic_translation.xml" value="0.2712962962962963" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/circular_border.xml" value="0.2361111111111111" />
         <entry key="..\:/TranslatorAppAndroid/app/src/main/res/drawable/custom_border.xml" value="0.24722222222222223" />

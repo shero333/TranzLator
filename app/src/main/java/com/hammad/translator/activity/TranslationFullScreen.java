@@ -1,10 +1,8 @@
 package com.hammad.translator.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -12,6 +10,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
@@ -23,6 +23,7 @@ import com.google.android.gms.ads.formats.MediaView;
 import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
+import com.hammad.translator.BuildConfig;
 import com.hammad.translator.R;
 
 public class TranslationFullScreen extends AppCompatActivity {
@@ -30,7 +31,7 @@ public class TranslationFullScreen extends AppCompatActivity {
     ImageView imageViewClose;
     TextView textViewSourceText, textViewTranslatedText;
 
-    private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-3940256099942544/2247696110";
+    private String nativeAdId = ""; /*getString(R.string.native_ad_id)*//*"ca-app-pub-3940256099942544/2247696110"*/;
     private UnifiedNativeAd nativeAd;
 
 
@@ -68,7 +69,18 @@ public class TranslationFullScreen extends AppCompatActivity {
 
     private void refreshAd() {
 
-        AdLoader.Builder builder = new AdLoader.Builder(this, ADMOB_AD_UNIT_ID);
+        //checking whether the app is running in release or debug version
+        if(BuildConfig.DEBUG)
+        {
+            nativeAdId="ca-app-pub-3940256099942544/2247696110";
+            Log.i("NATIVE_AD_ID: ", "if called: "+nativeAdId);
+        }
+        else {
+            nativeAdId=getString(R.string.native_ad_id);
+            Log.i("NATIVE_AD_ID: ", "else called: "+nativeAdId);
+        }
+
+        AdLoader.Builder builder = new AdLoader.Builder(this, nativeAdId);
 
         // OnUnifiedNativeAdLoadedListener implementation.
         builder.forUnifiedNativeAd(
@@ -183,7 +195,6 @@ public class TranslationFullScreen extends AppCompatActivity {
             ((TextView) adView.getAdvertiserView()).setText(nativeAd.getAdvertiser());
             adView.getAdvertiserView().setVisibility(View.VISIBLE);
         }
-
 
         // This method tells the Google Mobile Ads SDK that you have finished populating your
         // native ad view with this native ad.
