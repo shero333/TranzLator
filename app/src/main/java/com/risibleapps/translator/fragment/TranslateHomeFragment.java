@@ -373,6 +373,7 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
 
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                Log.i("FAILED_AD", "Translate Home Frag banner failed ad: "+loadAdError.getCode());
                 super.onAdFailedToLoad(loadAdError);
             }
 

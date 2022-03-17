@@ -475,6 +475,7 @@ public class DictionaryFragment extends Fragment {
 
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                Log.i("FAILED_AD", "Dictionary Home Frag banner failed ad: "+loadAdError.getCode());
                 super.onAdFailedToLoad(loadAdError);
             }
 

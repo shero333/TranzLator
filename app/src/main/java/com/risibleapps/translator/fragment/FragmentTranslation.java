@@ -788,6 +788,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                Log.i("FAILED_AD", "Translation Frag banner failed ad: "+loadAdError.getCode());
                 super.onAdFailedToLoad(loadAdError);
             }
 

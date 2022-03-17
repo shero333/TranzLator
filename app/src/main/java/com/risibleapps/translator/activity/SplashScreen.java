@@ -54,7 +54,12 @@ public class SplashScreen extends AppCompatActivity {
         //getting the theme saved value from preference
         isDarkModeEnabled=preference.getBoolean(getString(R.string.pref_theme),false);
 
-        if(isDarkModeEnabled)
+        if(!isDarkModeEnabled)
+        {
+            prefCounter++;
+            AppCompatDelegate.setDefaultNightMode((AppCompatDelegate.MODE_NIGHT_NO));
+        }
+        else if(isDarkModeEnabled)
         {
             prefCounter++;
             AppCompatDelegate.setDefaultNightMode((AppCompatDelegate.MODE_NIGHT_YES));
@@ -113,6 +118,7 @@ public class SplashScreen extends AppCompatActivity {
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 super.onAdFailedToLoad(loadAdError);
+                Log.i("FAILED_AD", "splash interstitial failed ad: "+loadAdError.getCode());
                 mInterstitialAd = null;
             }
         });

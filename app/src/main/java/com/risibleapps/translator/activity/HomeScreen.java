@@ -242,6 +242,7 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 super.onAdFailedToLoad(loadAdError);
+                Log.i("FAILED_AD", "home interstitial ad failed: "+loadAdError.getCode());
                 mInterstitialAd = null;
             }
         });

@@ -117,6 +117,7 @@ public class TranslationFullScreen extends AppCompatActivity {
             @Override
             public void onAdFailedToLoad(LoadAdError loadAdError) {
                 super.onAdFailedToLoad(loadAdError);
+                Log.i("FAILED_AD", "Translation Full Screen native ad failed: "+loadAdError.getCode());
             }
         }).build();
 
