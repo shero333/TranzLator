@@ -31,7 +31,7 @@ public class TranslationFullScreen extends AppCompatActivity {
     ImageView imageViewClose;
     TextView textViewSourceText, textViewTranslatedText;
 
-    private String nativeAdId = ""; /*getString(R.string.native_ad_id)*//*"ca-app-pub-3940256099942544/2247696110"*/;
+    private String nativeAdId = "";
     private UnifiedNativeAd nativeAd;
 
 
