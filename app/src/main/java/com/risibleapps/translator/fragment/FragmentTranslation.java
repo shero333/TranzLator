@@ -51,7 +51,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -60,10 +60,11 @@ import com.google.cloud.translate.TranslateOptions;
 import com.google.cloud.translate.Translation;
 import com.risibleapps.translator.BuildConfig;
 import com.risibleapps.translator.R;
-import com.risibleapps.translator.entities.TranslatedDataEntity;
-import com.risibleapps.translator.activity.TranslationFullScreen;
 import com.risibleapps.translator.TranslationRoomDB;
+import com.risibleapps.translator.activity.TranslationFullScreen;
 import com.risibleapps.translator.activity.TranslationLanguageList;
+import com.risibleapps.translator.ads.AdHelperClass;
+import com.risibleapps.translator.entities.TranslatedDataEntity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -110,36 +111,30 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
     //progress bar
     ProgressBar progressBar;
-
-    //banner AdView
-    private AdView mAdView;
-
     //frame layout which holds the adaptive banner ad
     FrameLayout bannerFrameLayout;
-
-    private AdRequest adRequest;
-
     //adaptive banner ad unit id
-    String adUnitId=""/*getString(R.string.banner_ad_id)*//*"ca-app-pub-3940256099942544/6300978111"*/;
+    String adUnitId = "";
+    //variable for controlling the ad on translation
+    int translateAdCount = 0;
+    //banner AdView
+    private AdView mAdView;
+    private AdRequest adRequest;
+    private InterstitialAd mInterstitialAd;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //initialize AdMob
-        MobileAds.initialize(requireContext(), initializationStatus -> {});
-
-        adRequest= new AdRequest.Builder().build();
+        adRequest = new AdRequest.Builder().build();
 
         //cheking whether app is running in release/debug version
-        if(BuildConfig.DEBUG)
-        {
-            adUnitId="ca-app-pub-3940256099942544/6300978111";
-            Log.i("FRAG_TRANS_AD_ID", "if called: "+adUnitId);
-        }
-        else{
-            adUnitId=getString(R.string.banner_ad_id);
-            Log.i("FRAG_TRANS_AD_ID", "else called: "+adUnitId);
+        if (BuildConfig.DEBUG) {
+            adUnitId = "ca-app-pub-3940256099942544/6300978111";
+            Log.i("FRAG_TRANS_AD_ID", "if called: " + adUnitId);
+        } else {
+            adUnitId = getString(R.string.banner_ad_id);
+            Log.i("FRAG_TRANS_AD_ID", "else called: " + adUnitId);
         }
     }
 
@@ -148,57 +143,16 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_translation, container, false);
 
-        //initialize preference
-        mPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
-        mEditor = mPreference.edit();
-
-        //initializing material textview which are used to select languages from & to translate
-        materialTxtViewLang1 = view.findViewById(R.id.lang_selector_1);
-        materialTxtViewLang2 = view.findViewById(R.id.lang_selector_2);
-
-        //initializing swap language image view
-        imageViewSwapLang = view.findViewById(R.id.img_btn_swapping);
-
-        //loading animation
-        animation = AnimationUtils.loadAnimation(getActivity(), R.anim.img_button_animation);
-
-        //input text initialization
-        inputEditText = view.findViewById(R.id.edittext_input_layout_translation);
-        //setting the ime type to action done with multiline edit text
-        inputEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        inputEditText.setRawInputType(InputType.TYPE_CLASS_TEXT);
-
-        //image view related to edit text initialization
-        editTextImageSpeak = view.findViewById(R.id.edittext_imageview_speak_translation);
-
-        //text view translated initialization
-        textViewTranslation = view.findViewById(R.id.textview_translated);
-
-        //image views related to text view translated initialization
-        textViewImageVolumeUp = view.findViewById(R.id.textview_imageview_volume_up);
-        textViewImageMoreOptions = view.findViewById(R.id.textview_imageview_more);
-        imageViewCopyContent = view.findViewById(R.id.textview_imageview_copy_content);
-
-        //initialize progressbar
-        progressBar=view.findViewById(R.id.progress_circular);
-        progressBar.bringToFront();
-
-        //instantiating banner frame layout
-        bannerFrameLayout=view.findViewById(R.id.translate_banner);
-        //initializing adview
-        mAdView=new AdView(requireContext());
-        mAdView.setAdUnitId(adUnitId);
-        //setting the adview to frame layout
-        bannerFrameLayout.addView(mAdView);
-
-        //setting the ad size for adaptive banner ad
-        AdSize adSize = getAdSize();
-        mAdView.setAdSize(adSize);
+        //initializing views
+        initializeViews(view);
 
         //loading ad into add view
-        mAdView.loadAd(adRequest);
+        // mAdView.loadAd(adRequest);
         //calling the ad listener here
-        adListener();
+        //adListener();
+
+        //loading intersitial ad
+        mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
 
         //getting the shared preferences values
         checkSharedPreferences();
@@ -225,8 +179,18 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         inputEditText.addTextChangedListener(textWatcher);
 
         //click listener for copy content
-        imageViewCopyContent.setOnClickListener(v ->
-                copyContent());
+        imageViewCopyContent.setOnClickListener(v -> AdHelperClass.showInterstitialAd(requireActivity(), new AdHelperClass.AdCloseListener() {
+            @Override
+            public void onAdClosed() {
+
+                copyContent();
+
+                //loading the ad again
+                if (mInterstitialAd == null) {
+                    AdHelperClass.loadInterstitialAd(requireContext());
+                }
+            }
+        }));
 
         //gets data from bundles if any
         Bundle bundle = getArguments();
@@ -236,11 +200,10 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
             the outer IF condition checks whether there is any data preset in bundle.
             If data exists, then execute the function based on condition which is true
         */
-        if(bundle != null) {
+        if (bundle != null) {
             if (bundle.getBoolean("micIsPressed") == true) {
                 isMicButtonPressed();
-            }
-            else if (bundle.getString("srcLang").length() > 0) {
+            } else if (bundle.getString("srcLang").length() > 0) {
                 checkBundleData(bundle);
             }
         }
@@ -252,6 +215,56 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         });
 
         return view;
+    }
+
+    private void initializeViews(View view) {
+        //initialize preference
+        mPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mEditor = mPreference.edit();
+
+        //initializing material textview which are used to select languages from & to translate
+        materialTxtViewLang1 = view.findViewById(R.id.lang_selector_1);
+        materialTxtViewLang2 = view.findViewById(R.id.lang_selector_2);
+
+        //initializing swap language image view
+        imageViewSwapLang = view.findViewById(R.id.img_btn_swapping);
+
+        //loading animation
+        animation = AnimationUtils.loadAnimation(getActivity(), R.anim.img_button_animation);
+
+        //input text initialization
+        inputEditText = view.findViewById(R.id.edittext_input_layout_translation);
+
+        //setting the ime type to action done with multiline edit text
+        inputEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        inputEditText.setRawInputType(InputType.TYPE_CLASS_TEXT);
+
+        //image view related to edit text initialization
+        editTextImageSpeak = view.findViewById(R.id.edittext_imageview_speak_translation);
+
+        //text view translated initialization
+        textViewTranslation = view.findViewById(R.id.textview_translated);
+
+        //image views related to text view translated initialization
+        textViewImageVolumeUp = view.findViewById(R.id.textview_imageview_volume_up);
+        textViewImageMoreOptions = view.findViewById(R.id.textview_imageview_more);
+        imageViewCopyContent = view.findViewById(R.id.textview_imageview_copy_content);
+
+        //initialize progressbar
+        progressBar = view.findViewById(R.id.progress_circular);
+        progressBar.bringToFront();
+
+        //instantiating banner frame layout
+        bannerFrameLayout = view.findViewById(R.id.translate_banner);
+        //initializing adview
+        mAdView = new AdView(requireContext());
+        mAdView.setAdUnitId(adUnitId);
+        //setting the adview to frame layout
+        bannerFrameLayout.addView(mAdView);
+
+        //setting the ad size for adaptive banner ad
+        AdSize adSize = getAdSize();
+        mAdView.setAdSize(adSize);
     }
 
     @Override
@@ -276,10 +289,9 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     }
 
     public TextWatcher textWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-        }
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -301,14 +313,42 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
                         //condition to check source & target languages
                         if (sourceLangCode.equals(targetLangCode)) {
                             Toast.makeText(requireContext(), "Please select different source & target Translation languages", Toast.LENGTH_SHORT).show();
-                        } else {
-                            TranslationAsyncTask asyncTask=new TranslationAsyncTask(FragmentTranslation.this);
-                            asyncTask.execute(s.toString(), sourceLangCode, targetLangCode);
+                        }
+                        else {
+                            //incrementing the value
+                            translateAdCount++;
 
-                            //function for checking the TTS (text to speech) of language
-                            textToSpeechInitialization();
+                            //saving the incremeted value in preference
+                            mEditor.putInt(getString(R.string.translation_ad_count), translateAdCount);
 
-                            textViewImageVolumeUp.setOnClickListener(view -> speech());
+                            //ad will be displayed after every two translation clicks
+                            if (translateAdCount == 0 || translateAdCount == 3) {
+                                //displaying ad before translation
+                                AdHelperClass.showInterstitialAd(requireActivity(), new AdHelperClass.AdCloseListener() {
+                                    @Override
+                                    public void onAdClosed() {
+                                        //function for calling the text translation through Async Task
+                                        transText(s);
+
+                                        //loading the ad again
+                                        if (mInterstitialAd == null) {
+                                            AdHelperClass.loadInterstitialAd(requireContext());
+                                        }
+                                    }
+                                });
+                            }
+                            else {
+                                //function for calling the text translation through Async Task
+                                transText(s);
+
+                                //setting the value to 1, when preference count reaches 3.
+                                if (translateAdCount > 3) {
+                                    mEditor.putInt(getString(R.string.translation_ad_count), 1).apply();
+
+                                    //setting the current count to 1 as well
+                                    translateAdCount = 1;
+                                }
+                            }
                         }
 
                     } else {
@@ -330,10 +370,18 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         }
 
         @Override
-        public void afterTextChanged(Editable s) {
-
-        }
+        public void afterTextChanged(Editable s) {}
     };
+
+    private void transText(CharSequence s){
+        TranslationAsyncTask asyncTask=new TranslationAsyncTask(FragmentTranslation.this);
+        asyncTask.execute(s.toString(), sourceLangCode, targetLangCode);
+
+        //function for checking the TTS (text to speech) of language
+        textToSpeechInitialization();
+
+        textViewImageVolumeUp.setOnClickListener(view -> speech());
+    }
 
     public boolean checkInternetConnection() {
         boolean isConnected;
@@ -373,6 +421,33 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     }
 
     public void languageSelection() {
+
+        /*//showing interstitial ad on language selection
+        AdHelperClass.showInterstitialAd(requireActivity(), new AdHelperClass.AdCloseListener() {
+            @Override
+            public void onAdClosed() {
+
+                //click listener for lang 1
+                materialTxtViewLang1.setOnClickListener(v -> {
+                    Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
+                    intent.putExtra("value", "Lang1");
+                    startActivity(intent);
+                });
+
+                //click listener for lang 2
+                materialTxtViewLang2.setOnClickListener(v -> {
+                    Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
+                    intent.putExtra("value", "Lang2");
+                    startActivity(intent);
+                });
+
+                if(mInterstitialAd == null){
+                    AdHelperClass.loadInterstitialAd(requireContext());
+                }
+
+            }
+        });*/
+
         //click listener for lang 1
         materialTxtViewLang1.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
@@ -393,6 +468,9 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         sourceLangCode = mPreference.getString(getString(R.string.lang_one_code), "en");
         targetLang = mPreference.getString(getString(R.string.lang_two), "Urdu");
         targetLangCode = mPreference.getString(getString(R.string.lang_two_code), "ur");
+
+        //getting the translation ad count
+        translateAdCount = mPreference.getInt(getString(R.string.translation_ad_count), -1);
 
         materialTxtViewLang1.setText(sourceLang);
 
@@ -415,32 +493,40 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     }
 
     @Override
-    public void onDestroy() {
-        //destroy adview for banner ad with activity onDestroy()
-        if(mAdView != null)
-        {
-            mAdView.destroy();
-        }
-        TranslationLanguageList.unregisterPreference(getActivity(), this);
-        super.onDestroy();
-    }
-
-    /* Called when leaving the activity */
-    @Override
-    public void onPause() {
-        if (mAdView != null) {
-            mAdView.pause();
-        }
-        super.onPause();
-    }
-
-    /* Called when returning to the activity */
-    @Override
     public void onResume() {
         super.onResume();
         if (mAdView != null) {
             mAdView.resume();
         }
+    }
+
+    @Override
+    public void onPause() {
+        if (mAdView != null) {
+            mAdView.pause();
+        }
+
+        mInterstitialAd = null;
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        mInterstitialAd = null;
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        //destroy adview for banner ad with activity onDestroy()
+        if (mAdView != null) {
+            mAdView.destroy();
+        }
+
+        mInterstitialAd = null;
+
+        TranslationLanguageList.unregisterPreference(getActivity(), this);
+        super.onDestroy();
     }
 
     public void copyContent() {
@@ -716,70 +802,12 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
     }
 
-    private static class TranslationAsyncTask extends AsyncTask<String,Void,String> {
-
-        private WeakReference<FragmentTranslation> translationWeakReference;
-
-        public TranslationAsyncTask(FragmentTranslation translation) {
-            this.translationWeakReference = new WeakReference<>(translation);
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            //weak reference to the context of this function
-            FragmentTranslation fragment=translationWeakReference.get();
-            if(fragment==null || fragment.getActivity().isFinishing())
-            {
-                return;
-            }
-            fragment.progressBar.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            FragmentTranslation fragment=translationWeakReference.get();
-            if(fragment==null || fragment.getActivity().isFinishing()) {
-
-            }
-            return fragment.translate(strings[0],strings[1],strings[2]);
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-
-            //weak reference to the context of this function
-            FragmentTranslation fragment=translationWeakReference.get();
-            if(fragment==null || fragment.getActivity().isFinishing())
-            {
-                return;
-            }
-
-            //setting the progress bar visibility to gone
-            fragment.progressBar.setVisibility(View.GONE);
-
-            //setting the resturned text to textview
-            fragment.textViewTranslation.setText(s);
-
-            //setting the visibility of textview where translated text is set
-            fragment.textViewTranslation.setVisibility(View.VISIBLE);
-
-            fragment.imageViewCopyContent.setVisibility(View.VISIBLE);
-            fragment.textViewImageMoreOptions.setVisibility(View.VISIBLE);
-
-            //saving data to database here because data is saved to DB when both iput edit tex and text view translation have length greater than zero
-            fragment.saveToDatabase();
-        }
-    }
-
     private void hideSoftInputKeyboard(View view) {
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    private void adListener()
-    {
+    private void adListener() {
         mAdView.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {
@@ -788,7 +816,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                Log.i("FAILED_AD", "Translation Frag banner failed ad: "+loadAdError.getCode());
+                Log.i("FAILED_AD", "Translation Frag banner failed ad: " + loadAdError.getCode());
                 super.onAdFailedToLoad(loadAdError);
             }
 
@@ -827,6 +855,61 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
         // Get adaptive ad size and return for setting on the ad view.
         return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(requireContext(), adWidth);
+    }
+
+    private static class TranslationAsyncTask extends AsyncTask<String, Void, String> {
+
+        private WeakReference<FragmentTranslation> translationWeakReference;
+
+        public TranslationAsyncTask(FragmentTranslation translation) {
+            this.translationWeakReference = new WeakReference<>(translation);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //weak reference to the context of this function
+            FragmentTranslation fragment = translationWeakReference.get();
+            if (fragment == null || fragment.getActivity().isFinishing()) {
+                return;
+            }
+            fragment.progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            FragmentTranslation fragment = translationWeakReference.get();
+            if (fragment == null || fragment.getActivity().isFinishing()) {
+
+            }
+            return fragment.translate(strings[0], strings[1], strings[2]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            //weak reference to the context of this function
+            FragmentTranslation fragment = translationWeakReference.get();
+            if (fragment == null || fragment.getActivity().isFinishing()) {
+                return;
+            }
+
+            //setting the progress bar visibility to gone
+            fragment.progressBar.setVisibility(View.GONE);
+
+            //setting the resturned text to textview
+            fragment.textViewTranslation.setText(s);
+
+            //setting the visibility of textview where translated text is set
+            fragment.textViewTranslation.setVisibility(View.VISIBLE);
+
+            fragment.imageViewCopyContent.setVisibility(View.VISIBLE);
+            fragment.textViewImageMoreOptions.setVisibility(View.VISIBLE);
+
+            //saving data to database here because data is saved to DB when both iput edit tex and text view translation have length greater than zero
+            fragment.saveToDatabase();
+        }
     }
 
 }

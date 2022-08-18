@@ -85,7 +85,7 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     private AdRequest adRequest;
 
     //adaptive banner ad unit id
-    String adUnitId=""/*getString(R.string.banner_ad_id)*//*"ca-app-pub-3940256099942544/6300978111"*/;
+    String adUnitId="";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

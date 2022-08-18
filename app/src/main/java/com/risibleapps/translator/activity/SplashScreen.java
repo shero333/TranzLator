@@ -5,25 +5,18 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
-import com.risibleapps.translator.BuildConfig;
 import com.risibleapps.translator.R;
+import com.risibleapps.translator.ads.AdHelperClass;
 
 public class SplashScreen extends AppCompatActivity {
 
@@ -54,18 +47,42 @@ public class SplashScreen extends AppCompatActivity {
         //getting the theme saved value from preference
         isDarkModeEnabled=preference.getBoolean(getString(R.string.pref_theme),false);
 
-        if(!isDarkModeEnabled)
-        {
+        if(!isDarkModeEnabled) {
+
             prefCounter++;
             AppCompatDelegate.setDefaultNightMode((AppCompatDelegate.MODE_NIGHT_NO));
         }
-        else if(isDarkModeEnabled)
-        {
+        else if(isDarkModeEnabled) {
+
             prefCounter++;
             AppCompatDelegate.setDefaultNightMode((AppCompatDelegate.MODE_NIGHT_YES));
         }
 
         //initializing animations
+        setSplashAnimation();
+
+        if(prefCounter<=1) {
+
+            //loading the ads
+            mInterstitialAd = AdHelperClass.loadInterstitialAd(this);
+
+            //delaying the splash screen for 3.5 seconds
+            new Handler().postDelayed(() -> {
+
+                //showing the interstitial ad
+                AdHelperClass.showInterstitialAd(this, () -> {
+
+                    //moving to Home Screen
+                    Intent intent = new Intent(SplashScreen.this, HomeScreen.class);
+                    startActivity(intent);
+                    finish();
+                });
+
+            }, SPLASH_SCREEN);
+        }
+    }
+
+    private void setSplashAnimation(){
         topAnim = AnimationUtils.loadAnimation(this, R.anim.top_anim);
         bottomAnim = AnimationUtils.loadAnimation(this, R.anim.bottom_anim);
 
@@ -76,86 +93,6 @@ public class SplashScreen extends AppCompatActivity {
         //setting animations
         logoImageView.setAnimation(topAnim);
         sloganTextView.setAnimation(bottomAnim);
-
-        if(prefCounter<=1) {
-            //ads initialization
-            MobileAds.initialize(this, initializationStatus -> {
-            });
-
-            //loading the ads
-            loadAd();
-
-            //delaying the splash screen for 3.5 seconds
-            //loading the ad
-            new Handler().postDelayed(this::showAd, SPLASH_SCREEN);
-        }
-
-    }
-
-    public void loadAd() {
-
-        //checking whether app is running on release/debug version
-        String interstitialAdId="";
-        if(BuildConfig.DEBUG)
-        {
-            interstitialAdId="ca-app-pub-3940256099942544/1033173712";
-            Log.i("INTER_AD_ID", "if called: "+interstitialAdId);
-        }
-        else {
-            interstitialAdId=getString(R.string.interstitial_ad_id);
-            Log.i("INTER_AD_ID", "else called: "+interstitialAdId);
-        }
-
-        AdRequest adRequest = new AdRequest.Builder().build();
-
-        InterstitialAd.load(this, interstitialAdId, adRequest, new InterstitialAdLoadCallback() {
-            @Override
-            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                super.onAdLoaded(interstitialAd);
-                mInterstitialAd = interstitialAd;
-            }
-
-            @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                super.onAdFailedToLoad(loadAdError);
-                Log.i("FAILED_AD", "splash interstitial failed ad: "+loadAdError.getCode());
-                mInterstitialAd = null;
-            }
-        });
-    }
-
-    public void showAd() {
-        //checking if ad is loaded or not
-        if (mInterstitialAd != null) {
-            mInterstitialAd.show(SplashScreen.this);
-
-            mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                @Override
-                public void onAdDismissedFullScreenContent() {
-                    super.onAdDismissedFullScreenContent();
-
-                    mInterstitialAd = null;
-
-                    //moving to Home Screen
-                    Intent intent = new Intent(SplashScreen.this, HomeScreen.class);
-                    startActivity(intent);
-                    finish();
-                }
-
-                //this function make sure no ad is loaded for second time
-                @Override
-                public void onAdShowedFullScreenContent() {
-                    super.onAdShowedFullScreenContent();
-
-                    mInterstitialAd = null;
-                }
-            });
-        } else {
-            //if there is no internet connection, then no ad will be loaded and app will move onto Home Screen
-            Intent intent = new Intent(SplashScreen.this, HomeScreen.class);
-            startActivity(intent);
-            finish();
-        }
     }
 
     @Override
@@ -166,7 +103,6 @@ public class SplashScreen extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-
         mInterstitialAd = null;
         super.onDestroy();
     }
@@ -175,4 +111,5 @@ public class SplashScreen extends AppCompatActivity {
         preference = PreferenceManager.getDefaultSharedPreferences(this);
         prefEditor = preference.edit();
     }
+
 }

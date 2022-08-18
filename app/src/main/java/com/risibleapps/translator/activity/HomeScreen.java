@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Switch;
 
@@ -21,18 +20,14 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.risibleapps.translator.BuildConfig;
 import com.risibleapps.translator.R;
 import com.risibleapps.translator.TranslationRoomDB;
 import com.risibleapps.translator.adapter.TranslationHistoryAdapter;
+import com.risibleapps.translator.ads.AdHelperClass;
 import com.risibleapps.translator.entities.TranslatedDataEntity;
 
 import java.util.List;
@@ -73,12 +68,8 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
         //initializing preferences for Theme switching
         initializePreference();
 
-        //ads initialization
-        MobileAds.initialize(HomeScreen.this, initializationStatus -> {
-        });
-
-        //loading the Ad
-        loadAd();
+        //loading the interstitial ad
+        AdHelperClass.loadInterstitialAd(this);
 
         //code for menu button on top left side of toolbar
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
@@ -130,7 +121,6 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
                 if(isDarkModeEnabled)
                 {
                     modeSwitch.setChecked(true);
-                   /* AppCompatDelegate.setDefaultNightMode((AppCompatDelegate.MODE_NIGHT_YES));*/
                 }
 
                 modeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -190,7 +180,12 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
         TranslationHistoryAdapter translationHistoryAdapter = new TranslationHistoryAdapter(this, dataEntityList);
 
         //showing the ad
-        showAd();
+        AdHelperClass.showInterstitialAd(this, () -> {
+
+            //restarting the activity
+            Intent intent = new Intent(HomeScreen.this, HomeScreen.class);
+            startActivity(intent);
+        });
     }
 
     public void alertDialog() {
@@ -217,77 +212,14 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
         prefEditor = preference.edit();
     }
 
-    public void loadAd() {
-
-       String interstitialAdId="";
-       if(BuildConfig.DEBUG)
-       {
-           interstitialAdId="ca-app-pub-3940256099942544/1033173712";
-           Log.i("INTER_AD_ID", "if called: "+interstitialAdId);
-       }
-       else {
-           interstitialAdId=getString(R.string.interstitial_ad_id);
-           Log.i("INTER_AD_ID", "else called: "+interstitialAdId);
-       }
-
-        AdRequest adRequest = new AdRequest.Builder().build();
-
-        InterstitialAd.load(HomeScreen.this, interstitialAdId, adRequest, new InterstitialAdLoadCallback() {
-            @Override
-            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                super.onAdLoaded(interstitialAd);
-                mInterstitialAd = interstitialAd;
-            }
-
-            @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                super.onAdFailedToLoad(loadAdError);
-                Log.i("FAILED_AD", "home interstitial ad failed: "+loadAdError.getCode());
-                mInterstitialAd = null;
-            }
-        });
-    }
-
-    public void showAd() {
-        //checking if ad is loaded or not
-        if (mInterstitialAd != null) {
-            mInterstitialAd.show(HomeScreen.this);
-
-            mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                @Override
-                public void onAdDismissedFullScreenContent() {
-                    super.onAdDismissedFullScreenContent();
-
-                    mInterstitialAd = null;
-                    //calling this intent in same activity so that it can refresh the activity and history recyclerview values can be updated
-                    Intent intent = new Intent(HomeScreen.this, HomeScreen.class);
-                    startActivity(intent);
-                }
-
-                //this prevents ad from showing it second time
-                @Override
-                public void onAdShowedFullScreenContent() {
-                    super.onAdShowedFullScreenContent();
-                    mInterstitialAd = null;
-                }
-            });
-        } else {
-            //when there is no internet connection
-            Intent intent = new Intent(HomeScreen.this, HomeScreen.class);
-            startActivity(intent);
-        }
-    }
-
     @Override
     protected void onPause() {
         super.onPause();
-        //assigning the null value to interstitial ad to avoid running it in background which is a violation of AdMob policies
         mInterstitialAd = null;
     }
 
     @Override
     protected void onStop() {
-        //assigning the null value to interstitial ad to avoid running it in background which is a violation of AdMob policies
         mInterstitialAd = null;
         super.onStop();
     }
@@ -297,4 +229,5 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
         mInterstitialAd = null;
         super.onDestroy();
     }
+
 }
