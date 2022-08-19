@@ -46,6 +46,9 @@
         <entry key="..\:/Android_Pratice/TranzLator/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.1" />
         <entry key="..\:/Android_Pratice/TranzLator/app/src/main/res/menu/navigation_drawer_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Android_Pratice/TranzLator/app/src/main/res/menu/textview_translation_menu.xml" value="0.20416666666666666" />
+        <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/drawable/dialog_background.xml" value="0.1515" />
+        <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/drawable/drawable_button_blue.xml" value="0.1515" />
+        <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/drawable/drawable_button_red.xml" value="0.1515" />
         <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/drawable/ic_conversation.xml" value="0.23981481481481481" />
         <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/drawable/ic_dark_mode.xml" value="0.15885416666666666" />
         <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/drawable/ic_dictionary.xml" value="0.23981481481481481" />
@@ -53,8 +56,10 @@
         <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/layout/activity_home_screen.xml" value="0.27291666666666664" />
         <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/layout/activity_language_list.xml" value="0.27291666666666664" />
         <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/layout/activity_splash_screen.xml" value="0.27291666666666664" />
-        <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/layout/activity_translation_full_screen.xml" value="0.27291666666666664" />
+        <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/layout/activity_translation_full_screen.xml" value="0.25" />
         <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/layout/ad_unified.xml" value="0.22" />
+        <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/layout/ad_unified_dialog.xml" value="0.25" />
+        <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/layout/exit_dialog.xml" value="0.271875" />
         <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/layout/fragment_conversation.xml" value="0.27291666666666664" />
         <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/layout/fragment_dictionary.xml" value="0.2" />
         <entry key="..\:/Hammad/TranslatorAppAndroid/app/src/main/res/layout/fragment_translate_home.xml" value="0.27291666666666664" />

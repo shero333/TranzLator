@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.risibleapps.translator.BuildConfig;
@@ -18,6 +19,8 @@ import com.risibleapps.translator.application.App;
 public class AdHelperClass {
 
     static InterstitialAd mInterstitialAd;
+
+    static UnifiedNativeAd nativeAd;
 
     public interface AdCloseListener{
         void onAdClosed();
@@ -41,6 +44,7 @@ public class AdHelperClass {
             public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                 super.onAdLoaded(interstitialAd);
                 mInterstitialAd = interstitialAd;
+                Log.i("ADS", "interstitial ad loaded");
             }
 
             @Override
@@ -48,7 +52,7 @@ public class AdHelperClass {
                 super.onAdFailedToLoad(loadAdError);
                 mInterstitialAd = null;
 
-                Log.e("FAILED_AD", "interstitial ad failed: "+loadAdError.getCode());
+                Log.e("ADS", "interstitial ad failed: "+loadAdError.getCode());
             }
         });
 

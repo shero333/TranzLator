@@ -120,6 +120,8 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     //banner AdView
     private AdView mAdView;
     private AdRequest adRequest;
+
+    //interstitial ad instance
     private InterstitialAd mInterstitialAd;
 
     @Override
@@ -187,7 +189,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
                 //loading the ad again
                 if (mInterstitialAd == null) {
-                    AdHelperClass.loadInterstitialAd(requireContext());
+                    mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
                 }
             }
         }));
@@ -332,7 +334,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
                                         //loading the ad again
                                         if (mInterstitialAd == null) {
-                                            AdHelperClass.loadInterstitialAd(requireContext());
+                                            mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
                                         }
                                     }
                                 });
@@ -422,44 +424,41 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
     public void languageSelection() {
 
-        /*//showing interstitial ad on language selection
-        AdHelperClass.showInterstitialAd(requireActivity(), new AdHelperClass.AdCloseListener() {
-            @Override
-            public void onAdClosed() {
+        //click listener for lang 1
+        materialTxtViewLang1.setOnClickListener(v -> {
+            AdHelperClass.showInterstitialAd(requireActivity(), new AdHelperClass.AdCloseListener() {
+                @Override
+                public void onAdClosed() {
 
-                //click listener for lang 1
-                materialTxtViewLang1.setOnClickListener(v -> {
                     Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
                     intent.putExtra("value", "Lang1");
                     startActivity(intent);
-                });
 
-                //click listener for lang 2
-                materialTxtViewLang2.setOnClickListener(v -> {
-                    Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
-                    intent.putExtra("value", "Lang2");
-                    startActivity(intent);
-                });
+                    //load the ad after showing
+                    if(mInterstitialAd == null){
+                        mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
+                    }
 
-                if(mInterstitialAd == null){
-                    AdHelperClass.loadInterstitialAd(requireContext());
                 }
-
-            }
-        });*/
-
-        //click listener for lang 1
-        materialTxtViewLang1.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
-            intent.putExtra("value", "Lang1");
-            startActivity(intent);
+            });
         });
 
         //click listener for lang 2
         materialTxtViewLang2.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
-            intent.putExtra("value", "Lang2");
-            startActivity(intent);
+            AdHelperClass.showInterstitialAd(requireActivity(), new AdHelperClass.AdCloseListener() {
+                @Override
+                public void onAdClosed() {
+
+                    Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
+                    intent.putExtra("value", "Lang2");
+                    startActivity(intent);
+
+                    //loading the ad again
+                    if(mInterstitialAd == null){
+                        mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
+                    }
+                }
+            });
         });
     }
 

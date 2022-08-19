@@ -35,9 +35,11 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.material.textview.MaterialTextView;
 import com.risibleapps.translator.BuildConfig;
 import com.risibleapps.translator.R;
+import com.risibleapps.translator.ads.AdHelperClass;
 import com.risibleapps.translator.entities.TranslatedDataEntity;
 import com.risibleapps.translator.adapter.TranslationHistoryAdapter;
 import com.risibleapps.translator.TranslationRoomDB;
@@ -87,6 +89,9 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     //adaptive banner ad unit id
     String adUnitId="";
 
+    //interstitial ad instance
+    InterstitialAd mInterstitialAd;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,27 +123,14 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         mPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
         mEditor = mPreference.edit();
 
-        textViewTranslTransferFragment = view.findViewById(R.id.textview_enter_text);
+        //initializing view
+        initializeView(view);
 
-        imageViewSwapLang = view.findViewById(R.id.img_btn_swapping);
-
-        //initializing the animation for image view click
-        animation = AnimationUtils.loadAnimation(getActivity(), R.anim.img_button_animation);
-
-        //initializing mic image view to move to fragment translation
-        imageViewMic=view.findViewById(R.id.image_view_mic);
-
+        //mic click listener
         imageViewMic.setOnClickListener(v-> checkAudioPermission());
 
-        //initializing material textview which are used to select languages from & to translate
-        materialLang1 = view.findViewById(R.id.lang_selector_1);
-        materialLang2 = view.findViewById(R.id.lang_selector_2);
-
-        //initializing history recyclerview
-        recyclerViewHistory = view.findViewById(R.id.recyclerview_history);
-
-        //initializing room DB
-        database =TranslationRoomDB.getInstance(getContext());
+        //initializing interstitial ad
+        mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
 
         //instantiating banner frame layout
         bannerFrameLayout=view.findViewById(R.id.translate_home_banner);
@@ -156,6 +148,7 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
 
         //loading ad into add view
         mAdView.loadAd(adRequest);
+
         //calling the ad listener here
         adListener();
 
@@ -177,6 +170,29 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         return view;
     }
 
+    private void initializeView(View view){
+
+        textViewTranslTransferFragment = view.findViewById(R.id.textview_enter_text);
+
+        imageViewSwapLang = view.findViewById(R.id.img_btn_swapping);
+
+        //initializing the animation for image view click
+        animation = AnimationUtils.loadAnimation(getActivity(), R.anim.img_button_animation);
+
+        //initializing mic image view to move to fragment translation
+        imageViewMic=view.findViewById(R.id.image_view_mic);
+
+        //initializing material textview which are used to select languages from & to translate
+        materialLang1 = view.findViewById(R.id.lang_selector_1);
+        materialLang2 = view.findViewById(R.id.lang_selector_2);
+
+        //initializing history recyclerview
+        recyclerViewHistory = view.findViewById(R.id.recyclerview_history);
+
+        //initializing room DB
+        database =TranslationRoomDB.getInstance(getContext());
+    }
+
     public void speechToTextNavigation() {
 
         Bundle speechBundle=new Bundle();
@@ -189,16 +205,34 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     public void languageSelectionHome() {
         //click listener for lang 1
         materialLang1.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
-            intent.putExtra("value", "Lang1");
-            startActivity(intent);
+
+            AdHelperClass.showInterstitialAd(requireActivity(), () -> {
+
+                Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
+                intent.putExtra("value", "Lang1");
+                startActivity(intent);
+
+                //load the ad again after showing
+                if(mInterstitialAd == null){
+                    mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
+                }
+            });
         });
 
         //click listener for lang 2
         materialLang2.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
-            intent.putExtra("value", "Lang2");
-            startActivity(intent);
+
+            AdHelperClass.showInterstitialAd(requireActivity(), () -> {
+
+                Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
+                intent.putExtra("value", "Lang2");
+                startActivity(intent);
+
+                //load the ad again after showing
+                if(mInterstitialAd == null){
+                    mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
+                }
+            });
         });
     }
 
@@ -251,42 +285,6 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
             checkSharePreference();
         }
 
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        TranslationLanguageList.registerPreference(getActivity(), this);
-    }
-
-    @Override
-    public void onDestroy() {
-        //destroy the adview of adaptive banner
-        if(mAdView != null)
-        {
-            mAdView.destroy();
-        }
-        TranslationLanguageList.unregisterPreference(getActivity(), this);
-
-        super.onDestroy();
-    }
-
-    /* Called when leaving the activity */
-    @Override
-    public void onPause() {
-        if (mAdView != null) {
-            mAdView.pause();
-        }
-        super.onPause();
-    }
-
-    /* Called when returning to the activity */
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (mAdView != null) {
-            mAdView.resume();
-        }
     }
 
     public void reserveTranslationLanguages() {
@@ -363,8 +361,7 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         }
     }
 
-    private void adListener()
-    {
+    private void adListener() {
         mAdView.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {
@@ -412,6 +409,54 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
 
         // Get adaptive ad size and return for setting on the ad view.
         return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(requireContext(), adWidth);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        TranslationLanguageList.registerPreference(getActivity(), this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mAdView != null) {
+            mAdView.resume();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        if (mAdView != null) {
+            mAdView.pause();
+        }
+
+        //setting the interstitial ad to null
+        mInterstitialAd = null;
+
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        mInterstitialAd = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        //destroy the adview of adaptive banner
+        if(mAdView != null)
+        {
+            mAdView.destroy();
+        }
+        TranslationLanguageList.unregisterPreference(getActivity(), this);
+
+        //setting the interstitial ad to null
+        mInterstitialAd = null;
+
+        super.onDestroy();
     }
 
 }

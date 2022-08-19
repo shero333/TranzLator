@@ -32,6 +32,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.translate.Translate;
@@ -41,6 +42,7 @@ import com.risibleapps.translator.R;
 import com.risibleapps.translator.TranslationRoomDB;
 import com.risibleapps.translator.activity.ConversationLanguageList;
 import com.risibleapps.translator.adapter.ConversationAdapter;
+import com.risibleapps.translator.ads.AdHelperClass;
 import com.risibleapps.translator.entities.ConversationDataEntity;
 
 import java.io.IOException;
@@ -55,14 +57,14 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
     private static final int SPEECH_INPUT_REQUEST_CODE_2 = 2;
     private static final int AUDIO_REQUEST_CODE = 100;
 
-    ImageView imageView;
+    ImageView imageViewSwapLanguages;
     Animation animation;
-    ImageView imageViewLang1, imageViewLang2;
+    ImageView imageViewMic1, imageViewMic2;
     RecyclerView recyclerViewConversation;
     ConversationAdapter conversationAdapter;
 
     //material textviews for selecting languages
-    private MaterialTextView materialLang1, materialLang2;
+    private MaterialTextView materialLangSelectionOne, materialLangSelectionTwo;
 
     SharedPreferences mPreference;
     SharedPreferences.Editor mEditor;
@@ -93,6 +95,8 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
 
     String strSpeechToText = "", strTranslatedText = "";
 
+    //interstitial ad instance
+    private InterstitialAd mInterstitialAd;
 
     @Nullable
     @Override
@@ -104,15 +108,44 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         mPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
         mEditor = mPreference.edit();
 
-        //initializing image views
-        imageView = view.findViewById(R.id.img_btn_swapping);
+        //initializing views
+        initialViews(view);
 
-        imageViewLang1 = view.findViewById(R.id.imageview_speak_lang_1);
-        imageViewLang2 = view.findViewById(R.id.imageview_speak_lang_2);
+        //loading the interstitial ad
+        mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
+
+        //setting the recyclerview
+        setupRecyclerview();
+
+        // Language 1 click listener
+        imageViewMic1.setOnClickListener(v -> languageOneClickListener());
+
+        // Language 2 click listener
+        imageViewMic2.setOnClickListener(v -> languageTwoClickListener());
+
+        //function for selecting source and target languages
+        conversationLanguagesSelection();
+
+        //swap languages function
+        swapLanguages();
+
+        //function for displaying the source & target languages from list
+        checkSharePreference();
+
+        return view;
+    }
+
+    private void initialViews(View view){
+
+        //initializing image views
+        imageViewSwapLanguages = view.findViewById(R.id.img_btn_swapping);
+
+        imageViewMic1 = view.findViewById(R.id.imageview_speak_lang_1);
+        imageViewMic2 = view.findViewById(R.id.imageview_speak_lang_2);
 
         //initializing material textview which are used to select languages from & to translate
-        materialLang1 = view.findViewById(R.id.lang_selector_1);
-        materialLang2 = view.findViewById(R.id.lang_selector_2);
+        materialLangSelectionOne = view.findViewById(R.id.lang_selector_1);
+        materialLangSelectionTwo = view.findViewById(R.id.lang_selector_2);
 
         //initializing the animation for image view click
         animation = AnimationUtils.loadAnimation(getActivity(), R.anim.img_button_animation);
@@ -122,26 +155,6 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
 
         //initializing conversation recyclerview
         recyclerViewConversation = view.findViewById(R.id.recyclerview_conversation);
-
-        //setting the recyclerview
-        setupRecyclerview();
-
-        // Language 1 click listener
-        imageViewLang1.setOnClickListener(v -> languageOneClickListener());
-
-        // Language 2 click listener
-        imageViewLang2.setOnClickListener(v -> languageTwoClickListener());
-
-        //function for selecting source and target languages
-        languageSelectionHome();
-
-        //swap languages function
-        swapLanguages();
-
-        //function for displaying the source & target languages from list
-        checkSharePreference();
-
-        return view;
     }
 
     private void setupRecyclerview() {
@@ -191,41 +204,44 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         recyclerViewConversation.scrollToPosition(newPosition);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        ConversationLanguageList.registerConversationPreference(getActivity(), this);
-
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        ConversationLanguageList.unregisterConversationPreference(getActivity(), this);
-        if (mTTS != null) {
-            mTTS.shutdown();
-        }
-    }
-
-    private void languageSelectionHome() {
+    private void conversationLanguagesSelection() {
         //click listener for lang 1
-        materialLang1.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), ConversationLanguageList.class);
-            intent.putExtra("value", "Lang1");
-            startActivity(intent);
+        materialLangSelectionOne.setOnClickListener(v -> {
+
+            AdHelperClass.showInterstitialAd(requireActivity(), () -> {
+
+                Intent intent = new Intent(getActivity(), ConversationLanguageList.class);
+                intent.putExtra("value", "Lang1");
+                startActivity(intent);
+
+                //loading the ad again after showing
+                if(mInterstitialAd == null){
+                    mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
+                }
+            });
+
         });
 
         //click listener for lang 2
-        materialLang2.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), ConversationLanguageList.class);
-            intent.putExtra("value", "Lang2");
-            startActivity(intent);
+        materialLangSelectionTwo.setOnClickListener(v -> {
+
+            AdHelperClass.showInterstitialAd(requireActivity(), () -> {
+
+                Intent intent = new Intent(getActivity(), ConversationLanguageList.class);
+                intent.putExtra("value", "Lang2");
+                startActivity(intent);
+
+                //loading ad after showing
+                if(mInterstitialAd == null){
+                    mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
+                }
+            });
         });
     }
 
     private void swapLanguages() {
-        imageView.setOnClickListener(v -> {
-            imageView.startAnimation(animation);
+        imageViewSwapLanguages.setOnClickListener(v -> {
+            imageViewSwapLanguages.startAnimation(animation);
             reserveTranslationLanguages();
         });
     }
@@ -253,8 +269,8 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         mEditor.putString(getString(R.string.conversation_lang_one), srcLang).apply();
 
         //setting the changed source & target translation languages
-        materialLang1.setText(srcLang);
-        materialLang2.setText(trgtLang);
+        materialLangSelectionOne.setText(srcLang);
+        materialLangSelectionTwo.setText(trgtLang);
 
         /*
             condition to reset the prefDecrement & sharedPrefChangedChecker values so that the updatePreference function can execute properly
@@ -272,9 +288,9 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         trgtLang = mPreference.getString(getString(R.string.conversation_lang_two), "Urdu (Pakistan)");
         trgtLangCode = mPreference.getString(getString(R.string.conversation_lang_two_code), "ur-PK");
 
-        materialLang1.setText(srcLang);
+        materialLangSelectionOne.setText(srcLang);
 
-        materialLang2.setText(trgtLang);
+        materialLangSelectionTwo.setText(trgtLang);
     }
 
     @Override
@@ -526,4 +542,33 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         }
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        ConversationLanguageList.registerConversationPreference(getActivity(), this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mInterstitialAd = null;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mInterstitialAd = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ConversationLanguageList.unregisterConversationPreference(getActivity(), this);
+        if (mTTS != null) {
+            mTTS.shutdown();
+        }
+
+        //setting the interstitial ad object to null
+        mInterstitialAd = null;
+    }
 }

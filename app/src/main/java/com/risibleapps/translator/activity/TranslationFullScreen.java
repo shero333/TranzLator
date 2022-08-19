@@ -1,5 +1,6 @@
 package com.risibleapps.translator.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,9 +32,7 @@ public class TranslationFullScreen extends AppCompatActivity {
     ImageView imageViewClose;
     TextView textViewSourceText, textViewTranslatedText;
 
-    private String nativeAdId = "";
     private UnifiedNativeAd nativeAd;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,23 +63,22 @@ public class TranslationFullScreen extends AppCompatActivity {
         imageViewClose.setOnClickListener(v -> finish());
 
         //loading the native advance ad
-        refreshAd();
+        refreshAd(this);
     }
 
-    private void refreshAd() {
+    private void refreshAd(Context context) {
+
+        String nativeAdId = "";
 
         //checking whether the app is running in release or debug version
-        if(BuildConfig.DEBUG)
-        {
-            nativeAdId="ca-app-pub-3940256099942544/2247696110";
-            Log.i("NATIVE_AD_ID: ", "if called: "+nativeAdId);
+        if(BuildConfig.DEBUG) {
+            nativeAdId = getString(R.string.native_ad_id_debug);
         }
         else {
-            nativeAdId=getString(R.string.native_ad_id);
-            Log.i("NATIVE_AD_ID: ", "else called: "+nativeAdId);
+            nativeAdId = getString(R.string.native_ad_id_release);
         }
 
-        AdLoader.Builder builder = new AdLoader.Builder(this, nativeAdId);
+        AdLoader.Builder builder = new AdLoader.Builder(context, nativeAdId);
 
         // OnUnifiedNativeAdLoadedListener implementation.
         builder.forUnifiedNativeAd(
@@ -146,12 +144,22 @@ public class TranslationFullScreen extends AppCompatActivity {
 
         // These assets aren't guaranteed to be in every UnifiedNativeAd, so it's important to
         // check before trying to display them.
-        if (nativeAd.getBody() == null) {
+        if(adView.getBodyView() != null){
+
+            if (nativeAd.getBody() == null) {
+                adView.getBodyView().setVisibility(View.INVISIBLE);
+            } else {
+                adView.getBodyView().setVisibility(View.VISIBLE);
+                ((TextView) adView.getBodyView()).setText(nativeAd.getBody());
+            }
+
+        }
+        /*if (nativeAd.getBody() == null) {
             adView.getBodyView().setVisibility(View.INVISIBLE);
         } else {
             adView.getBodyView().setVisibility(View.VISIBLE);
             ((TextView) adView.getBodyView()).setText(nativeAd.getBody());
-        }
+        }*/
 
         if (nativeAd.getCallToAction() == null) {
             adView.getCallToActionView().setVisibility(View.INVISIBLE);
