@@ -1,31 +1,17 @@
 package com.risibleapps.translator.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdLoader;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.VideoOptions;
-import com.google.android.gms.ads.formats.MediaView;
-import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
-import com.google.android.gms.ads.formats.UnifiedNativeAdView;
-import com.risibleapps.translator.BuildConfig;
 import com.risibleapps.translator.R;
+import com.risibleapps.translator.ads.AdHelperClass;
 
 public class TranslationFullScreen extends AppCompatActivity {
 
@@ -63,10 +49,10 @@ public class TranslationFullScreen extends AppCompatActivity {
         imageViewClose.setOnClickListener(v -> finish());
 
         //loading the native advance ad
-        refreshAd(this);
+        nativeAd = AdHelperClass.refreshNativeAd(this,0,null);
     }
 
-    private void refreshAd(Context context) {
+    /*private void refreshAd(Context context) {
 
         String nativeAdId = "";
 
@@ -154,12 +140,12 @@ public class TranslationFullScreen extends AppCompatActivity {
             }
 
         }
-        /*if (nativeAd.getBody() == null) {
+        *//*if (nativeAd.getBody() == null) {
             adView.getBodyView().setVisibility(View.INVISIBLE);
         } else {
             adView.getBodyView().setVisibility(View.VISIBLE);
             ((TextView) adView.getBodyView()).setText(nativeAd.getBody());
-        }*/
+        }*//*
 
         if (nativeAd.getCallToAction() == null) {
             adView.getCallToActionView().setVisibility(View.INVISIBLE);
@@ -208,7 +194,7 @@ public class TranslationFullScreen extends AppCompatActivity {
         // This method tells the Google Mobile Ads SDK that you have finished populating your
         // native ad view with this native ad.
         adView.setNativeAd(nativeAd);
-    }
+    }*/
 
     @Override
     protected void onDestroy() {

@@ -1,7 +1,10 @@
 package com.risibleapps.translator.activity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -13,6 +16,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -20,6 +24,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -52,6 +57,12 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
 
     //Interstitial Ad initialization
     private InterstitialAd mInterstitialAd;
+
+    //exit dialog
+    private Dialog dialog;
+
+    //unified native ad object
+    private UnifiedNativeAd nativeAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,15 +109,18 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
         //setting up the navigation component
         NavController navController = Navigation.findNavController(this, R.id.fragment_container);
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
+
+        //app exit dialog
+        exitAlertDialog();
     }
 
     @Override
     public void onBackPressed() {
+        //showing the dialog
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
         }
+        else dialog.show();
     }
 
     //the overridden method which will handles the click events of navigation view
@@ -162,7 +176,7 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
     public void shareAppLink() {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
-        String subSectionLink = "Download Tranzlator app from:\n\n\t\"https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID;
+        String subSectionLink = "Download Translator app from:\n\n\t\"https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID;
         intent.putExtra(Intent.EXTRA_TEXT, subSectionLink);
         startActivity(Intent.createChooser(intent, "Share via"));
     }
@@ -212,6 +226,31 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
         prefEditor = preference.edit();
     }
 
+    private void exitAlertDialog(){
+        dialog=new Dialog(this);
+        dialog.setContentView(R.layout.exit_dialog);
+
+        //setting the transparent background
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        //loading the ad
+        nativeAd = AdHelperClass.refreshNativeAd(this,1,dialog);
+
+        AppCompatButton buttonExit=dialog.findViewById(R.id.btn_exit);
+        AppCompatButton buttonCancel=dialog.findViewById(R.id.btn_cancel);
+
+        //click listener buttons
+        buttonExit.setOnClickListener(view -> {
+
+            //dismissing the alert dialog before finishing activity. Else 'Activity has a window leak' exception is thrown
+            dialog.dismiss();
+            finish();
+        });
+
+        buttonCancel.setOnClickListener(view -> dialog.dismiss());
+
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -227,7 +266,12 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
     @Override
     protected void onDestroy() {
         mInterstitialAd = null;
+
+        //destroying the native ad object
+         if(nativeAd != null){
+             nativeAd.destroy();
+         }
+
         super.onDestroy();
     }
-
 }
