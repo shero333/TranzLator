@@ -1,5 +1,7 @@
 package com.risibleapps.translator.fragment;
 
+import static com.risibleapps.translator.activity.HomeScreen.isHomeTransFragment;
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,15 +10,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,21 +28,16 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.material.textview.MaterialTextView;
-import com.risibleapps.translator.BuildConfig;
 import com.risibleapps.translator.R;
+import com.risibleapps.translator.TranslationRoomDB;
+import com.risibleapps.translator.activity.HomeScreen;
+import com.risibleapps.translator.activity.TranslationLanguageList;
+import com.risibleapps.translator.adapter.TranslationHistoryAdapter;
 import com.risibleapps.translator.ads.AdHelperClass;
 import com.risibleapps.translator.entities.TranslatedDataEntity;
-import com.risibleapps.translator.adapter.TranslationHistoryAdapter;
-import com.risibleapps.translator.TranslationRoomDB;
-import com.risibleapps.translator.activity.TranslationLanguageList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,46 +72,17 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     //translated data list
     List<TranslatedDataEntity> entityDataList =new ArrayList<>();
 
-    //banner AdView
-    private AdView mAdView;
-
-    //frame layout which holds the adaptive banner ad
-    FrameLayout bannerFrameLayout;
-
-    private AdRequest adRequest;
-
-    //adaptive banner ad unit id
-    String adUnitId="";
-
     //interstitial ad instance
     InterstitialAd mInterstitialAd;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        //initialize AdMob
-        MobileAds.initialize(requireContext(), initializationStatus -> {});
-
-         adRequest= new AdRequest.Builder().build();
-
-         //checking whether app is running in release/debug version
-        if(BuildConfig.DEBUG)
-        {
-            adUnitId="ca-app-pub-3940256099942544/6300978111";
-            Log.i("FRAG_TRANS_HOME_AD_ID", "if called: "+adUnitId);
-        }
-        else {
-            adUnitId=getString(R.string.banner_ad_id);
-            Log.i("FRAG_TRANS_HOME_AD_ID", "else called: "+adUnitId);
-        }
-    }
+    UnifiedNativeAd nativeAd;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_translate_home, container, false);
+
 
         //initialize preference
         mPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -132,25 +97,8 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         //initializing interstitial ad
         mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
 
-        //instantiating banner frame layout
-        bannerFrameLayout=view.findViewById(R.id.translate_home_banner);
-
-        //initializing adview
-        mAdView=new AdView(requireContext());
-        mAdView.setAdUnitId(adUnitId);
-
-        //setting the adview to frame layout
-        bannerFrameLayout.addView(mAdView);
-
-        //setting the ad size for adaptive banner ad
-        AdSize adSize = getAdSize();
-        mAdView.setAdSize(adSize);
-
-        //loading ad into add view
-        mAdView.loadAd(adRequest);
-
-        //calling the ad listener here
-        adListener();
+        //initializing native ad
+        nativeAd = AdHelperClass.refreshNativeAd(requireActivity(),2,null);
 
         //swap languages function
         swapLanguages();
@@ -166,6 +114,9 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
 
         //function for displaying the source & target languages from list
         checkSharePreference();
+
+        //incrementing the value of 'isHomeTransFragment' to 1 so that the exit dialog appears only in TranslateHomeFragment
+        isHomeTransFragment = 1;
 
         return view;
     }
@@ -361,75 +312,15 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         }
     }
 
-    private void adListener() {
-        mAdView.setAdListener(new AdListener() {
-            @Override
-            public void onAdClosed() {
-                super.onAdClosed();
-            }
-
-            @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                Log.i("FAILED_AD", "Translate Home Frag banner failed ad: "+loadAdError.getCode());
-                super.onAdFailedToLoad(loadAdError);
-            }
-
-            @Override
-            public void onAdOpened() {
-                super.onAdOpened();
-            }
-
-            @Override
-            public void onAdLoaded() {
-                super.onAdLoaded();
-            }
-
-            @Override
-            public void onAdClicked() {
-                super.onAdClicked();
-            }
-
-            @Override
-            public void onAdImpression() {
-                super.onAdImpression();
-            }
-        });
-    }
-
-    private AdSize getAdSize() {
-        // Determine the screen width (less decorations) to use for the ad width
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        display.getMetrics(outMetrics);
-
-        float widthPixels = outMetrics.widthPixels;
-        float density = outMetrics.density;
-
-        int adWidth = (int) (widthPixels / density);
-
-        // Get adaptive ad size and return for setting on the ad view.
-        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(requireContext(), adWidth);
-    }
-
     @Override
     public void onStart() {
         super.onStart();
         TranslationLanguageList.registerPreference(getActivity(), this);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (mAdView != null) {
-            mAdView.resume();
-        }
-    }
 
     @Override
     public void onPause() {
-        if (mAdView != null) {
-            mAdView.pause();
-        }
 
         //setting the interstitial ad to null
         mInterstitialAd = null;
@@ -446,15 +337,15 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
 
     @Override
     public void onDestroy() {
-        //destroy the adview of adaptive banner
-        if(mAdView != null)
-        {
-            mAdView.destroy();
-        }
         TranslationLanguageList.unregisterPreference(getActivity(), this);
 
         //setting the interstitial ad to null
         mInterstitialAd = null;
+
+        //native ad set to null
+        if(nativeAd != null){
+            nativeAd.destroy();
+        }
 
         super.onDestroy();
     }

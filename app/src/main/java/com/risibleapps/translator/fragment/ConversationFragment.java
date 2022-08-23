@@ -2,6 +2,8 @@ package com.risibleapps.translator.fragment;
 
 import static android.app.Activity.RESULT_OK;
 
+import static com.risibleapps.translator.activity.HomeScreen.isHomeTransFragment;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -32,6 +34,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -98,6 +101,9 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
     //interstitial ad instance
     private InterstitialAd mInterstitialAd;
 
+    //native ad
+    private UnifiedNativeAd nativeAd;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -117,10 +123,10 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         //setting the recyclerview
         setupRecyclerview();
 
-        // Language 1 click listener
+        //Language 1 click listener
         imageViewMic1.setOnClickListener(v -> languageOneClickListener());
 
-        // Language 2 click listener
+        //Language 2 click listener
         imageViewMic2.setOnClickListener(v -> languageTwoClickListener());
 
         //function for selecting source and target languages
@@ -131,6 +137,12 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
 
         //function for displaying the source & target languages from list
         checkSharePreference();
+
+        //native ad loading
+        nativeAd = AdHelperClass.refreshNativeAd(requireActivity(),5, null);
+
+        //decrementing the value of 'isHomeTransFragment' to 0 so that the exit dialog appears only in TranslateHomeFragment.
+        isHomeTransFragment = 0;
 
         return view;
     }
@@ -570,5 +582,10 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
 
         //setting the interstitial ad object to null
         mInterstitialAd = null;
+
+        //destroying the native ad object
+        if(nativeAd != null){
+            nativeAd.destroy();
+        }
     }
 }

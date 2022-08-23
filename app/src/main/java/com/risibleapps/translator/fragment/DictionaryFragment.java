@@ -1,5 +1,7 @@
 package com.risibleapps.translator.fragment;
 
+import static com.risibleapps.translator.activity.HomeScreen.isHomeTransFragment;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -9,16 +11,12 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,17 +29,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.risibleapps.translator.BuildConfig;
 import com.risibleapps.translator.R;
 import com.risibleapps.translator.adapter.DictionaryAdapter;
+import com.risibleapps.translator.ads.AdHelperClass;
 import com.risibleapps.translator.model.DictionaryModel;
 import com.risibleapps.translator.volleyLibrary.VolleySingleton;
 
@@ -54,6 +47,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DictionaryFragment extends Fragment {
+
     TextInputEditText textInputEditText;
     TextInputLayout textInputLayout;
 
@@ -64,37 +58,7 @@ public class DictionaryFragment extends Fragment {
     List<DictionaryModel> dictionaryModelList = new ArrayList<>();
     ProgressDialog progressDialog;
 
-    //banner AdView
-    private AdView mAdView;
-
-    //frame layout which holds the adaptive banner ad
-    FrameLayout bannerFrameLayout;
-
-    private AdRequest adRequest;
-
-    //adaptive banner ad unit id
-    String adUnitId=""/*getString(R.string.banner_ad_id)*//*"ca-app-pub-3940256099942544/6300978111"*/;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        //initialize AdMob
-        MobileAds.initialize(requireContext(), initializationStatus -> {});
-
-        adRequest= new AdRequest.Builder().build();
-
-        //checking whether app is running in release/debug version
-        if(BuildConfig.DEBUG)
-        {
-            adUnitId="ca-app-pub-3940256099942544/6300978111";
-            Log.i("FRAG_DICT_AD_ID", "if called: "+adUnitId);
-        }
-        else{
-            adUnitId=getString(R.string.banner_ad_id);
-            Log.i("FRAG_DICT_AD_ID", "else called: "+adUnitId);
-        }
-    }
+    private UnifiedNativeAd nativeAd;
 
     @Nullable
     @Override
@@ -102,27 +66,16 @@ public class DictionaryFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_dictionary, container, false);
 
-        //function to initialize view
+        // function to initialize view
         initializeViews(view);
 
         textInputEditText.addTextChangedListener(textWatcher);
 
-        //instantiating banner frame layout
-        bannerFrameLayout=view.findViewById(R.id.dictionary_banner);
-        //initializing adview
-        mAdView=new AdView(requireContext());
-        mAdView.setAdUnitId(adUnitId);
-        //setting the adview to frame layout
-        bannerFrameLayout.addView(mAdView);
+        // native ad loading
+        nativeAd = AdHelperClass.refreshNativeAd(requireActivity(),4,null);
 
-        //setting the ad size for adaptive banner ad
-        AdSize adSize = getAdSize();
-        mAdView.setAdSize(adSize);
-
-        //loading ad into add view
-        mAdView.loadAd(adRequest);
-        //calling the ad listener here
-        adListener();
+        //decrementing the value of 'isHomeTransFragment' to 0 so that the exit dialog appears only in TranslateHomeFragment.
+        isHomeTransFragment = 0;
 
         return view;
     }
@@ -425,16 +378,16 @@ public class DictionaryFragment extends Fragment {
 
     @Override
     public void onDestroy() {
+
         if(progressDialog !=null)
         {
             progressDialog.dismiss();
         }
 
-        //destroy the adview of adaptive banner ad
-        if(mAdView != null)
-        {
-            mAdView.destroy();
+        if(nativeAd != null){
+            nativeAd.destroy();
         }
+
         super.onDestroy();
     }
 
@@ -445,75 +398,6 @@ public class DictionaryFragment extends Fragment {
         {
             progressDialog.dismiss();
         }
-    }
-
-    /* Called when leaving the activity */
-    @Override
-    public void onPause() {
-        if (mAdView != null) {
-            mAdView.pause();
-        }
-        super.onPause();
-    }
-
-    /* Called when returning to the activity */
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (mAdView != null) {
-            mAdView.resume();
-        }
-    }
-
-    private void adListener()
-    {
-        mAdView.setAdListener(new AdListener() {
-            @Override
-            public void onAdClosed() {
-                super.onAdClosed();
-            }
-
-            @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                Log.i("FAILED_AD", "Dictionary Home Frag banner failed ad: "+loadAdError.getCode());
-                super.onAdFailedToLoad(loadAdError);
-            }
-
-            @Override
-            public void onAdOpened() {
-                super.onAdOpened();
-            }
-
-            @Override
-            public void onAdLoaded() {
-                super.onAdLoaded();
-            }
-
-            @Override
-            public void onAdClicked() {
-                super.onAdClicked();
-            }
-
-            @Override
-            public void onAdImpression() {
-                super.onAdImpression();
-            }
-        });
-    }
-
-    private AdSize getAdSize() {
-        // Determine the screen width (less decorations) to use for the ad width
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        display.getMetrics(outMetrics);
-
-        float widthPixels = outMetrics.widthPixels;
-        float density = outMetrics.density;
-
-        int adWidth = (int) (widthPixels / density);
-
-        // Get adaptive ad size and return for setting on the ad view.
-        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(requireContext(), adWidth);
     }
 
 }

@@ -64,6 +64,8 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
     //unified native ad object
     private UnifiedNativeAd nativeAd;
 
+    public static int isHomeTransFragment=0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,7 +122,13 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         }
-        else dialog.show();
+        else if(isHomeTransFragment == 1) {
+            isHomeTransFragment = 0;
+            dialog.show();
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 
     //the overridden method which will handles the click events of navigation view

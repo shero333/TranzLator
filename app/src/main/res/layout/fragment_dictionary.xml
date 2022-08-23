@@ -7,7 +7,7 @@
     android:layout_marginTop="@dimen/_45sdp">
 
     <FrameLayout
-        android:id="@+id/dictionary_banner"
+        android:id="@+id/fl_adplaceholder_dictionary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent" />
@@ -15,7 +15,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintTop_toBottomOf="@id/dictionary_banner">
+        app:layout_constraintTop_toBottomOf="@id/fl_adplaceholder_dictionary">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/dictionary_edit_text_layout"

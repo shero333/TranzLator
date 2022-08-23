@@ -84,14 +84,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!--<TextView
+                <TextView
                     android:id="@+id/ad_body"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="?android:attr/textColorPrimary"
                     android:layout_marginEnd="@dimen/_20sdp"
                     android:textSize="@dimen/_12ssp"
-                    tools:text="Add some sample body text for this block of demo native ad"/>-->
+                    tools:text="Add some sample body text for this block of demo native ad"/>
 
                 <com.google.android.gms.ads.formats.MediaView
                     android:id="@+id/ad_media"

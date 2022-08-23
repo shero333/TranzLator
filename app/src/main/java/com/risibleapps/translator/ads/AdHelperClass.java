@@ -65,7 +65,7 @@ public class AdHelperClass {
                 super.onAdFailedToLoad(loadAdError);
                 mInterstitialAd = null;
 
-                Log.e("ADS", "interstitial ad failed: "+loadAdError.getCode());
+                Log.e("FAILED_AD", "interstitial ad failed: "+loadAdError.getCode());
             }
         });
 
@@ -139,20 +139,44 @@ public class AdHelperClass {
                     switch (viewType){
 
                         case 0: {
-
                             // Translation Full Screen Activity Native Ad
-                            frameLayout = activity.findViewById(R.id.fl_adplaceholder);
-                            adView = (UnifiedNativeAdView) activity.getLayoutInflater().inflate(R.layout.ad_unified, null);
-
+                            frameLayout = initializeNativeFrameLayout(activity,R.id.fl_adplaceholder);
+                            adView = initializeNativeAdView(activity,R.layout.ad_unified);
                             break;
                         }
 
                         case 1: {
-
                             //Exit Dialog Native Ad
                             frameLayout = dialog.findViewById(R.id.fl_adplaceholder_dialog);
                             adView = (UnifiedNativeAdView) dialog.getLayoutInflater().inflate(R.layout.ad_unified_dialog,null);
+                            break;
+                        }
 
+                        case 2:{
+                            //Translate Home Fragment
+                            frameLayout = initializeNativeFrameLayout(activity,R.id.fl_adplaceholder_trans_home);
+                            adView = initializeNativeAdView(activity,R.layout.ad_unified_small);
+                            break;
+                        }
+
+                        case 3:{
+                            //Translation Fragment
+                            frameLayout = initializeNativeFrameLayout(activity,R.id.fl_adplaceholder_translation);
+                            adView = initializeNativeAdView(activity,R.layout.ad_unified_small);
+                            break;
+                        }
+
+                        case 4:{
+                            //Dictionary Fragment
+                            frameLayout = initializeNativeFrameLayout(activity,R.id.fl_adplaceholder_dictionary);
+                            adView = initializeNativeAdView(activity,R.layout.ad_unified_small);
+                            break;
+                        }
+
+                        case 5: {
+                            //Conversation Fragment
+                            frameLayout = initializeNativeFrameLayout(activity,R.id.fl_adplaceholder_conversation);
+                            adView = initializeNativeAdView(activity,R.layout.ad_unified_small);
                             break;
                         }
 
@@ -177,7 +201,7 @@ public class AdHelperClass {
             @Override
             public void onAdFailedToLoad(LoadAdError loadAdError) {
                 super.onAdFailedToLoad(loadAdError);
-                Log.i("FAILED_AD", "Unified Native Ad error"+loadAdError.getCode());
+                Log.e("FAILED_AD", "Unified Native Ad error: "+loadAdError.getCode());
             }
         }).build();
 
@@ -291,6 +315,16 @@ public class AdHelperClass {
         // This method tells the Google Mobile Ads SDK that you have finished populating your
         // native ad view with this native ad.
         adView.setNativeAd(nativeAd);
+    }
+
+    //function for initializing the frame layout
+    private static FrameLayout initializeNativeFrameLayout(Activity activity, int adPlaceHolder){
+        return activity.findViewById(adPlaceHolder);
+    }
+
+    //function for initializing unified ad view
+    private static UnifiedNativeAdView initializeNativeAdView(Activity activity, int layout){
+        return (UnifiedNativeAdView) activity.getLayoutInflater().inflate(layout,null);
     }
 
 }
