@@ -1,6 +1,7 @@
 package com.risibleapps.translator.application;
 
 import android.app.Application;
+
 import com.google.android.gms.ads.MobileAds;
 
 public class App extends Application {

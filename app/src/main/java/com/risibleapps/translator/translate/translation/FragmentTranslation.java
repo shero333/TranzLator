@@ -1,8 +1,7 @@
-package com.risibleapps.translator.fragment;
+package com.risibleapps.translator.translate.translation;
 
 import static android.app.Activity.RESULT_OK;
-
-import static com.risibleapps.translator.activity.HomeScreen.isHomeTransFragment;
+import static com.risibleapps.translator.mainActivity.HomeScreen.isHomeTransFragment;
 
 import android.Manifest;
 import android.app.Activity;
@@ -54,11 +53,10 @@ import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
 import com.google.cloud.translate.Translation;
 import com.risibleapps.translator.R;
-import com.risibleapps.translator.TranslationRoomDB;
-import com.risibleapps.translator.activity.TranslationFullScreen;
-import com.risibleapps.translator.activity.TranslationLanguageList;
 import com.risibleapps.translator.ads.AdHelperClass;
-import com.risibleapps.translator.entities.TranslatedDataEntity;
+import com.risibleapps.translator.room.TranslationRoomDB;
+import com.risibleapps.translator.translate.translateHome.db.TranslatedDataEntity;
+import com.risibleapps.translator.translate.translationLanguages.TranslationLanguageList;
 
 import java.io.IOException;
 import java.io.InputStream;

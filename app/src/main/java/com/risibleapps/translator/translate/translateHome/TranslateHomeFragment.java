@@ -1,6 +1,6 @@
-package com.risibleapps.translator.fragment;
+package com.risibleapps.translator.translate.translateHome;
 
-import static com.risibleapps.translator.activity.HomeScreen.isHomeTransFragment;
+import static com.risibleapps.translator.mainActivity.HomeScreen.isHomeTransFragment;
 
 import android.Manifest;
 import android.content.Intent;
@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,17 +31,16 @@ import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.material.textview.MaterialTextView;
 import com.risibleapps.translator.R;
-import com.risibleapps.translator.TranslationRoomDB;
-import com.risibleapps.translator.activity.HomeScreen;
-import com.risibleapps.translator.activity.TranslationLanguageList;
-import com.risibleapps.translator.adapter.TranslationHistoryAdapter;
 import com.risibleapps.translator.ads.AdHelperClass;
-import com.risibleapps.translator.entities.TranslatedDataEntity;
+import com.risibleapps.translator.room.TranslationRoomDB;
+import com.risibleapps.translator.translate.translateHome.db.TranslatedDataEntity;
+import com.risibleapps.translator.translate.translationLanguages.TranslationLanguageList;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TranslateHomeFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+
     private static final int REQUEST_CODE_AUDIO = 10;
 
     TextView textViewTranslTransferFragment;

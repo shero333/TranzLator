@@ -1,4 +1,4 @@
-package com.risibleapps.translator.model;
+package com.risibleapps.translator.conversation.conversationLanguages;
 
 public class ConversationLanguageModel {
 
@@ -14,15 +14,8 @@ public class ConversationLanguageModel {
         return conLanguageName;
     }
 
-    public void setConLanguageName(String cLanguageName) {
-        this.conLanguageName = cLanguageName;
-    }
-
     public String getConLanguageCode() {
         return conLanguageCode;
     }
 
-    public void setConLanguageCode(String cLanguageCode) {
-        this.conLanguageCode = cLanguageCode;
-    }
 }

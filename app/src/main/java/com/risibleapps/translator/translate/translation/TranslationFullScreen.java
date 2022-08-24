@@ -1,4 +1,4 @@
-package com.risibleapps.translator.activity;
+package com.risibleapps.translator.translate.translation;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.risibleapps.translator.R;
 import com.risibleapps.translator.ads.AdHelperClass;

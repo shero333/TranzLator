@@ -1,4 +1,4 @@
-package com.risibleapps.translator.activity;
+package com.risibleapps.translator.mainActivity;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -30,10 +30,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.risibleapps.translator.BuildConfig;
 import com.risibleapps.translator.R;
-import com.risibleapps.translator.TranslationRoomDB;
-import com.risibleapps.translator.adapter.TranslationHistoryAdapter;
 import com.risibleapps.translator.ads.AdHelperClass;
-import com.risibleapps.translator.entities.TranslatedDataEntity;
+import com.risibleapps.translator.room.TranslationRoomDB;
+import com.risibleapps.translator.translate.translateHome.TranslationHistoryAdapter;
+import com.risibleapps.translator.translate.translateHome.db.TranslatedDataEntity;
 
 import java.util.List;
 
@@ -199,7 +199,7 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
         dataEntityList.clear();
         dataEntityList.addAll(database.translationHistoryDao().getAllTranslatedData());
 
-        TranslationHistoryAdapter translationHistoryAdapter = new TranslationHistoryAdapter(this, dataEntityList);
+        new TranslationHistoryAdapter(this, dataEntityList);
 
         //showing the ad
         AdHelperClass.showInterstitialAd(this, () -> {

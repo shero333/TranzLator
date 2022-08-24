@@ -1,4 +1,4 @@
-package com.risibleapps.translator.adapter;
+package com.risibleapps.translator.translate.translationLanguages;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.risibleapps.translator.R;
-import com.risibleapps.translator.model.TranslationLanguageModel;
 
 import java.util.ArrayList;
 import java.util.List;

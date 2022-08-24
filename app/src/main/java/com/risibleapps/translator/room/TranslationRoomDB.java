@@ -1,4 +1,4 @@
-package com.risibleapps.translator;
+package com.risibleapps.translator.room;
 
 import android.content.Context;
 
@@ -6,8 +6,11 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-import com.risibleapps.translator.entities.ConversationDataEntity;
-import com.risibleapps.translator.entities.TranslatedDataEntity;
+import com.risibleapps.translator.conversation.db.ConversationDao;
+import com.risibleapps.translator.conversation.db.ConversationDataEntity;
+import com.risibleapps.translator.translate.translateHome.db.TranslatedDataEntity;
+import com.risibleapps.translator.translate.translateHome.db.TranslationHistoryDao;
+
 
 //Add database entities
 @Database(entities = {TranslatedDataEntity.class, ConversationDataEntity.class},version = 1,exportSchema = false)

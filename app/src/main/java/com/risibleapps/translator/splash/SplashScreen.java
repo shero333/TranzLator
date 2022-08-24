@@ -1,4 +1,4 @@
-package com.risibleapps.translator.activity;
+package com.risibleapps.translator.splash;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.risibleapps.translator.R;
 import com.risibleapps.translator.ads.AdHelperClass;
+import com.risibleapps.translator.mainActivity.HomeScreen;
 
 public class SplashScreen extends AppCompatActivity {
 

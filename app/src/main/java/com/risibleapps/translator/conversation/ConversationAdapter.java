@@ -1,4 +1,4 @@
-package com.risibleapps.translator.adapter;
+package com.risibleapps.translator.conversation;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,9 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.risibleapps.translator.entities.ConversationDataEntity;
-import com.risibleapps.translator.TranslationRoomDB;
 import com.risibleapps.translator.R;
+import com.risibleapps.translator.conversation.db.ConversationDataEntity;
+import com.risibleapps.translator.room.TranslationRoomDB;
 
 import java.util.List;
 

@@ -41,7 +41,7 @@ public class AdHelperClass {
 
     public static InterstitialAd loadInterstitialAd(Context context) {
 
-        String interstitialAdId="";
+        String interstitialAdId;
 
         if(BuildConfig.DEBUG) {
             interstitialAdId = App.getAppContext().getString(R.string.interstitial_ad_id_debug);
@@ -103,7 +103,7 @@ public class AdHelperClass {
 
     public static UnifiedNativeAd refreshNativeAd(Activity activity, int viewType,Dialog dialog) {
 
-        String nativeAdId = "";
+        String nativeAdId;
 
         //checking whether the app is running in release or debug version
         if(BuildConfig.DEBUG) {

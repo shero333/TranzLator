@@ -1,4 +1,4 @@
-package com.risibleapps.translator.adapter;
+package com.risibleapps.translator.dictionary;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.risibleapps.translator.R;
-import com.risibleapps.translator.model.DictionaryModel;
 
 import java.util.List;
 

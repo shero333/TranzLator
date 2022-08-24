@@ -1,4 +1,4 @@
-package com.risibleapps.translator.activity;
+package com.risibleapps.translator.conversation.conversationLanguages;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,14 +18,13 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.risibleapps.translator.adapter.TranslationLanguagesAdapter;
 import com.risibleapps.translator.R;
 
-public class TranslationLanguageList extends AppCompatActivity implements TranslationLanguagesAdapter.OnLanguageSelectionListener {
+public class ConversationLanguageList extends AppCompatActivity implements ConversationLanguagesAdapter.OnConversationLanguageSelectionListener {
 
     Toolbar toolbar;
     RecyclerView recyclerView;
-    TranslationLanguagesAdapter languagesAdapter;
+    ConversationLanguagesAdapter conversationLanguagesAdapter;
     SharedPreferences mPreference;
     SharedPreferences.Editor mEditor;
     boolean bLangOnePressed, bLangTwoPressed;
@@ -33,10 +32,10 @@ public class TranslationLanguageList extends AppCompatActivity implements Transl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_language_list);
+        setContentView(R.layout.activity_conversation_language_list);
 
         //initializing toolbar
-        toolbar = findViewById(R.id.toolbar_language_activity);
+        toolbar = findViewById(R.id.toolbar_conversation_language_activity);
         setSupportActionBar(toolbar);
 
         //sets the back button on toolbar
@@ -44,7 +43,7 @@ public class TranslationLanguageList extends AppCompatActivity implements Transl
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         //initializing recyclerview
-        recyclerView = findViewById(R.id.recyclerview_languages);
+        recyclerView = findViewById(R.id.recyclerview_conversation_languages);
 
         //setting default values for boolean variables
         bLangOnePressed = false;
@@ -58,17 +57,24 @@ public class TranslationLanguageList extends AppCompatActivity implements Transl
 
         //this function setup the recyclerview for supported languages
         setupRecyclerview();
-
     }
 
-    public void setupRecyclerview() {
-        //setting the layout for recyclerview
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(linearLayoutManager);
+    public void initializePreference() {
+        mPreference = PreferenceManager.getDefaultSharedPreferences(this);
+        mEditor = mPreference.edit();
+    }
 
-        //setting the adapter to recyclerview
-        languagesAdapter = new TranslationLanguagesAdapter(this, this, bLangOnePressed, bLangTwoPressed);
-        recyclerView.setAdapter(languagesAdapter);
+    public void setTitleBarText() {
+        //getting the intent from FragmentTranslation to set the title text
+        Intent intent = getIntent();
+        String buttonPressed = intent.getStringExtra("value");
+        if (buttonPressed.equals("Lang1")) {
+            toolbar.setTitle("Translate From");
+            bLangOnePressed = true;
+        } else if (buttonPressed.equals("Lang2")) {
+            toolbar.setTitle("Translate To");
+            bLangTwoPressed = true;
+        }
     }
 
     //this handles the back pressed button on toolbar
@@ -79,6 +85,16 @@ public class TranslationLanguageList extends AppCompatActivity implements Transl
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void setupRecyclerview() {
+        //setting the layout for recyclerview
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        //setting the adapter to recyclerview
+        conversationLanguagesAdapter = new ConversationLanguagesAdapter(this, this, bLangOnePressed, bLangTwoPressed);
+        recyclerView.setAdapter(conversationLanguagesAdapter);
     }
 
     //handling the searchview of toolbar
@@ -105,7 +121,7 @@ public class TranslationLanguageList extends AppCompatActivity implements Transl
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                languagesAdapter.getFilter().filter(newText);
+                conversationLanguagesAdapter.getFilter().filter(newText);
                 return false;
             }
         });
@@ -113,50 +129,32 @@ public class TranslationLanguageList extends AppCompatActivity implements Transl
         return super.onCreateOptionsMenu(menu);
     }
 
-    public void initializePreference() {
-        mPreference = PreferenceManager.getDefaultSharedPreferences(this);
-        mEditor = mPreference.edit();
-    }
-
-    public void setTitleBarText() {
-        //getting the intent from FragmentTranslation to set the title text
-        Intent intent = getIntent();
-        String buttonPressed = intent.getStringExtra("value");
-        if (buttonPressed.equals("Lang1")) {
-            toolbar.setTitle("Translate From");
-            bLangOnePressed = true;
-        } else if (buttonPressed.equals("Lang2")) {
-            toolbar.setTitle("Translate To");
-            bLangTwoPressed = true;
-        }
-    }
-
     //overridden function of OnLanguageSelectionListener interface
     @Override
-    public void onLanguageSelection(String lang, String langCode, boolean btnOnePressed, boolean btnTwoPressed) {
+    public void onConversationLanguageSelection(String lang, String langCode, boolean btnOnePressed, boolean btnTwoPressed) {
         if (btnOnePressed) {
-            mEditor.putString(getString(R.string.lang_one), lang);
+            mEditor.putString(getString(R.string.conversation_lang_one), lang);
             mEditor.apply();
-            mEditor.putString(getString(R.string.lang_one_code), langCode);
+            mEditor.putString(getString(R.string.conversation_lang_one_code), langCode);
             mEditor.apply();
         }
         else if (btnTwoPressed) {
-            mEditor.putString(getString(R.string.lang_two), lang);
+            mEditor.putString(getString(R.string.conversation_lang_two), lang);
             mEditor.apply();
-            mEditor.putString(getString(R.string.lang_two_code), langCode);
+            mEditor.putString(getString(R.string.conversation_lang_two_code), langCode);
             mEditor.apply();
         }
         finish();
     }
 
     //functions for preference change listeners
-    public static void registerPreference(Context context,SharedPreferences.OnSharedPreferenceChangeListener listener)
+    public static void registerConversationPreference(Context context, SharedPreferences.OnSharedPreferenceChangeListener listener)
     {
         SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(context);
         preferences.registerOnSharedPreferenceChangeListener(listener);
     }
 
-    public static void unregisterPreference(Context context,SharedPreferences.OnSharedPreferenceChangeListener listener)
+    public static void unregisterConversationPreference(Context context, SharedPreferences.OnSharedPreferenceChangeListener listener)
     {
         SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(context);
         preferences.unregisterOnSharedPreferenceChangeListener(listener);

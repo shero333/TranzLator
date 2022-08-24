@@ -1,6 +1,6 @@
-package com.risibleapps.translator.fragment;
+package com.risibleapps.translator.dictionary;
 
-import static com.risibleapps.translator.activity.HomeScreen.isHomeTransFragment;
+import static com.risibleapps.translator.mainActivity.HomeScreen.isHomeTransFragment;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -33,9 +33,7 @@ import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.risibleapps.translator.R;
-import com.risibleapps.translator.adapter.DictionaryAdapter;
 import com.risibleapps.translator.ads.AdHelperClass;
-import com.risibleapps.translator.model.DictionaryModel;
 import com.risibleapps.translator.volleyLibrary.VolleySingleton;
 
 import org.json.JSONArray;
@@ -224,9 +222,7 @@ public class DictionaryFragment extends Fragment {
                         {
                             String finalAudioUrl = audioUrl;
                             imageViewSpeech.setOnClickListener(v ->
-                            {
-                                playPhoneticAudio(finalAudioUrl);
-                            });
+                                    playPhoneticAudio(finalAudioUrl));
                         }
                         else{
                             imageViewSpeech.setVisibility(View.GONE);

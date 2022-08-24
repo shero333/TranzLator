@@ -15,7 +15,7 @@
     </fragment>
     <fragment
         android:id="@+id/bottom_nav_conversation"
-        android:name="com.risibleapps.translator.fragment.ConversationFragment"
+        android:name="com.risibleapps.translator.conversation.ConversationFragment"
         android:label="ConversationFragment" />
     <fragment
         android:id="@+id/bottom_nav_dictionary"

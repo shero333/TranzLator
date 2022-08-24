@@ -1,8 +1,7 @@
-package com.risibleapps.translator.fragment;
+package com.risibleapps.translator.conversation;
 
 import static android.app.Activity.RESULT_OK;
-
-import static com.risibleapps.translator.activity.HomeScreen.isHomeTransFragment;
+import static com.risibleapps.translator.mainActivity.HomeScreen.isHomeTransFragment;
 
 import android.Manifest;
 import android.content.Context;
@@ -42,11 +41,10 @@ import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
 import com.google.cloud.translate.Translation;
 import com.risibleapps.translator.R;
-import com.risibleapps.translator.TranslationRoomDB;
-import com.risibleapps.translator.activity.ConversationLanguageList;
-import com.risibleapps.translator.adapter.ConversationAdapter;
 import com.risibleapps.translator.ads.AdHelperClass;
-import com.risibleapps.translator.entities.ConversationDataEntity;
+import com.risibleapps.translator.conversation.conversationLanguages.ConversationLanguageList;
+import com.risibleapps.translator.conversation.db.ConversationDataEntity;
+import com.risibleapps.translator.room.TranslationRoomDB;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -218,37 +216,30 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
 
     private void conversationLanguagesSelection() {
         //click listener for lang 1
-        materialLangSelectionOne.setOnClickListener(v -> {
+        materialLangSelectionOne.setOnClickListener(v -> AdHelperClass.showInterstitialAd(requireActivity(), () -> {
 
-            AdHelperClass.showInterstitialAd(requireActivity(), () -> {
+            Intent intent = new Intent(getActivity(), ConversationLanguageList.class);
+            intent.putExtra("value", "Lang1");
+            startActivity(intent);
 
-                Intent intent = new Intent(getActivity(), ConversationLanguageList.class);
-                intent.putExtra("value", "Lang1");
-                startActivity(intent);
-
-                //loading the ad again after showing
-                if(mInterstitialAd == null){
-                    mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
-                }
-            });
-
-        });
+            //loading the ad again after showing
+            if(mInterstitialAd == null){
+                mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
+            }
+        }));
 
         //click listener for lang 2
-        materialLangSelectionTwo.setOnClickListener(v -> {
+        materialLangSelectionTwo.setOnClickListener(v -> AdHelperClass.showInterstitialAd(requireActivity(), () -> {
 
-            AdHelperClass.showInterstitialAd(requireActivity(), () -> {
+            Intent intent = new Intent(getActivity(), ConversationLanguageList.class);
+            intent.putExtra("value", "Lang2");
+            startActivity(intent);
 
-                Intent intent = new Intent(getActivity(), ConversationLanguageList.class);
-                intent.putExtra("value", "Lang2");
-                startActivity(intent);
-
-                //loading ad after showing
-                if(mInterstitialAd == null){
-                    mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
-                }
-            });
-        });
+            //loading ad after showing
+            if(mInterstitialAd == null){
+                mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
+            }
+        }));
     }
 
     private void swapLanguages() {
@@ -588,4 +579,5 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
             nativeAd.destroy();
         }
     }
+
 }

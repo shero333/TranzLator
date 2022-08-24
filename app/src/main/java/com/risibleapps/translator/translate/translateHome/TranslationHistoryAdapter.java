@@ -1,8 +1,7 @@
-package com.risibleapps.translator.adapter;
+package com.risibleapps.translator.translate.translateHome;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +12,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.risibleapps.translator.R;
-import com.risibleapps.translator.entities.TranslatedDataEntity;
-import com.risibleapps.translator.TranslationRoomDB;
+import com.risibleapps.translator.translate.translateHome.db.TranslatedDataEntity;
 
 import java.util.List;
 
@@ -38,7 +36,7 @@ public class TranslationHistoryAdapter extends RecyclerView.Adapter<TranslationH
     @Override
     public TranslationHistoryAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view =null;
+        View view;
 
         if(viewType == AD_TYPE){
             view = inflater.inflate(R.layout.ad_unified_dialog, parent, false);

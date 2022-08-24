@@ -30,7 +30,7 @@
             android:exported="true"
             android:windowSoftInputMode="adjustPan"/>
         <activity
-            android:name="com.risibleapps.translator.activity.SplashScreen"
+            android:name="com.risibleapps.translator.splash.SplashScreen"
             android:exported="true"
             android:noHistory="true">
             <intent-filter>

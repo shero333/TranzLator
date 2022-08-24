@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:backgroundTint="?android:attr/textColorPrimary"
-    tools:context=".activity.ConversationLanguageList">
+    tools:context=".conversation.conversationLanguages.ConversationLanguageList">
 
     <!--app:contentInsetLeft="0dp"
         app:contentInsetStart="0dp"

@@ -1,4 +1,4 @@
-package com.risibleapps.translator.model;
+package com.risibleapps.translator.dictionary;
 
 import java.util.List;
 
@@ -30,6 +30,5 @@ public class DictionaryModel {
     public String getExample() {
         return example;
     }
-
 
 }

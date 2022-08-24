@@ -1,11 +1,4 @@
-package com.risibleapps.translator.activity;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+package com.risibleapps.translator.translate.translationLanguages;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,14 +11,20 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 
-import com.risibleapps.translator.adapter.ConversationLanguagesAdapter;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.risibleapps.translator.R;
 
-public class ConversationLanguageList extends AppCompatActivity implements ConversationLanguagesAdapter.OnConversationLanguageSelectionListener {
+public class TranslationLanguageList extends AppCompatActivity implements TranslationLanguagesAdapter.OnLanguageSelectionListener {
 
     Toolbar toolbar;
     RecyclerView recyclerView;
-    ConversationLanguagesAdapter conversationLanguagesAdapter;
+    TranslationLanguagesAdapter languagesAdapter;
     SharedPreferences mPreference;
     SharedPreferences.Editor mEditor;
     boolean bLangOnePressed, bLangTwoPressed;
@@ -33,10 +32,10 @@ public class ConversationLanguageList extends AppCompatActivity implements Conve
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_conversation_language_list);
+        setContentView(R.layout.activity_language_list);
 
         //initializing toolbar
-        toolbar = findViewById(R.id.toolbar_conversation_language_activity);
+        toolbar = findViewById(R.id.toolbar_language_activity);
         setSupportActionBar(toolbar);
 
         //sets the back button on toolbar
@@ -44,7 +43,7 @@ public class ConversationLanguageList extends AppCompatActivity implements Conve
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         //initializing recyclerview
-        recyclerView = findViewById(R.id.recyclerview_conversation_languages);
+        recyclerView = findViewById(R.id.recyclerview_languages);
 
         //setting default values for boolean variables
         bLangOnePressed = false;
@@ -58,24 +57,17 @@ public class ConversationLanguageList extends AppCompatActivity implements Conve
 
         //this function setup the recyclerview for supported languages
         setupRecyclerview();
+
     }
 
-    public void initializePreference() {
-        mPreference = PreferenceManager.getDefaultSharedPreferences(this);
-        mEditor = mPreference.edit();
-    }
+    public void setupRecyclerview() {
+        //setting the layout for recyclerview
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(linearLayoutManager);
 
-    public void setTitleBarText() {
-        //getting the intent from FragmentTranslation to set the title text
-        Intent intent = getIntent();
-        String buttonPressed = intent.getStringExtra("value");
-        if (buttonPressed.equals("Lang1")) {
-            toolbar.setTitle("Translate From");
-            bLangOnePressed = true;
-        } else if (buttonPressed.equals("Lang2")) {
-            toolbar.setTitle("Translate To");
-            bLangTwoPressed = true;
-        }
+        //setting the adapter to recyclerview
+        languagesAdapter = new TranslationLanguagesAdapter(this, this, bLangOnePressed, bLangTwoPressed);
+        recyclerView.setAdapter(languagesAdapter);
     }
 
     //this handles the back pressed button on toolbar
@@ -86,16 +78,6 @@ public class ConversationLanguageList extends AppCompatActivity implements Conve
             finish();
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public void setupRecyclerview() {
-        //setting the layout for recyclerview
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(linearLayoutManager);
-
-        //setting the adapter to recyclerview
-        conversationLanguagesAdapter = new ConversationLanguagesAdapter(this, this, bLangOnePressed, bLangTwoPressed);
-        recyclerView.setAdapter(conversationLanguagesAdapter);
     }
 
     //handling the searchview of toolbar
@@ -122,7 +104,7 @@ public class ConversationLanguageList extends AppCompatActivity implements Conve
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                conversationLanguagesAdapter.getFilter().filter(newText);
+                languagesAdapter.getFilter().filter(newText);
                 return false;
             }
         });
@@ -130,32 +112,50 @@ public class ConversationLanguageList extends AppCompatActivity implements Conve
         return super.onCreateOptionsMenu(menu);
     }
 
+    public void initializePreference() {
+        mPreference = PreferenceManager.getDefaultSharedPreferences(this);
+        mEditor = mPreference.edit();
+    }
+
+    public void setTitleBarText() {
+        //getting the intent from FragmentTranslation to set the title text
+        Intent intent = getIntent();
+        String buttonPressed = intent.getStringExtra("value");
+        if (buttonPressed.equals("Lang1")) {
+            toolbar.setTitle("Translate From");
+            bLangOnePressed = true;
+        } else if (buttonPressed.equals("Lang2")) {
+            toolbar.setTitle("Translate To");
+            bLangTwoPressed = true;
+        }
+    }
+
     //overridden function of OnLanguageSelectionListener interface
     @Override
-    public void onConversationLanguageSelection(String lang, String langCode, boolean btnOnePressed, boolean btnTwoPressed) {
+    public void onLanguageSelection(String lang, String langCode, boolean btnOnePressed, boolean btnTwoPressed) {
         if (btnOnePressed) {
-            mEditor.putString(getString(R.string.conversation_lang_one), lang);
+            mEditor.putString(getString(R.string.lang_one), lang);
             mEditor.apply();
-            mEditor.putString(getString(R.string.conversation_lang_one_code), langCode);
+            mEditor.putString(getString(R.string.lang_one_code), langCode);
             mEditor.apply();
         }
         else if (btnTwoPressed) {
-            mEditor.putString(getString(R.string.conversation_lang_two), lang);
+            mEditor.putString(getString(R.string.lang_two), lang);
             mEditor.apply();
-            mEditor.putString(getString(R.string.conversation_lang_two_code), langCode);
+            mEditor.putString(getString(R.string.lang_two_code), langCode);
             mEditor.apply();
         }
         finish();
     }
 
     //functions for preference change listeners
-    public static void registerConversationPreference(Context context, SharedPreferences.OnSharedPreferenceChangeListener listener)
+    public static void registerPreference(Context context,SharedPreferences.OnSharedPreferenceChangeListener listener)
     {
         SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(context);
         preferences.registerOnSharedPreferenceChangeListener(listener);
     }
 
-    public static void unregisterConversationPreference(Context context, SharedPreferences.OnSharedPreferenceChangeListener listener)
+    public static void unregisterPreference(Context context,SharedPreferences.OnSharedPreferenceChangeListener listener)
     {
         SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(context);
         preferences.unregisterOnSharedPreferenceChangeListener(listener);

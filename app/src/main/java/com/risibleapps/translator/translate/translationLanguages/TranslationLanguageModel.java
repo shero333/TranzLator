@@ -1,4 +1,4 @@
-package com.risibleapps.translator.model;
+package com.risibleapps.translator.translate.translationLanguages;
 
 public class TranslationLanguageModel {
     private String languageName;
@@ -13,15 +13,8 @@ public class TranslationLanguageModel {
         return languageName;
     }
 
-    public void setLanguageName(String languageName) {
-        this.languageName = languageName;
-    }
-
     public String getLanguageCode() {
         return languageCode;
     }
 
-    public void setLanguageCode(String languageCode) {
-        this.languageCode = languageCode;
-    }
 }

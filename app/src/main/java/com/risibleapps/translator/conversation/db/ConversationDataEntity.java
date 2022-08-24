@@ -1,4 +1,4 @@
-package com.risibleapps.translator.entities;
+package com.risibleapps.translator.conversation.db;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -36,8 +36,6 @@ public class ConversationDataEntity implements Serializable {
 
     @ColumnInfo(name = "textToSpeechCode")
     private String TTSCode;
-
-    //getter & setter
 
     public int getConID() {
         return conID;

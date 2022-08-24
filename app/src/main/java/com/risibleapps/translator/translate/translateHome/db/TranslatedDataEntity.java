@@ -1,5 +1,4 @@
-package com.risibleapps.translator.entities;
-
+package com.risibleapps.translator.translate.translateHome.db;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -11,8 +10,6 @@ import java.io.Serializable;
 @Entity(tableName = "language_translation_history")
 
 public class TranslatedDataEntity implements Serializable {
-
-    //column names for tables
 
     //column id
     @PrimaryKey(autoGenerate = true)
