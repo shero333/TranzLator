@@ -17,16 +17,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TranzLator">
         <activity
-            android:name="com.risibleapps.translator.activity.ConversationLanguageList"
+            android:name="com.risibleapps.translator.conversation.conversationLanguages.ConversationLanguageList"
             android:exported="true" />
         <activity
-            android:name="com.risibleapps.translator.activity.TranslationFullScreen"
+            android:name="com.risibleapps.translator.translate.translation.TranslationFullScreen"
             android:exported="true" />
         <activity
-            android:name="com.risibleapps.translator.activity.TranslationLanguageList"
+            android:name="com.risibleapps.translator.translate.translationLanguages.TranslationLanguageList"
             android:exported="false" />
         <activity
-            android:name="com.risibleapps.translator.activity.HomeScreen"
+            android:name="com.risibleapps.translator.mainActivity.HomeScreen"
             android:exported="true"
             android:windowSoftInputMode="adjustPan"/>
         <activity

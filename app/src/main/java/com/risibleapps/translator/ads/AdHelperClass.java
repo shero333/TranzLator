@@ -81,7 +81,6 @@ public class AdHelperClass {
                 @Override
                 public void onAdDismissedFullScreenContent() {
                     super.onAdDismissedFullScreenContent();
-
                     mInterstitialAd = null;
 
                     //calling the interface
@@ -211,6 +210,7 @@ public class AdHelperClass {
     }
 
     private static void populateUnifiedNativeAdView(UnifiedNativeAd nativeAd, UnifiedNativeAdView adView) {
+
         // Set the media view.
         adView.setMediaView((MediaView) adView.findViewById(R.id.ad_media));
 
@@ -224,15 +224,16 @@ public class AdHelperClass {
         adView.setStoreView(adView.findViewById(R.id.ad_store));
         adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
 
-
         // The headline and mediaContent are guaranteed to be in every UnifiedNativeAd.
         ((TextView) adView.getHeadlineView()).setText(nativeAd.getHeadline());
-        adView.getMediaView().setMediaContent(nativeAd.getMediaContent());
-
-        // These assets aren't guaranteed to be in every UnifiedNativeAd, so it's important to
 
         // checking the adView before every native ad, if any views doesn't exist in native ad. It will be handled without error.
 
+        if(adView.getMediaView() != null) {
+            adView.getMediaView().setMediaContent(nativeAd.getMediaContent());
+        }
+
+        // These assets aren't guaranteed to be in every UnifiedNativeAd, so it's important to
         if(adView.getBodyView() != null){
 
             if (nativeAd.getBody() == null) {
@@ -241,7 +242,6 @@ public class AdHelperClass {
                 adView.getBodyView().setVisibility(View.VISIBLE);
                 ((TextView) adView.getBodyView()).setText(nativeAd.getBody());
             }
-
         }
 
         if(adView.getCallToActionView() != null){
@@ -252,7 +252,6 @@ public class AdHelperClass {
                 adView.getCallToActionView().setVisibility(View.VISIBLE);
                 ((Button) adView.getCallToActionView()).setText(nativeAd.getCallToAction());
             }
-
         }
 
         if(adView.getIconView() != null){
@@ -264,7 +263,6 @@ public class AdHelperClass {
                         nativeAd.getIcon().getDrawable());
                 adView.getIconView().setVisibility(View.VISIBLE);
             }
-
         }
 
         if(adView.getPriceView() != null){
@@ -275,7 +273,6 @@ public class AdHelperClass {
                 adView.getPriceView().setVisibility(View.VISIBLE);
                 ((TextView) adView.getPriceView()).setText(nativeAd.getPrice());
             }
-
         }
 
         if(adView.getStoreView() != null){
@@ -286,7 +283,6 @@ public class AdHelperClass {
                 adView.getStoreView().setVisibility(View.VISIBLE);
                 ((TextView) adView.getStoreView()).setText(nativeAd.getStore());
             }
-
         }
 
         if(adView.getStarRatingView() != null){
@@ -298,7 +294,6 @@ public class AdHelperClass {
                         .setRating(nativeAd.getStarRating().floatValue());
                 adView.getStarRatingView().setVisibility(View.VISIBLE);
             }
-
         }
 
         if(adView.getAdvertiserView() != null){
@@ -309,11 +304,12 @@ public class AdHelperClass {
                 ((TextView) adView.getAdvertiserView()).setText(nativeAd.getAdvertiser());
                 adView.getAdvertiserView().setVisibility(View.VISIBLE);
             }
-
         }
 
-        // This method tells the Google Mobile Ads SDK that you have finished populating your
-        // native ad view with this native ad.
+        /*
+         This method tells the Google Mobile Ads SDK that you have finished populating your
+         native ad view with this native ad.
+        */
         adView.setNativeAd(nativeAd);
     }
 

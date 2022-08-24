@@ -70,7 +70,9 @@
                 android:textSize="@dimen/_10ssp"
                 tools:text="Install"
                 android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
                 app:layout_constraintStart_toEndOf="@id/ad_headline"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/ad_headline"
                 app:layout_constraintBottom_toBottomOf="@id/ad_body"/>
 

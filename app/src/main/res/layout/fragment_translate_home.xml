@@ -10,16 +10,18 @@
         android:id="@+id/fl_adplaceholder_trans_home"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="@dimen/_90sdp"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <LinearLayout
         android:id="@+id/linear_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:orientation="vertical"
         android:padding="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_5sdp"
         app:layout_constraintTop_toBottomOf="@id/fl_adplaceholder_trans_home"
-        android:layout_marginTop="@dimen/_45sdp">
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <include
             android:id="@+id/appbar_translate"

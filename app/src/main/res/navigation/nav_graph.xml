@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/bottom_nav_translation">
 
     <fragment
         android:id="@+id/bottom_nav_translation"
-        android:name="com.risibleapps.translator.fragment.TranslateHomeFragment"
+        android:name="com.risibleapps.translator.translate.translateHome.TranslateHomeFragment"
         android:label="TranslateHomeFragment">
         <action
             android:id="@+id/action_bottom_nav_translation_to_fragmentTranslation"
@@ -19,10 +18,10 @@
         android:label="ConversationFragment" />
     <fragment
         android:id="@+id/bottom_nav_dictionary"
-        android:name="com.risibleapps.translator.fragment.DictionaryFragment"
+        android:name="com.risibleapps.translator.dictionary.DictionaryFragment"
         android:label="DictionaryFragment" />
     <fragment
         android:id="@+id/fragmentTranslation"
-        android:name="com.risibleapps.translator.fragment.FragmentTranslation"
+        android:name="com.risibleapps.translator.translate.translation.FragmentTranslation"
         android:label="FragmentTranslation" />
 </navigation>

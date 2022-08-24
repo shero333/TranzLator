@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -45,6 +46,9 @@ public class SplashScreen extends AppCompatActivity {
         //initializing preferences
         initializePreference();
 
+        //loading the ads
+        mInterstitialAd = AdHelperClass.loadInterstitialAd(this);
+
         //getting the theme saved value from preference
         isDarkModeEnabled=preference.getBoolean(getString(R.string.pref_theme),false);
 
@@ -63,9 +67,6 @@ public class SplashScreen extends AppCompatActivity {
         setSplashAnimation();
 
         if(prefCounter<=1) {
-
-            //loading the ads
-            mInterstitialAd = AdHelperClass.loadInterstitialAd(this);
 
             //delaying the splash screen for 3.5 seconds
             new Handler().postDelayed(() -> {
