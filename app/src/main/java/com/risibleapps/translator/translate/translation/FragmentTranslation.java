@@ -113,6 +113,9 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     //native ad (of banner size)
     private UnifiedNativeAd nativeAd;
 
+    // tts for bundle data from Home Translation Fragment(Translation History)
+    private TextToSpeech mTTSBundle;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -362,7 +365,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        try (InputStream is = getResources().openRawResource(R.raw.credentials)) {
+        try (InputStream is = getResources().openRawResource(R.raw.credentials_1)) {
             //get credentials
             final GoogleCredentials myCredentials = GoogleCredentials.fromStream(is);
 
@@ -626,6 +629,43 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         textViewImageVolumeUp.setVisibility(View.VISIBLE);
         imageViewCopyContent.setVisibility(View.VISIBLE);
         textViewImageMoreOptions.setVisibility(View.VISIBLE);
+
+        //text to speech click listener
+        textViewImageVolumeUp.setOnClickListener(v -> {
+
+            //initializing text to speech
+            mTTSBundle = new TextToSpeech(getActivity(), status -> {
+
+                if(status == TextToSpeech.SUCCESS){
+
+                    String localeCode = "";
+
+                    for (Locale text : mTTSBundle.getAvailableLanguages()) {
+                        if (text.toLanguageTag().contains(targetLangCode)) {
+                            localeCode = text.toLanguageTag();
+                            break;
+                        }
+                    }
+
+                    if (localeCode.isEmpty()) {
+                        textViewImageVolumeUp.setVisibility(View.INVISIBLE);
+                    } else if (!(localeCode.isEmpty())) {
+                        textViewImageVolumeUp.setVisibility(View.VISIBLE);
+                    }
+
+                    Locale locale = new Locale(localeCode);
+                    mTTSBundle.setLanguage(locale);
+
+                    //setting the speed rate of TTS. Normal is 1.0f. Slower < 1.0f ; Faster > 1.0f
+                    mTTSBundle.setSpeechRate(0.7f);
+
+                    mTTSBundle.speak(textViewTranslation.getText().toString().trim(), TextToSpeech.QUEUE_FLUSH, null, null);
+
+                }
+
+            });
+
+        });
     }
 
     public void checkBundleData(Bundle bundle) {
@@ -664,7 +704,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
                 mTTS.setSpeechRate(0.7f);
 
             } else if (status == TextToSpeech.ERROR) {
-                Log.d("TTS Initialization TRA", "Error in TTS translated text Initialization");
+                Log.d("TTS Initialization TRA", "Error in TTS translated text Initialization" + status);
             }
         });
     }

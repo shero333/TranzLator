@@ -179,8 +179,14 @@ public class AdHelperClass {
                             break;
                         }
 
-                    }
+                        case 6: {
+                            //Translation Home Fragment Recyclerview
+                            frameLayout = initializeNativeFrameLayout(activity,R.id.fl_adplaceholder_recycler_home);
+                            adView = initializeNativeAdView(activity,R.layout.ad_unified_dialog);
+                            break;
+                        }
 
+                    }
 
                     if(frameLayout != null){
                         populateUnifiedNativeAdView(unifiedNativeAd, adView);

@@ -81,7 +81,6 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
 
         View view = inflater.inflate(R.layout.fragment_translate_home, container, false);
 
-
         //initialize preference
         mPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
         mEditor = mPreference.edit();

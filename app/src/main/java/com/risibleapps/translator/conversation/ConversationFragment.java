@@ -464,7 +464,7 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        try (InputStream is = getResources().openRawResource(R.raw.credentials)) {
+        try (InputStream is = getResources().openRawResource(R.raw.credentials_1)) {
             //get credentials
             final GoogleCredentials myCredentials = GoogleCredentials.fromStream(is);
 

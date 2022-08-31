@@ -1,65 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="@dimen/_45sdp"
-    android:layout_marginBottom="@dimen/_50sdp"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_marginBottom="@dimen/_50sdp">
 
     <FrameLayout
         android:id="@+id/fl_adplaceholder_conversation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        android:minHeight="@dimen/_90sdp"/>
+        android:minHeight="@dimen/_90sdp"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <ScrollView
+    <include
+        android:id="@+id/lang_selection_tab"
+        layout="@layout/layout_language_selection"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/_10sdp"
+        app:layout_constraintTop_toBottomOf="@id/fl_adplaceholder_conversation" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview_conversation"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:fillViewport="true"
-        app:layout_constraintTop_toBottomOf="@id/fl_adplaceholder_conversation"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginBottom="@dimen/_20sdp"
+        app:layout_constraintTop_toBottomOf="@id/lang_selection_tab"
+        app:layout_constraintBottom_toTopOf="@id/imageview_speak_lang_1"/>
+
+    <ImageView
+        android:id="@+id/imageview_speak_lang_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_20sdp"
+        android:layout_marginBottom="@dimen/_20sdp"
+        android:src="@drawable/ic_mic"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="@dimen/_5sdp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:tint="?android:attr/textColorPrimary" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <include layout="@layout/layout_language_selection"
-                android:id="@+id/lang_selection_tab"/>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerview_conversation"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/_50sdp"
-                android:layout_marginBottom="@dimen/_120sdp"
-                app:layout_constraintTop_toBottomOf="@id/lang_selection_tab"/>
-
-            <ImageView
-                android:id="@+id/imageview_speak_lang_1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_mic"
-                app:tint="?android:attr/textColorPrimary"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginBottom="@dimen/_20sdp"
-                android:layout_marginStart="@dimen/_20sdp"/>
-
-            <ImageView
-                android:id="@+id/imageview_speak_lang_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_mic"
-                app:tint="@color/colorPrimary"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginBottom="@dimen/_20sdp"
-                android:layout_marginEnd="@dimen/_20sdp"/>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </ScrollView>
+    <ImageView
+        android:id="@+id/imageview_speak_lang_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_20sdp"
+        android:layout_marginBottom="@dimen/_20sdp"
+        android:src="@drawable/ic_mic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/colorPrimary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

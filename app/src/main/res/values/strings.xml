@@ -55,9 +55,6 @@
     <string name="ad_attribution">Ad</string>
     <string name="testing_text">Testing Text</string>
 
-    <!-- Ad ids -->
-    <string name="banner_ad_id">ca-app-pub-1814031312363155/5325339094</string>
-
     <string name="native_ad_id_debug">ca-app-pub-3940256099942544/2247696110</string>
     <string name="native_ad_id_release">ca-app-pub-1814031312363155/6497566953</string>
 

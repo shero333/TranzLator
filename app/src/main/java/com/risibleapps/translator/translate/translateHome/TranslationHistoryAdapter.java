@@ -1,5 +1,6 @@
 package com.risibleapps.translator.translate.translateHome;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,20 +12,24 @@ import androidx.annotation.NonNull;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.risibleapps.translator.R;
+import com.risibleapps.translator.ads.AdHelperClass;
 import com.risibleapps.translator.translate.translateHome.db.TranslatedDataEntity;
 
 import java.util.List;
 
 public class TranslationHistoryAdapter extends RecyclerView.Adapter<TranslationHistoryAdapter.MyViewHolder> {
 
-    Context context;
-    List<TranslatedDataEntity> translatedDataEntityList;
-
     //for native ad
     private static final int LIST_AD_POS = 4;
     private static final int CONTENT_TYPE = 0;
     private static final int AD_TYPE = 1;
+    Context context;
+    List<TranslatedDataEntity> translatedDataEntityList;
+
+    //native ad
+    UnifiedNativeAd nativeAd;
 
     public TranslationHistoryAdapter(Context context, List<TranslatedDataEntity> dataEntityList) {
         this.context = context;
@@ -35,13 +40,13 @@ public class TranslationHistoryAdapter extends RecyclerView.Adapter<TranslationH
     @NonNull
     @Override
     public TranslationHistoryAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
         LayoutInflater inflater = LayoutInflater.from(context);
         View view;
 
-        if(viewType == AD_TYPE){
-            view = inflater.inflate(R.layout.ad_unified_dialog, parent, false);
-        }
-        else {
+        if (viewType == AD_TYPE) {
+            view = inflater.inflate(R.layout.layout_recycler_native_ad_view, parent, false);
+        } else {
             view = inflater.inflate(R.layout.layout_translation_history, parent, false);
         }
 
@@ -51,13 +56,25 @@ public class TranslationHistoryAdapter extends RecyclerView.Adapter<TranslationH
     @Override
     public void onBindViewHolder(@NonNull TranslationHistoryAdapter.MyViewHolder holder, int position) {
 
-        if(getItemViewType(position) == CONTENT_TYPE){
+        if (getItemViewType(position) == CONTENT_TYPE) {
             TranslatedDataEntity dataList = translatedDataEntityList.get(getRealPosition(position));
 
             holder.textViewLang1.setText(dataList.getSourceLang());
             holder.textViewLang2.setText(dataList.getTargetLang());
             holder.textViewEnteredText.setText(dataList.getSourceText());
             holder.textViewTranslatedText.setText(dataList.getTranslatedText());
+
+            if(nativeAd != null){
+                nativeAd.destroy();
+            }
+
+        }
+        else if (getItemViewType(position) == AD_TYPE) {
+            nativeAd = AdHelperClass.refreshNativeAd((Activity) context, 6, null);
+
+            if(nativeAd != null){
+                nativeAd.destroy();
+            }
         }
     }
 
@@ -70,9 +87,9 @@ public class TranslationHistoryAdapter extends RecyclerView.Adapter<TranslationH
 
     @Override
     public int getItemViewType(int position) {
-       if(position % LIST_AD_POS == 3 )
-           return AD_TYPE;
-       return CONTENT_TYPE;
+        if (position % LIST_AD_POS == 3)
+            return AD_TYPE;
+        return CONTENT_TYPE;
     }
 
     private int getRealPosition(int position) {
@@ -97,19 +114,19 @@ public class TranslationHistoryAdapter extends RecyclerView.Adapter<TranslationH
             //click listener for history recyclerview
             itemView.setOnClickListener(v -> {
 
-                TranslatedDataEntity dataEntityItem=translatedDataEntityList.get(getAdapterPosition());
+                TranslatedDataEntity dataEntityItem = translatedDataEntityList.get(getRealPosition(getAdapterPosition()));
 
                 //bundle for passing data to other fragment
-                Bundle bundle=new Bundle();
-                bundle.putString("srcLang",dataEntityItem.getSourceLang());
-                bundle.putString("srcLangCode",dataEntityItem.getSourceLangCode());
-                bundle.putString("srcText",dataEntityItem.getSourceText());
+                Bundle bundle = new Bundle();
+                bundle.putString("srcLang", dataEntityItem.getSourceLang());
+                bundle.putString("srcLangCode", dataEntityItem.getSourceLangCode());
+                bundle.putString("srcText", dataEntityItem.getSourceText());
 
-                bundle.putString("trgtLang",dataEntityItem.getTargetLang());
-                bundle.putString("trgtLangCode",dataEntityItem.getTargetLangCode());
-                bundle.putString("transText",dataEntityItem.getTranslatedText());
+                bundle.putString("trgtLang", dataEntityItem.getTargetLang());
+                bundle.putString("trgtLangCode", dataEntityItem.getTargetLangCode());
+                bundle.putString("transText", dataEntityItem.getTranslatedText());
 
-                Navigation.findNavController(itemView).navigate(R.id.action_bottom_nav_translation_to_fragmentTranslation,bundle);
+                Navigation.findNavController(itemView).navigate(R.id.action_bottom_nav_translation_to_fragmentTranslation, bundle);
 
             });
         }
