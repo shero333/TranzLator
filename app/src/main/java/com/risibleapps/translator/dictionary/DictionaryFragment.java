@@ -239,7 +239,6 @@ public class DictionaryFragment extends Fragment {
                 //getting the 'meanings' JSON Array
                 JSONArray meaningsJsonArray = mainJsonObject.getJSONArray("meanings");
 
-
                 if (meaningsJsonArray.length() >= 1) {
                     for (int i = 0; i < meaningsJsonArray.length(); i++) {
 

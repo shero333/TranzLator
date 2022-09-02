@@ -44,6 +44,11 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.material.textfield.TextInputEditText;
@@ -51,18 +56,25 @@ import com.google.android.material.textview.MaterialTextView;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
-import com.google.cloud.translate.Translation;
+import com.risibleapps.translator.ClassOne;
 import com.risibleapps.translator.R;
 import com.risibleapps.translator.ads.AdHelperClass;
 import com.risibleapps.translator.room.TranslationRoomDB;
 import com.risibleapps.translator.translate.translateHome.db.TranslatedDataEntity;
 import com.risibleapps.translator.translate.translationLanguages.TranslationLanguageList;
+import com.risibleapps.translator.volleyLibrary.VolleySingleton;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuItemClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -109,10 +121,92 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
     //interstitial ad instance
     private InterstitialAd mInterstitialAd;
+    public TextWatcher textWatcher = new TextWatcher() {
 
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            if (s.toString().trim().length() > 0) {
+                editTextImageSpeak.setImageResource(R.drawable.ic_arrow_forward);
+
+                editTextImageSpeak.setOnClickListener(v -> {
+
+                    //hiding the soft input keyboard
+                    hideSoftInputKeyboard(v);
+
+                    if (s.toString().trim().length() == 0) {
+                        checkAudioPermission();
+                    } else if (checkInternetConnection()) {
+                        //setting the translation service
+                        //getTranslateService();
+
+                        //condition to check source & target languages
+                        if (sourceLangCode.equals(targetLangCode)) {
+                            Toast.makeText(requireContext(), "Please select different source & target Translation languages", Toast.LENGTH_SHORT).show();
+                        } else {
+                            //incrementing the value
+                            translateAdCount++;
+
+                            //saving the incremeted value in preference
+                            mEditor.putInt(getString(R.string.translation_ad_count), translateAdCount);
+
+                            //ad will be displayed after every two translation clicks
+                            if (translateAdCount == 0 || translateAdCount == 3) {
+                                //displaying ad before translation
+                                AdHelperClass.showInterstitialAd(requireActivity(), new AdHelperClass.AdCloseListener() {
+                                    @Override
+                                    public void onAdClosed() {
+                                        //function for calling the text translation through Async Task
+                                        transText(s);
+
+                                        //loading the ad again
+                                        if (mInterstitialAd == null) {
+                                            mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
+                                        }
+                                    }
+                                });
+                            } else {
+                                //function for calling the text translation through Async Task
+                                transText(s);
+
+                                //setting the value to 1, when preference count reaches 3.
+                                if (translateAdCount > 3) {
+                                    mEditor.putInt(getString(R.string.translation_ad_count), 1).apply();
+
+                                    //setting the current count to 1 as well
+                                    translateAdCount = 1;
+                                }
+                            }
+                        }
+
+                    } else {
+                        Toast.makeText(getContext(), "No Internet connection! Cannot be translated", Toast.LENGTH_SHORT).show();
+                    }
+
+                });
+            } else {
+                editTextImageSpeak.setImageResource(R.drawable.ic_mic_translation);
+
+                textViewTranslation.setVisibility(View.GONE);
+                textViewImageVolumeUp.setVisibility(View.GONE);
+                imageViewCopyContent.setVisibility(View.GONE);
+                textViewImageMoreOptions.setVisibility(View.GONE);
+
+                //setting the progress bar visiblity to gone
+                progressBar.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+        }
+    };
     //native ad (of banner size)
     private UnifiedNativeAd nativeAd;
-
     // tts for bundle data from Home Translation Fragment(Translation History)
     private TextToSpeech mTTSBundle;
 
@@ -231,7 +325,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         progressBar.bringToFront();
 
         //initializing native ad
-        nativeAd = AdHelperClass.refreshNativeAd(requireActivity(),3,null);
+        nativeAd = AdHelperClass.refreshNativeAd(requireActivity(), 3, null);
     }
 
     @Override
@@ -255,93 +349,8 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         return true;
     }
 
-    public TextWatcher textWatcher = new TextWatcher() {
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            if (s.toString().trim().length() > 0) {
-                editTextImageSpeak.setImageResource(R.drawable.ic_arrow_forward);
-
-                editTextImageSpeak.setOnClickListener(v -> {
-
-                    //hiding the soft input keyboard
-                    hideSoftInputKeyboard(v);
-
-                    if (s.toString().trim().length() == 0) {
-                        checkAudioPermission();
-                    } else if (checkInternetConnection()) {
-                        //setting the translation service
-                        getTranslateService();
-
-                        //condition to check source & target languages
-                        if (sourceLangCode.equals(targetLangCode)) {
-                            Toast.makeText(requireContext(), "Please select different source & target Translation languages", Toast.LENGTH_SHORT).show();
-                        }
-                        else {
-                            //incrementing the value
-                            translateAdCount++;
-
-                            //saving the incremeted value in preference
-                            mEditor.putInt(getString(R.string.translation_ad_count), translateAdCount);
-
-                            //ad will be displayed after every two translation clicks
-                            if (translateAdCount == 0 || translateAdCount == 3) {
-                                //displaying ad before translation
-                                AdHelperClass.showInterstitialAd(requireActivity(), new AdHelperClass.AdCloseListener() {
-                                    @Override
-                                    public void onAdClosed() {
-                                        //function for calling the text translation through Async Task
-                                        transText(s);
-
-                                        //loading the ad again
-                                        if (mInterstitialAd == null) {
-                                            mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
-                                        }
-                                    }
-                                });
-                            }
-                            else {
-                                //function for calling the text translation through Async Task
-                                transText(s);
-
-                                //setting the value to 1, when preference count reaches 3.
-                                if (translateAdCount > 3) {
-                                    mEditor.putInt(getString(R.string.translation_ad_count), 1).apply();
-
-                                    //setting the current count to 1 as well
-                                    translateAdCount = 1;
-                                }
-                            }
-                        }
-
-                    } else {
-                        Toast.makeText(getContext(), "No Internet connection! Cannot be translated", Toast.LENGTH_SHORT).show();
-                    }
-
-                });
-            } else {
-                editTextImageSpeak.setImageResource(R.drawable.ic_mic_translation);
-
-                textViewTranslation.setVisibility(View.GONE);
-                textViewImageVolumeUp.setVisibility(View.GONE);
-                imageViewCopyContent.setVisibility(View.GONE);
-                textViewImageMoreOptions.setVisibility(View.GONE);
-
-                //setting the progress bar visiblity to gone
-                progressBar.setVisibility(View.GONE);
-            }
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {}
-    };
-
-    private void transText(CharSequence s){
-        TranslationAsyncTask asyncTask=new TranslationAsyncTask(FragmentTranslation.this);
+    private void transText(CharSequence s) {
+        TranslationAsyncTask asyncTask = new TranslationAsyncTask(FragmentTranslation.this);
         asyncTask.execute(s.toString(), sourceLangCode, targetLangCode);
 
         //function for checking the TTS (text to speech) of language
@@ -370,7 +379,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
             final GoogleCredentials myCredentials = GoogleCredentials.fromStream(is);
 
             //setting credentials and get translate service
-            TranslateOptions translateOptions = TranslateOptions.newBuilder().setCredentials(myCredentials).build();
+            TranslateOptions translateOptions = TranslateOptions.newBuilder().setApiKey("AIzaSyDVAXhAWiB_OfRx71wm5HMyUzfclSkDnxs")/*.setCredentials(myCredentials)*/.build();
             translate = translateOptions.getService();
 
         } catch (IOException e) {
@@ -379,12 +388,61 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     }
 
     public String translate(String textToTranslate, String sourceLang, String targetLang) {
-        String translatedText;
+
+        /*String translatedText;
 
         Translation translation = translate.translate(textToTranslate, Translate.TranslateOption.sourceLanguage(sourceLang), Translate.TranslateOption.targetLanguage(targetLang), Translate.TranslateOption.model("base"));
         translatedText = translation.getTranslatedText();
 
-        return translatedText;
+        return translatedText;*/
+
+        final String[] translatedText = new String[1];
+
+        String apiKeyRestricted = "AIzaSyDVAXhAWiB_OfRx71wm5HMyUzfclSkDnxs";
+        String apiKeyUnrestricted = "AIzaSyBaj2X07n8w6bWSh_PfoiDQD0MwYZfkib0";
+        String yApiKey = "AIzaSyBMQNG-qurBQdQEEMJaSztmwbyVkHOvghA";
+
+        String URL = "https://www.googleapis.com/language/translate/v2?key=" + apiKeyRestricted + "&source=" + sourceLang + "&target=" + targetLang + "&q=" + textToTranslate;
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, URL, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+                try {
+                    JSONObject object1 = response.getJSONObject("data");
+
+                    JSONArray array = object1.getJSONArray("translations");
+
+                    translatedText[0] = array.getString(0);
+
+                    Log.i("HELLO_123", "onResponse: " + translatedText[0]);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Log.i("HELLO_123", "JSON ececption: " + e.getMessage());
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.i("HELLO_123", "Response Error: " + error.getMessage());
+                error.getMessage();
+            }
+        })/*;*/ {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+
+                Map<String, String> header = new HashMap<>();
+                header.put("X-Android-Package", getContext().getPackageName());
+                header.put("X-Android-Cert", ClassOne.Companion.getApplicationSignature(getContext(), getContext().getPackageName()));
+
+                return /*super.getHeaders()*/header;
+            }
+        };
+
+        //instantiating the VolleySingleton Class
+        VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+
+        return translatedText[0];
     }
 
     public void languageSelection() {
@@ -400,7 +458,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
                     startActivity(intent);
 
                     //load the ad after showing
-                    if(mInterstitialAd == null){
+                    if (mInterstitialAd == null) {
                         mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
                     }
 
@@ -419,7 +477,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
                     startActivity(intent);
 
                     //loading the ad again
-                    if(mInterstitialAd == null){
+                    if (mInterstitialAd == null) {
                         mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
                     }
                 }
@@ -476,7 +534,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         TranslationLanguageList.unregisterPreference(getActivity(), this);
 
         //destroying the native ad instance
-        if(nativeAd != null){
+        if (nativeAd != null) {
             nativeAd.destroy();
         }
 
@@ -636,7 +694,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
             //initializing text to speech
             mTTSBundle = new TextToSpeech(getActivity(), status -> {
 
-                if(status == TextToSpeech.SUCCESS){
+                if (status == TextToSpeech.SUCCESS) {
 
                     String localeCode = "";
 
@@ -852,5 +910,6 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
             fragment.saveToDatabase();
         }
     }
+
 
 }
