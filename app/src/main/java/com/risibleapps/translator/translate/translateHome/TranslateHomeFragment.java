@@ -315,7 +315,6 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         TranslationLanguageList.registerPreference(getActivity(), this);
     }
 
-
     @Override
     public void onPause() {
 

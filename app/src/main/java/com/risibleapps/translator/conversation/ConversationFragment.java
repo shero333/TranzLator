@@ -12,7 +12,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
@@ -33,24 +32,31 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.material.textview.MaterialTextView;
-import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.translate.Translate;
-import com.google.cloud.translate.TranslateOptions;
-import com.google.cloud.translate.Translation;
 import com.risibleapps.translator.R;
 import com.risibleapps.translator.ads.AdHelperClass;
 import com.risibleapps.translator.conversation.conversationLanguages.ConversationLanguageList;
 import com.risibleapps.translator.conversation.db.ConversationDataEntity;
 import com.risibleapps.translator.room.TranslationRoomDB;
+import com.risibleapps.translator.volleyLibrary.VolleySingleton;
 
-import java.io.IOException;
-import java.io.InputStream;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class ConversationFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener, ConversationAdapter.OnSpeakerPressedListener {
 
@@ -415,8 +421,6 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
     private void translateText(String text, String sourceCode, String targetCode, int requestCode) {
 
         if (checkInternetConnection()) {
-            //setting the translation service
-            getTranslateService();
 
             //condition to check source & target languages
             if (srcLangCode.equals(trgtLangCode)) {
@@ -424,7 +428,61 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
             } else {
 
                 //translating the text
-                strTranslatedText = translate(text, sourceCode, targetCode);
+                //strTranslatedText = translate(text, sourceCode, targetCode);
+
+                String URL = "https://www.googleapis.com/language/translate/v2?key=" + getString(R.string.api_key) + "&source=" + sourceCode + "&target=" + targetCode + "&q=" + text;
+
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, URL, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        try {
+                            JSONObject object1 = response.getJSONObject("data");
+
+                            JSONArray array = object1.getJSONArray("translations");
+
+                            //setting the returned text to textview
+                            textViewTranslation.setText(array.getJSONObject(0).getString("translatedText"));
+
+                            //setting the progress bar visibility to gone
+                            progressBar.setVisibility(View.GONE);
+
+                            //setting the visibility of textview where translated text is set
+                            textViewTranslation.setVisibility(View.VISIBLE);
+
+                            imageViewCopyContent.setVisibility(View.VISIBLE);
+                            textViewImageMoreOptions.setVisibility(View.VISIBLE);
+
+                            //saving data to database here because data is saved to DB when both iput edit tex and text view translation have length greater than zero
+                            saveToDatabase();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.getMessage();
+
+                        //showing the toast message
+                        Toast.makeText(getContext(), "Error! cannot translate.", Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+
+                        Map<String, String> header = new HashMap<>();
+                        header.put("X-Android-Package", getContext().getPackageName());
+                        header.put("X-Android-Cert", getSignature(getContext().getPackageManager(),getContext().getPackageName()));
+
+                        return header;
+                    }
+                };
+
+                //instantiating the VolleySingleton Class
+                VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(jsonObjectRequest);
 
                 //this condition checks which mic was pressed and displays that particular view
                 if (requestCode == 1) {
@@ -460,30 +518,10 @@ public class ConversationFragment extends Fragment implements SharedPreferences.
         return isConnected;
     }
 
-    public void getTranslateService() {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+    public void translate(String textToTranslate, String sourceLang, String targetLang) {
 
-        try (InputStream is = getResources().openRawResource(R.raw.credentials_1)) {
-            //get credentials
-            final GoogleCredentials myCredentials = GoogleCredentials.fromStream(is);
 
-            //setting credentials and get translate service
-            TranslateOptions translateOptions = TranslateOptions.newBuilder().setCredentials(myCredentials).build();
-            translate = translateOptions.getService();
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String translate(String textToTranslate, String sourceLang, String targetLang) {
-        String translatedText;
-
-        Translation translation = translate.translate(textToTranslate, Translate.TranslateOption.sourceLanguage(trimLanguageCode(sourceLang)), Translate.TranslateOption.targetLanguage(trimLanguageCode(targetLang)), Translate.TranslateOption.model("base"));
-        translatedText = translation.getTranslatedText();
-
-        return translatedText;
     }
 
     /*
