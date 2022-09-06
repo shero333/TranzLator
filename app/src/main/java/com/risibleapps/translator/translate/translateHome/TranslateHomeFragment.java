@@ -27,10 +27,12 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.material.textview.MaterialTextView;
 import com.risibleapps.translator.R;
+import com.risibleapps.translator.Util.Constants;
 import com.risibleapps.translator.ads.AdHelperClass;
 import com.risibleapps.translator.room.TranslationRoomDB;
 import com.risibleapps.translator.translate.translateHome.db.TranslatedDataEntity;
@@ -40,8 +42,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TranslateHomeFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
-
-    private static final int REQUEST_CODE_AUDIO = 10;
 
     TextView textViewTranslTransferFragment;
     ImageView imageViewSwapLang,imageViewMic;
@@ -74,6 +74,9 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     InterstitialAd mInterstitialAd;
 
     UnifiedNativeAd nativeAd;
+
+    //shimmer layout
+    ShimmerFrameLayout shimmerFrameLayout;
 
     @Nullable
     @Override
@@ -137,6 +140,9 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
         //initializing history recyclerview
         recyclerViewHistory = view.findViewById(R.id.recyclerview_history);
 
+        //initializing the native ad shimmer layout
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_trans_home_frag);
+
         //initializing room DB
         database =TranslationRoomDB.getInstance(getContext());
     }
@@ -152,36 +158,30 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
 
     public void languageSelectionHome() {
         //click listener for lang 1
-        materialLang1.setOnClickListener(v -> {
+        materialLang1.setOnClickListener(v -> AdHelperClass.showInterstitialAd(requireActivity(), () -> {
 
-            AdHelperClass.showInterstitialAd(requireActivity(), () -> {
+            Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
+            intent.putExtra("value", "Lang1");
+            startActivity(intent);
 
-                Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
-                intent.putExtra("value", "Lang1");
-                startActivity(intent);
-
-                //load the ad again after showing
-                if(mInterstitialAd == null){
-                    mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
-                }
-            });
-        });
+            //load the ad again after showing
+            if(mInterstitialAd == null){
+                mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
+            }
+        }));
 
         //click listener for lang 2
-        materialLang2.setOnClickListener(v -> {
+        materialLang2.setOnClickListener(v -> AdHelperClass.showInterstitialAd(requireActivity(), () -> {
 
-            AdHelperClass.showInterstitialAd(requireActivity(), () -> {
+            Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
+            intent.putExtra("value", "Lang2");
+            startActivity(intent);
 
-                Intent intent = new Intent(getActivity(), TranslationLanguageList.class);
-                intent.putExtra("value", "Lang2");
-                startActivity(intent);
-
-                //load the ad again after showing
-                if(mInterstitialAd == null){
-                    mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
-                }
-            });
-        });
+            //load the ad again after showing
+            if(mInterstitialAd == null){
+                mInterstitialAd = AdHelperClass.loadInterstitialAd(requireContext());
+            }
+        }));
     }
 
     public void setRecyclerview() {
@@ -284,7 +284,7 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
 
     public void checkAudioPermission() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_CODE_AUDIO);
+            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, Constants.REQUEST_CODE_AUDIO_INPUT);
         } else {
             speechToTextNavigation();
         }
@@ -294,7 +294,7 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == REQUEST_CODE_AUDIO && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == Constants.REQUEST_CODE_AUDIO_INPUT && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             speechToTextNavigation();
         }
 
@@ -316,10 +316,18 @@ public class TranslateHomeFragment extends Fragment implements SharedPreferences
     }
 
     @Override
-    public void onPause() {
+    public void onResume() {
+        super.onResume();
+        shimmerFrameLayout.startShimmer();
+    }
 
+    @Override
+    public void onPause() {
         //setting the interstitial ad to null
         mInterstitialAd = null;
+
+        //stopping the shimmer effect
+        shimmerFrameLayout.stopShimmer();
 
         super.onPause();
     }

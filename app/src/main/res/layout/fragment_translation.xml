@@ -12,7 +12,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        android:minHeight="@dimen/_90sdp"/>
+        android:minHeight="@dimen/_90sdp">
+
+        <include android:id="@+id/shimmer_trans_frag"
+            layout="@layout/shimmer_ad_unified_small"/>
+
+    </FrameLayout>
 
     <ScrollView
         android:layout_width="match_parent"

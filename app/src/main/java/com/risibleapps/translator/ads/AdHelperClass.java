@@ -119,8 +119,7 @@ public class AdHelperClass {
                 unifiedNativeAd -> {
                     // If this callback occurs after the activity is destroyed, you must call
                     // destroy and return or you may get a memory leak.
-                    boolean isDestroyed = false;
-                    if (isDestroyed || activity.isFinishing() || activity.isChangingConfigurations()) {
+                    if (activity.isFinishing() || activity.isChangingConfigurations()) {
                         unifiedNativeAd.destroy();
                         return;
                     }
@@ -317,6 +316,7 @@ public class AdHelperClass {
          native ad view with this native ad.
         */
         adView.setNativeAd(nativeAd);
+
     }
 
     //function for initializing the frame layout

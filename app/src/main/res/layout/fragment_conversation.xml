@@ -11,7 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="@dimen/_90sdp"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include android:id="@+id/shimmer_conversation"
+            layout="@layout/shimmer_ad_unified_small"/>
+
+    </FrameLayout>
 
     <include
         android:id="@+id/lang_selection_tab"

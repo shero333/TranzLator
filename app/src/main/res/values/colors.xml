@@ -20,4 +20,6 @@
 
     <color name="colorRatingBar">#F32011</color>
 
+    <color name="shimmerPlaceHolderColor">#dddddd</color>
+
 </resources>

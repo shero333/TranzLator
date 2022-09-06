@@ -18,8 +18,8 @@ android {
         applicationId "com.risibleapps.translator"
         minSdk 21
         targetSdk 31
-        versionCode 4
-        versionName "1.004"
+        versionCode 5
+        versionName "1.005"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.release
@@ -34,9 +34,12 @@ android {
 
     buildTypes {
         release {
-            /*minifyEnabled true
-            shrinkResources false*/
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        build{
         }
     }
     compileOptions {
@@ -83,6 +86,9 @@ dependencies {
 
     //google AdMob dependency
     implementation 'com.google.android.gms:play-services-ads:19.7.0'
+
+    //shimmer for loading animation
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
 
     testImplementation 'junit:junit:'
     testImplementation 'org.testng:testng:6.9.6'

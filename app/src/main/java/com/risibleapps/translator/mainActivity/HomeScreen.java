@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.Switch;
 
 import androidx.annotation.NonNull;
@@ -18,12 +19,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -241,11 +244,18 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
         //setting the transparent background
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
+        //setting the width and height of alert dialog
+        dialog.getWindow().setLayout(ConstraintLayout.LayoutParams.MATCH_PARENT,ConstraintLayout.LayoutParams.WRAP_CONTENT);
+
+        //loading the native ad shimmer
+        ShimmerFrameLayout shimmerFrameLayout = dialog.findViewById(R.id.shimmer_exit_dialog);
+
         //loading the ad
         nativeAd = AdHelperClass.refreshNativeAd(this,1,dialog);
 
         AppCompatButton buttonExit=dialog.findViewById(R.id.btn_exit);
         AppCompatButton buttonCancel=dialog.findViewById(R.id.btn_cancel);
+
 
         //click listener buttons
         buttonExit.setOnClickListener(view -> {

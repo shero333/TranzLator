@@ -10,9 +10,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -49,12 +47,14 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
-import com.google.common.io.BaseEncoding;
 import com.risibleapps.translator.R;
+import com.risibleapps.translator.Util.Commons;
+import com.risibleapps.translator.Util.Constants;
 import com.risibleapps.translator.ads.AdHelperClass;
 import com.risibleapps.translator.room.TranslationRoomDB;
 import com.risibleapps.translator.translate.translateHome.db.TranslatedDataEntity;
@@ -65,17 +65,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuItemClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
-
-    public static final int REQUEST_CODE_AUDIO = 101;
-    public static final int REQUEST_CODE_SPEECH_INPUT = 102;
 
     ImageView editTextImageSpeak;
     ImageView textViewImageVolumeUp, textViewImageMoreOptions;
@@ -120,6 +115,9 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
     // tts for bundle data from Home Translation Fragment(Translation History)
     private TextToSpeech mTTSBundle;
+
+    //shimmer layout
+    private ShimmerFrameLayout shimmerFrameLayout;
 
     @Nullable
     @Override
@@ -234,6 +232,9 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
         //initialize progressbar
         progressBar = view.findViewById(R.id.progress_circular);
         progressBar.bringToFront();
+
+        //native ad shimmer layout
+        shimmerFrameLayout=view.findViewById(R.id.shimmer_trans_frag);
 
         //initializing native ad
         nativeAd = AdHelperClass.refreshNativeAd(requireActivity(), 3, null);
@@ -396,7 +397,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
                     imageViewCopyContent.setVisibility(View.VISIBLE);
                     textViewImageMoreOptions.setVisibility(View.VISIBLE);
 
-                    //saving data to database here because data is saved to DB when both iput edit tex and text view translation have length greater than zero
+                    //saving data to database here because data is saved to DB when both input edit tex and text view translation have length greater than zero
                     saveToDatabase();
 
                 } catch (JSONException e) {
@@ -426,7 +427,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
                 Map<String, String> header = new HashMap<>();
                 header.put("X-Android-Package", getContext().getPackageName());
-                header.put("X-Android-Cert", getSignature(getContext().getPackageManager(),getContext().getPackageName()));
+                header.put("X-Android-Cert", Commons.getSignature(getContext().getPackageManager(),getContext().getPackageName()));
 
                 return header;
             }
@@ -434,32 +435,6 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
         //instantiating the VolleySingleton Class
         VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(jsonObjectRequest);
-    }
-
-    public static String getSignature(@NonNull PackageManager pm, @NonNull String packageName) {
-        try {
-            PackageInfo packageInfo = pm.getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
-            if (packageInfo == null
-                    || packageInfo.signatures == null
-                    || packageInfo.signatures.length == 0
-                    || packageInfo.signatures[0] == null) {
-                return null;
-            }
-            return signatureDigest(packageInfo.signatures[0]);
-        } catch (PackageManager.NameNotFoundException e) {
-            return null;
-        }
-    }
-
-    private static String signatureDigest(Signature sig) {
-        byte[] signature = sig.toByteArray();
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA1");
-            byte[] digest = md.digest(signature);
-            return BaseEncoding.base16().lowerCase().encode(digest);
-        } catch (NoSuchAlgorithmException e) {
-            return null;
-        }
     }
 
     public void languageSelection() {
@@ -757,7 +732,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
     public void checkAudioPermission() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_CODE_AUDIO);
+            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, Constants.REQUEST_CODE_AUDIO);
         } else {
             speechToText();
         }
@@ -767,7 +742,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == REQUEST_CODE_AUDIO && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == Constants.REQUEST_CODE_AUDIO && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             speechToText();
         }
 
@@ -808,7 +783,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
                     speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, localeCode[0]);
                     speechIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, mPreference.getString(getString(R.string.lang_one), "English"));
 
-                    startActivityForResult(speechIntent, REQUEST_CODE_SPEECH_INPUT);
+                    startActivityForResult(speechIntent, Constants.REQUEST_CODE_SPEECH_INPUT);
                 }
             }
         });
@@ -819,7 +794,7 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_CODE_SPEECH_INPUT && resultCode == RESULT_OK && data != null) {
+        if (requestCode == Constants.REQUEST_CODE_SPEECH_INPUT && resultCode == RESULT_OK && data != null) {
             //getting the data
             ArrayList<String> resultedData = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             inputEditText.setText(resultedData.get(0));
@@ -847,8 +822,16 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        shimmerFrameLayout.startShimmer();
+    }
+
+    @Override
     public void onPause() {
         mInterstitialAd = null;
+
+        shimmerFrameLayout.stopShimmer();
         super.onPause();
     }
 
@@ -872,4 +855,5 @@ public class FragmentTranslation extends Fragment implements PopupMenu.OnMenuIte
 
         super.onDestroy();
     }
+
 }

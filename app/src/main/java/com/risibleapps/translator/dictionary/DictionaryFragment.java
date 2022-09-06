@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -57,6 +58,8 @@ public class DictionaryFragment extends Fragment {
     ProgressDialog progressDialog;
 
     private UnifiedNativeAd nativeAd;
+
+    ShimmerFrameLayout shimmerFrameLayout;
 
     @Nullable
     @Override
@@ -90,6 +93,9 @@ public class DictionaryFragment extends Fragment {
 
         //recyclerview
         recyclerView = view.findViewById(R.id.recyclerview_dictionary);
+
+        //shimmer native ad layout
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_dictionary);
     }
 
     private void setupRecyclerview() {
@@ -315,7 +321,7 @@ public class DictionaryFragment extends Fragment {
         });
 
         //instantiating the VolleySingleton Class
-        VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(jsonArrayRequest);
+        VolleySingleton.getInstance(requireActivity().getApplicationContext()).addToRequestQueue(jsonArrayRequest);
     }
 
     private void playPhoneticAudio(String audioUri) {
@@ -350,7 +356,7 @@ public class DictionaryFragment extends Fragment {
     }
 
     private void hideSoftInputKeyboard(View view) {
-        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        InputMethodManager inputMethodManager = (InputMethodManager) requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
@@ -363,12 +369,24 @@ public class DictionaryFragment extends Fragment {
     private boolean checkInternetConnection() {
         boolean isConnected;
         //check internet connection
-        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
         isConnected = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED;
 
         return isConnected;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        shimmerFrameLayout.startShimmer();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        shimmerFrameLayout.stopShimmer();
     }
 
     @Override

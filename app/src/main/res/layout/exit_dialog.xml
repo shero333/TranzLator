@@ -14,7 +14,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_exit"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <include android:id="@+id/shimmer_exit_dialog"
+            layout="@layout/shimmer_ad_unified_dialog"/>
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/text_message"
