@@ -35,7 +35,7 @@ public class SplashScreen extends AppCompatActivity {
     //variable for checking whether dark theme is applied or not
     boolean isDarkModeEnabled = false;
 
-    public static int prefCounter=0;
+    private int prefCounter=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

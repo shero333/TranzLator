@@ -13,4 +13,9 @@ public interface Constants {
 
      //Translation Home Fragment
      int REQUEST_CODE_AUDIO_INPUT = 10;
+
+     //for native ad in HistoryAdapter
+     int LIST_AD_POS = 4;
+     int CONTENT_TYPE = 0;
+     int AD_TYPE = 1;
 }

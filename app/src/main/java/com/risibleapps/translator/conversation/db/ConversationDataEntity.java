@@ -19,8 +19,6 @@ public class ConversationDataEntity implements Serializable {
         this.TTSCode=TTSCode;
     }
 
-    //column names for table
-
     //column id
     @PrimaryKey(autoGenerate = true)
     private int conID;

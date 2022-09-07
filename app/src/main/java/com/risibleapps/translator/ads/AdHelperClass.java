@@ -57,7 +57,7 @@ public class AdHelperClass {
             public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                 super.onAdLoaded(interstitialAd);
                 mInterstitialAd = interstitialAd;
-                Log.i("ADS", "interstitial ad loaded");
+                Log.i("AD_LOAD", "interstitial ad loaded");
             }
 
             @Override

@@ -18,8 +18,8 @@ android {
         applicationId "com.risibleapps.translator"
         minSdk 21
         targetSdk 31
-        versionCode 5
-        versionName "1.005"
+        versionCode 6
+        versionName "1.006"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.release

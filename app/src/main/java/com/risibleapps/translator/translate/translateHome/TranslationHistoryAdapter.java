@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.risibleapps.translator.R;
+import com.risibleapps.translator.Util.Constants;
 import com.risibleapps.translator.ads.AdHelperClass;
 import com.risibleapps.translator.translate.translateHome.db.TranslatedDataEntity;
 
@@ -21,10 +22,6 @@ import java.util.List;
 
 public class TranslationHistoryAdapter extends RecyclerView.Adapter<TranslationHistoryAdapter.MyViewHolder> {
 
-    //for native ad
-    private static final int LIST_AD_POS = 4;
-    private static final int CONTENT_TYPE = 0;
-    private static final int AD_TYPE = 1;
     Context context;
     List<TranslatedDataEntity> translatedDataEntityList;
 
@@ -44,9 +41,10 @@ public class TranslationHistoryAdapter extends RecyclerView.Adapter<TranslationH
         LayoutInflater inflater = LayoutInflater.from(context);
         View view;
 
-        if (viewType == AD_TYPE) {
+        if (viewType == Constants.AD_TYPE) {
             view = inflater.inflate(R.layout.layout_recycler_native_ad_view, parent, false);
-        } else {
+        }
+        else {
             view = inflater.inflate(R.layout.layout_translation_history, parent, false);
         }
 
@@ -56,7 +54,7 @@ public class TranslationHistoryAdapter extends RecyclerView.Adapter<TranslationH
     @Override
     public void onBindViewHolder(@NonNull TranslationHistoryAdapter.MyViewHolder holder, int position) {
 
-        if (getItemViewType(position) == CONTENT_TYPE) {
+        if (getItemViewType(position) == Constants.CONTENT_TYPE) {
             TranslatedDataEntity dataList = translatedDataEntityList.get(getRealPosition(position));
 
             holder.textViewLang1.setText(dataList.getSourceLang());
@@ -69,7 +67,7 @@ public class TranslationHistoryAdapter extends RecyclerView.Adapter<TranslationH
             }
 
         }
-        else if (getItemViewType(position) == AD_TYPE) {
+        else if (getItemViewType(position) == Constants.AD_TYPE) {
             nativeAd = AdHelperClass.refreshNativeAd((Activity) context, 6, null);
 
             if(nativeAd != null){
@@ -80,23 +78,23 @@ public class TranslationHistoryAdapter extends RecyclerView.Adapter<TranslationH
 
     @Override
     public int getItemCount() {
-        int additionalCount = (translatedDataEntityList.size() + (translatedDataEntityList.size() / LIST_AD_POS)) / LIST_AD_POS;
+        int additionalCount = (translatedDataEntityList.size() + (translatedDataEntityList.size() / Constants.LIST_AD_POS)) / Constants.LIST_AD_POS;
 
         return translatedDataEntityList.size() + additionalCount;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position % LIST_AD_POS == 3)
-            return AD_TYPE;
-        return CONTENT_TYPE;
+        if (position % Constants.LIST_AD_POS == 3)
+            return Constants.AD_TYPE;
+        return Constants.CONTENT_TYPE;
     }
 
     private int getRealPosition(int position) {
-        if (LIST_AD_POS == 0) {
+        if (Constants.LIST_AD_POS == 0) {
             return position;
         } else {
-            return position - position / LIST_AD_POS;
+            return position - position / Constants.LIST_AD_POS;
         }
     }
 

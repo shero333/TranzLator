@@ -8,8 +8,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.widget.Switch;
 
 import androidx.annotation.NonNull;
@@ -65,7 +66,7 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
     private Dialog dialog;
 
     //unified native ad object
-    private UnifiedNativeAd nativeAd;
+    private UnifiedNativeAd nativeAdExitDialog;
 
     public static int isHomeTransFragment=0;
 
@@ -244,29 +245,43 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
         //setting the transparent background
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
+        //this sets the width of dialog to 90%
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        this.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int width = (int) (displayMetrics.widthPixels * 0.9);
+
         //setting the width and height of alert dialog
-        dialog.getWindow().setLayout(ConstraintLayout.LayoutParams.MATCH_PARENT,ConstraintLayout.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setLayout(width, ConstraintLayout.LayoutParams.WRAP_CONTENT);
 
         //loading the native ad shimmer
         ShimmerFrameLayout shimmerFrameLayout = dialog.findViewById(R.id.shimmer_exit_dialog);
 
         //loading the ad
-        nativeAd = AdHelperClass.refreshNativeAd(this,1,dialog);
+        nativeAdExitDialog = AdHelperClass.refreshNativeAd(this,1,dialog);
 
         AppCompatButton buttonExit=dialog.findViewById(R.id.btn_exit);
         AppCompatButton buttonCancel=dialog.findViewById(R.id.btn_cancel);
-
 
         //click listener buttons
         buttonExit.setOnClickListener(view -> {
 
             //dismissing the alert dialog before finishing activity. Else 'Activity has a window leak' exception is thrown
             dialog.dismiss();
-            finish();
+            this.finishAffinity();
+            /*finish();*/
+            //onBackPressed();
         });
 
-        buttonCancel.setOnClickListener(view -> dialog.dismiss());
+        buttonCancel.setOnClickListener(view -> {
+            //incrementing the value to 1
+            isHomeTransFragment = 1;
 
+            //dismissing the dialog
+            dialog.dismiss();
+
+            //setting the native ad to null
+            nativeAdExitDialog = null;
+        });
     }
 
     @Override
@@ -279,6 +294,7 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
     protected void onStop() {
         mInterstitialAd = null;
         super.onStop();
+        Log.i("HELLO_123", "onStop: ");
     }
 
     @Override
@@ -286,10 +302,13 @@ public class HomeScreen extends AppCompatActivity implements NavigationView.OnNa
         mInterstitialAd = null;
 
         //destroying the native ad object
-         if(nativeAd != null){
-             nativeAd.destroy();
+         if(nativeAdExitDialog != null){
+             nativeAdExitDialog.destroy();
          }
+
+        Log.i("HELLO_123", "onDestroy: ");
 
         super.onDestroy();
     }
+
 }
