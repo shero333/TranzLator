@@ -3,15 +3,14 @@ plugins {
 }
 
 android {
-    signingConfigs {
-
-        release {
-            storeFile file('D:\\Keys\\Signed Keys\\translator.jks')
-            storePassword 'bangash321'
-            keyAlias 'translator'
-            keyPassword 'bangash321'
-        }
-    }
+//    signingConfigs {
+//        release {
+//            storeFile file('D:\\Keys\\Signed Keys\\translator.jks')
+//            storePassword 'bangash321'
+//            keyAlias 'translator'
+//            keyPassword 'bangash321'
+//        }
+//    }
     compileSdk 31
 
     defaultConfig {
@@ -22,7 +21,7 @@ android {
         versionName "1.006"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        signingConfig signingConfigs.release
+//        signingConfig signingConfigs.release
     }
     packagingOptions {
         exclude 'project.properties'

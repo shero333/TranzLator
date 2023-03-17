@@ -179,7 +179,8 @@ public class ConversationLanguagesAdapter extends RecyclerView.Adapter<Conversat
 
             if (constraint == null || constraint.length() == 0) {
                 filteredLanguages.addAll(supportedLanguagesListAll);
-            } else {
+            }
+            else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
 
                 for (ConversationLanguageModel item : supportedLanguagesListAll) {
